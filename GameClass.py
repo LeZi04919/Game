@@ -63,7 +63,7 @@ class Monster:
     inCoolDown:list[Skill] = []
     isBoss = False
 
-    def __init__(self,Name:str,Health:float,Armor:float,Attack:float,Dodge:float,isBoss:bool,Skills:list[Skill],Level:int):
+    def __init__(self,Name:str,Health:float,Armor:float,Attack:float,Dodge:float,isBoss:bool,Skills:list[Skill],Level:int = 1):
         self.Name = Name
         self.Health = Health
         self.Armor = Armor
