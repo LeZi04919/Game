@@ -1,3 +1,4 @@
+import Game
 class Item:
     Name = ""
     Stackable = True
@@ -33,41 +34,7 @@ class Item:
             self.Count += canStackCount
             OtherItem.Count -= canStackCount
             return OtherItem
-            
-class Weapon(Item):
-    
-    Attack = 0
-    Durability = 20 #耐久度，单位为轮    
-    MaxDurability = 20
-    
-    def __init__(self,Name,Attack,Durability):
-        self.Name = Name
-        self.Stackable = False
-        self.Attack = Attack
-        self.Durability = Durability
-        
-    def Attacked(self) -> bool:
-        self.Durability -= 1
-        if self.Durability <= 0:
-            return False
-        else:
-            return True
-        
-        
-class SpecialItem(Item):
-    
-    Effect = ""
-    EffectiveRounds = 0 #生效轮数
-    EffectiveObject = []
-    Value = 0
-    
-    def __init__(self, Name, Count, MaxStackCount,Effect,EffectiveRounds,EffectiveObject,Value):
-        super().__init__(Name, True, Count, MaxStackCount)
-        self.Effect = Effect
-        self.EffectiveRounds = EffectiveRounds
-        self.EffectiveObject = EffectiveObject
-        self.Value = Value
-        
+  
 class Skill:
     Name = ""
     Effect = ""
@@ -82,8 +49,8 @@ class Skill:
         self.EffectiveRounds = EffectiveRounds
         self.EffectiveObject = EffectiveObject
         self.Value = Value
-        self.CoolDown = CoolDown
-        
+        self.CoolDown = CoolDown     
+
 class Monster:
     Name = ""  #怪物名称
     Health = 0 #生命值
@@ -91,9 +58,12 @@ class Monster:
     Armor = 0 #防御力
     Dodge = 0 #闪避率
     Skills = []
+    Buff = {}
+    Level = 1
+    inCoolDown:list[Skill] = []
     isBoss = False
 
-    def __init__(self,Name:str,Health:float,Armor:float,Attack:float,Dodge:float,isBoss:bool,Skills:list[Skill]):
+    def __init__(self,Name:str,Health:float,Armor:float,Attack:float,Dodge:float,isBoss:bool,Skills:list[Skill],Level:int):
         self.Name = Name
         self.Health = Health
         self.Armor = Armor
@@ -101,6 +71,7 @@ class Monster:
         self.Dodge = Dodge
         self.isBoss = isBoss
         self.Skills = Skills
+        self.Level = Level
         
 class Player:
     Health = 20
@@ -109,8 +80,8 @@ class Player:
     Experience = 0
     Level = 1
     Buff = {} # Buff/DeBuff名 : Buff层数
-    Items = []
-    Skills = [ 
+    Items:list[Item] = []
+    Skills:list[Skill] = [ 
         Skill
         (
             "强力击",
@@ -121,6 +92,58 @@ class Player:
             3
         )
     ]
+    inCoolDown:list[Skill] = []
 
     def __init__(self):
         pass
+    
+    def DisposeItem(self,item:Item):
+        self.Items.remove(item)
+          
+class Weapon(Item):
+    
+    Attack = 0
+    Durability = 20 #耐久度，单位为轮    
+    MaxDurability = 20
+    
+    def __init__(self,Name,Attack,Durability):
+        self.Name = Name
+        self.Stackable = False
+        self.Attack = Attack
+        self.Durability = Durability
+        
+    def Attacked(self):
+        self.Durability -= 1
+        if self.Durability <= 0:
+            Game.Player.DisposeItem(self)
+        
+        
+class SpecialItem(Item):
+    
+    Effect = ""
+    EffectiveRounds = 0 #生效轮数
+    EffectiveObjects = []
+    Value = 0
+    
+    def __init__(self, Name, Count, MaxStackCount,Effect,EffectiveRounds,EffectiveObject,Value):
+        super().__init__(Name, True, Count, MaxStackCount)
+        self.Effect = Effect
+        self.EffectiveRounds = EffectiveRounds
+        self.EffectiveObject = EffectiveObject
+        self.Value = Value
+        
+    def Use(self,Object) -> bool:
+        canUse = False
+        for i in self.EffectiveObjects:
+            if type(Object) in i :
+                canUse = True
+        if not canUse:
+            return False
+        else:
+            if self.Effect in Object.Buff.keys():
+                Object.Buff[self.Effect] += self.EffectiveRounds
+            else:
+                Object.Buff[self.Effect] = self.EffectiveRounds
+            return True
+            
+        
