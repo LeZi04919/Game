@@ -8,8 +8,8 @@ Monsters = [
     GameClass.Monster
     (
         "史莱姆",
-        10,
-        1,
+        5,
+        0,
         1,
         0.2,
         False,
@@ -18,8 +18,8 @@ Monsters = [
     GameClass.Monster
     (
         "红史莱姆",
-        10,
-        1,
+        5,
+        0,
         1,
         0.2,
         False,
@@ -28,8 +28,8 @@ Monsters = [
     GameClass.Monster
     (
         "蓝史莱姆",
-        10,
-        1,
+        5,
+        0,
         1,
         0.2,
         False,
@@ -43,36 +43,40 @@ Monsters = [
         2,
         0,
         False,
-        []
+        [],
+        1
     ),
     GameClass.Monster
     (
         "兽人",
         20,
-        2,
-        4,
+        1,
+        5,
         0,
         False,
-        []
+        [],
+        1
     ), 
     GameClass.Monster
     (
         "史莱姆王",
-        150,
-        10,
-        10,
-        0,
+        50,
+        2.5,
+        7,
+        0.3,
         True,
-        []
+        [],
+        1
     ),
     GameClass.Monster
     (
         "龙",
-        500,
+        100,
+        5,
         10,
-        50,
         0,
         True,
-        []
+        [],
+        1
     )
     ]

@@ -1,4 +1,11 @@
+from ast import Dict
+import math
+from msilib.schema import Upgrade
+from operator import attrgetter
+import random
+from typing import Self
 import Game
+    
 class Item:
     Name = ""
     Stackable = True
@@ -50,36 +57,101 @@ class Skill:
         self.EffectiveObject = EffectiveObject
         self.Value = Value
         self.CoolDown = CoolDown     
-
-class Monster:
-    Name = ""  #怪物名称
-    Health = 0 #生命值
-    Attack = 0 #攻击力
-    Armor = 0 #防御力
-    Dodge = 0 #闪避率
-    Skills = []
-    Buff = {}
-    Level = 1
+class Prefab:
+    MaxHealth:float
+    Health:float
+    Attack:float
+    Armor:float
+    Experience:float #经验值
+    ExpMaxLimit:float
+    Level:int = 1
+    Dodge:float = 0 # 闪避率
+    Buff:dict[str,int] = {} # Buff/DeBuff名 : Buff层数
+    BuffValue:dict[str,float] = {} # Buff名 : Buff效果
+    Skills:list[Skill] = []
     inCoolDown:list[Skill] = []
+    
+    def __init__(self,MaxHealth,Health,Attack,Armor,Experience,ExpMaxLimit,Level,Dodge,Skills):
+        self.MaxHealth = MaxHealth
+        self.Health = Health
+        self.Attack = Attack
+        self.Armor = Armor
+        self.Experience = Experience
+        self.ExpMaxLimit = ExpMaxLimit
+        self.Level = Level
+        self.Dodge = Dodge
+        self.Skills = Skills
+        self.Upgrade(Level)
+        
+    def Upgrade(self,Level:int): #升级
+        self.Level = Level
+        self.Experience -= self.ExpMaxLimit
+        self.ExpMaxLimit += 5 * (self.Level - 1) 
+        self.Health *=  math.pow(1.057,Level - 1) 
+        self.Attack *=  math.pow(1.062,Level - 1) 
+        
+    def Injuried(self,Attack:float) -> float: #被攻击
+        objectAttributes = self.ApplyBuff()
+        randomNum = random.random()
+        if randomNum < self.Dodge:
+            _Attack = min(Attack - objectAttributes["Armor"],Attack * 0.1)
+            self.Health -= _Attack
+            if self.Health <= 0 :
+                return -1
+            return _Attack
+        else:
+            return 0
+     
+    def ApplyBuff(self) ->dict[str,float]:
+        Attack = 0
+        Armor = 0        
+        for buff in self.Buff.keys():
+            if buff == "AttackUp" or buff == "AttackDown":
+                Attack = self.Attack * self.BuffValue[buff]
+            elif buff == "ArmorUp" or buff == "ArmorDown":
+                Armor = self.Armor * self.BuffValue[buff]                
+        return {"Attack":Attack,"Armor":Armor}   
+    
+    def ReleaseSkill(self,skill:Skill,object:Self) -> bool: #释放技能
+        
+        if skill in self.inCoolDown:
+            return False
+        else:
+            if skill.Effect in object.Buff.keys():
+                object.Buff[skill.Effect] += skill.EffectiveRounds
+                if "Up" in skill.Effect:
+                    object.BuffValue[skill.Effect] = max(object.BuffValue[skill.Effect],skill.Value)
+                elif "Down" in skill.Effect:
+                    object.BuffValue[skill.Effect] = min(object.BuffValue[skill.Effect],skill.Value)
+            else:
+                object.Buff[skill.Effect] = skill.EffectiveRounds
+                object.BuffValue[skill.Effect] = skill.Value
+            return True
+      
+    def Attacked(self,object:Self): #攻击
+        objectAttributes = self.ApplyBuff()
+        object.Injuried(objectAttributes["Attack"])          
+class Monster(Prefab):
+    Name = ""  #怪物名称
     isBoss = False
 
-    def __init__(self,Name:str,Health:float,Armor:float,Attack:float,Dodge:float,isBoss:bool,Skills:list[Skill],Level:int = 1):
+    def __init__(self,Name:str,MaxHealth:float,Armor:float,Attack:float,Dodge:float,isBoss:bool,Skills:list[Skill],Level:int = 1):
         self.Name = Name
-        self.Health = Health
+        self.MaxHealth = MaxHealth
         self.Armor = Armor
         self.Attack = Attack
         self.Dodge = Dodge
         self.isBoss = isBoss
         self.Skills = Skills
         self.Level = Level
+        super().__init__(MaxHealth,MaxHealth,Attack,Armor,0,1,Level,Dodge,Skills)
         
-class Player:
-    Health = 20
-    Attack = 5
-    Armor = 1
-    Experience = 0
+class Player(Prefab):
+    MaxHealth = 20
+    Experience = 0 #经验值
+    ExpMaxLimit = 25
     Level = 1
-    Buff = {} # Buff/DeBuff名 : Buff层数
+    Dodge:float = 0 # 闪避率
     Items:list[Item] = []
     Skills:list[Skill] = [ 
         Skill
@@ -92,14 +164,48 @@ class Player:
             3
         )
     ]
-    inCoolDown:list[Skill] = []
+    
 
     def __init__(self):
-        pass
+        super().__init__(
+            20,
+            20,
+            5,
+            1,
+            0,
+            25,
+            1,
+            0,
+            [
+                Skill
+                (
+                    "强力击",
+                    "AttackUp",
+                    1,
+                    ["Player"],
+                    2.0,
+                    3
+                )        
+    ])
     
     def DisposeItem(self,item:Item):
         self.Items.remove(item)
-          
+        
+    def AddExp(self,Exp:float): #经验值变动
+        self.Experience += Exp
+        if(self.Experience >= self.ExpMaxLimit):
+            self.Upgrade(self.Level + 1)
+    
+    def Upgrade(self,Level:int): #升级
+        self.Level = Level
+        self.Experience -= self.ExpMaxLimit
+        self.ExpMaxLimit += 5 * (self.Level - 1) 
+        self.Health += 20 * math.pow(1.055,Level - 1) - self.MaxHealth
+        self.MaxHealth = 20 * math.pow(1.055,Level - 1) 
+        self.Attack = 5 * math.pow(1.06,Level - 1) 
+        print(f"你升级了!\n距离下一级还需要{self.ExpMaxLimit - self.Experience} EXP")
+        self.AddExp(0)
+                       
 class Weapon(Item):
     
     Attack = 0
@@ -116,8 +222,7 @@ class Weapon(Item):
         self.Durability -= 1
         if self.Durability <= 0:
             Game.Player.DisposeItem(self)
-        
-        
+                
 class SpecialItem(Item):
     
     Effect = ""
