@@ -1,0 +1,82 @@
+import GameClass
+
+Items:list[GameClass.Item] = [
+    
+]
+
+Monsters:list[GameClass.Monster] = [
+    GameClass.Monster
+    (
+        "史莱姆",
+        5,
+        0,
+        1,
+        0.2,
+        False,
+        []
+    ),
+    GameClass.Monster
+    (
+        "红史莱姆",
+        5,
+        0,
+        1,
+        0.2,
+        False,
+        []
+    ),
+    GameClass.Monster
+    (
+        "蓝史莱姆",
+        5,
+        0,
+        1,
+        0.2,
+        False,
+        []
+    ),
+    GameClass.Monster
+    (
+        "哥布林",
+        15,
+        1,
+        2,
+        0,
+        False,
+        [],
+        1
+    ),
+    GameClass.Monster
+    (
+        "兽人",
+        20,
+        1,
+        5,
+        0,
+        False,
+        [],
+        1
+    ), 
+    GameClass.Monster
+    (
+        "史莱姆王",
+        50,
+        2.5,
+        7,
+        0.3,
+        True,
+        [],
+        1
+    ),
+    GameClass.Monster
+    (
+        "龙",
+        100,
+        5,
+        10,
+        0,
+        True,
+        [],
+        1
+    )
+]

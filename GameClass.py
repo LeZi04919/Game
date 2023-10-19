@@ -131,6 +131,7 @@ class Prefab:
     def Attacked(self,object:Self): #攻击
         objectAttributes = self.ApplyBuff()
         object.Injuried(objectAttributes["Attack"])          
+
 class Monster(Prefab):
     Name = ""  #怪物名称
     isBoss = False
