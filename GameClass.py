@@ -70,6 +70,7 @@ class Prefab:
     BuffValue:dict[str,float] = {} # Buff名 : Buff效果
     Skills:list[Skill] = []
     inCoolDown:list[Skill] = []
+    Equipment:list = []
     
     def __init__(self,MaxHealth,Health,Attack,Armor,Experience,ExpMaxLimit,Level,Dodge,Skills):
         self.MaxHealth = MaxHealth
@@ -109,7 +110,12 @@ class Prefab:
             if buff == "AttackUp" or buff == "AttackDown":
                 Attack = self.Attack * self.BuffValue[buff]
             elif buff == "ArmorUp" or buff == "ArmorDown":
-                Armor = self.Armor * self.BuffValue[buff]                
+                Armor = self.Armor * self.BuffValue[buff]    
+        for equip in self.Equipment:
+            if "Weapon" in type(equip): #剑
+                Attack += equip.Attack
+            elif "" in type(equip): #护甲
+                Armor += equip.ArmorValue                            
         return {"Attack":Attack,"Armor":Armor}   
     
     def ReleaseSkill(self,skill:Skill,object:Self) -> bool: #释放技能
@@ -136,7 +142,7 @@ class Monster(Prefab):
     Name = ""  #怪物名称
     isBoss = False
 
-    def __init__(self,Name:str,MaxHealth:float,Armor:float,Attack:float,Dodge:float,isBoss:bool,Skills:list[Skill],Level:int = 1):
+    def __init__(self,Name:str,MaxHealth:float,Armor:float,Attack:float,Dodge:float,isBoss:bool,Skills:list[Skill],Level:int = 1,Equipment:list = []):
         self.Name = Name
         self.MaxHealth = MaxHealth
         self.Armor = Armor
@@ -145,6 +151,7 @@ class Monster(Prefab):
         self.isBoss = isBoss
         self.Skills = Skills
         self.Level = Level
+        self.Equipment = Equipment
         super().__init__(MaxHealth,MaxHealth,Attack,Armor,0,1,Level,Dodge,Skills)
         
 class Player(Prefab):
@@ -218,12 +225,25 @@ class Weapon(Item):
         self.Stackable = False
         self.Attack = Attack
         self.Durability = Durability
+        super().__init__(Name,False,1,1)
         
-    def Attacked(self):
+    def NextRound(self) -> bool:
         self.Durability -= 1
         if self.Durability <= 0:
             Game.Player.DisposeItem(self)
-                
+            return True
+        else:
+            return False
+
+        
+class WearableArmor(Item):
+    
+    ArmorValue:int = 0
+    
+    def __init__(self, Name:str,ArmorValue:int):
+        self.ArmorValue = ArmorValue
+        super().__init__(Name, False, 1, 1)
+  
 class SpecialItem(Item):
     
     Effect = ""
@@ -231,7 +251,7 @@ class SpecialItem(Item):
     EffectiveObjects = []
     Value = 0
     
-    def __init__(self, Name, Count, MaxStackCount,Effect,EffectiveRounds,EffectiveObject,Value):
+    def __init__(self, Name:str, Count:int, MaxStackCount:int,Effect:str,EffectiveRounds:int,EffectiveObject:list,Value:float):
         super().__init__(Name, True, Count, MaxStackCount)
         self.Effect = Effect
         self.EffectiveRounds = EffectiveRounds
@@ -241,7 +261,7 @@ class SpecialItem(Item):
     def Use(self,Object) -> bool:
         canUse = False
         for i in self.EffectiveObjects:
-            if type(Object) in i :
+            if type(Object) in type(i) :
                 canUse = True
         if not canUse:
             return False

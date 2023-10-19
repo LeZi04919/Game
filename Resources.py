@@ -1,7 +1,33 @@
 import GameClass
 
-Items:list[GameClass.Item] = [
-    
+Items = [
+    GameClass.Weapon(
+        "双手剑",   
+        3,
+        20        
+    ),
+    GameClass.WearableArmor(
+        "精良的护甲",
+        2
+        ),
+    GameClass.SpecialItem(
+        "HP恢复药",
+        1,
+        20,
+        "HealthUP",
+        3,
+        [GameClass.Player],
+        4              
+    ),
+    GameClass.SpecialItem(
+        "技能冷却加速剂",
+        1,
+        10,
+        "CoolDownUP",
+        0,
+        [GameClass.Player],
+        1        
+    )
 ]
 
 Monsters:list[GameClass.Monster] = [
@@ -10,8 +36,8 @@ Monsters:list[GameClass.Monster] = [
         "史莱姆",
         5,
         0,
-        1,
-        0.2,
+        2,
+        0.5,
         False,
         []
     ),
@@ -20,8 +46,8 @@ Monsters:list[GameClass.Monster] = [
         "红史莱姆",
         5,
         0,
-        1,
-        0.2,
+        2,
+        0.5,
         False,
         []
     ),
@@ -30,8 +56,8 @@ Monsters:list[GameClass.Monster] = [
         "蓝史莱姆",
         5,
         0,
-        1,
-        0.2,
+        2,
+        0.5,
         False,
         []
     ),
@@ -40,7 +66,7 @@ Monsters:list[GameClass.Monster] = [
         "哥布林",
         15,
         1,
-        2,
+        5,
         0,
         False,
         [],
@@ -51,7 +77,7 @@ Monsters:list[GameClass.Monster] = [
         "兽人",
         20,
         1,
-        5,
+        8,
         0,
         False,
         [],
@@ -62,8 +88,8 @@ Monsters:list[GameClass.Monster] = [
         "史莱姆王",
         50,
         2.5,
-        7,
-        0.3,
+        10,
+        0.75,
         True,
         [],
         1
@@ -73,7 +99,7 @@ Monsters:list[GameClass.Monster] = [
         "龙",
         100,
         5,
-        10,
+        15,
         0,
         True,
         [],
