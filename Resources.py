@@ -155,4 +155,31 @@ MapEvents:dict[str,dict[str,float]] = {
     "冰原":{"冻伤":0.3,"史莱姆群":0.4,"前辈":0.2,"北极熊":0.1},
     "沙漠":{"缺水":0.3,"前辈":0.5,"昏厥":0.3},
     "城市":{"坎诺特":0.4,"普通商人":0.4,"卫兵打劫":0.2}
-} 
+}
+EventMonsters:dict[str,GameClass.Monster] = {
+    "宝箱事件":GameClass.Monster(
+        "宝箱怪",
+        30,
+        5,
+        10,
+        0,
+        False,
+        [
+            GameClass.Skill("宝箱护盾","DodgeUp",1,["Monster"],0.9,4),
+            GameClass.Skill("强力撕咬","AttackUp",1,["Player"],2.5,4)
+        ],
+    ),
+    "北极熊":GameClass.Monster(
+        "北极熊",
+        35,
+        5,
+        15,
+        0,
+        False,
+        [
+            GameClass.Skill("强力击","AttackUp",1,["Monster"],1.75,5),
+            GameClass.Skill("震慑","ArmorDown",3,["Player"],0.75,3),
+            GameClass.Skill("防护强化","ArmorUp",3,["Monster"],1.5,2)
+        ]
+    )
+}

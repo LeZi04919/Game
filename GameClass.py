@@ -111,6 +111,10 @@ class Prefab:
                 Attack = self.Attack * self.BuffValue[buff]
             elif buff == "ArmorUp" or buff == "ArmorDown":
                 Armor = self.Armor * self.BuffValue[buff]    
+            elif buff == "DodgeUp":
+                Dodge = min(self.Dodge + self.BuffValue[buff],1)
+            elif buff == "DodgeDown":
+                Dodge = max(self.Dodge - self.BuffValue[buff],0)
         for equip in self.Equipment:
             if "Weapon" in type(equip): #剑
                 Attack += equip.Attack
@@ -163,15 +167,8 @@ class Player(Prefab):
     Dodge:float = 0 # 闪避率
     Items:list[Item] = []
     Skills:list[Skill] = [ 
-        Skill
-        (
-            "强力击",
-            "AttackUp",
-            1,
-            ["Player"],
-            2.0,
-            3
-        )
+        Skill("强力击","AttackUp",1,["Player"],2.0,3),
+        Skill("广域攻击","AreaAttack",1,["Monster"],3,2)        
     ]
     
 
