@@ -1,24 +1,22 @@
-from ast import Dict
 import math
-from msilib.schema import Upgrade
-from operator import attrgetter
 import random
 from typing import Self
 import Game
     
 class Item:
-    Name = ""
-    Stackable = True
-    Count = 0
-    MaxStackCount = 0
+    Name:str = ""
+    Stackable:bool = True
+    Count:int = 0
+    MaxStackCount:int = 0
+    Level:int = 1
         
-    def __init__(self,Name,Stackable,Count,MaxStackCount):
+    def __init__(self,Name:str,Stackable:bool,Count:int,MaxStackCount:int):
         self.Name = Name
         self.Stackable = Stackable
         self.Count = Count
         self.MaxStackCount = MaxStackCount
         
-    def Use(self,UsageCount) -> bool:
+    def Use(self,UsageCount:int) -> bool:
         if UsageCount > self.Count:
             raise Exception(f"使用数量\"{UsageCount}\"超出了物品\"{self.Name}\"的最大数量，该物品所持数量为:{self.Count}")
         else:
@@ -219,15 +217,21 @@ class Player(Prefab):
                        
 class Weapon(Item):
     
-    Attack = 0
-    Durability = 20 #耐久度，单位为轮    
-    MaxDurability = 20
+    Attack:float = 0
+    Durability:int = 20 #耐久度，单位为轮    
+    MaxDurability:int = 20
     
-    def __init__(self,Name,Attack,Durability):
+    def __init__(self,Name:str,Attack:float,MaxDurability:int,Level:int = 1):
         self.Name = Name
         self.Stackable = False
-        self.Attack = Attack
-        self.Durability = Durability
+        self.Level = Level
+        self.Attack = Attack + int(random.uniform(-(Attack * 0.2),(Attack * 0.2)))
+        if random.random() <= 0.8:
+            self.Durability = MaxDurability
+            self.MaxDurability = MaxDurability
+        else:
+            self.MaxDurability = MaxDurability
+            self.Durability = int(random.uniform(-MaxDurability * 0.5,MaxDurability * 0.95))
         super().__init__(Name,False,1,1)
         
     def NextRound(self) -> bool:
@@ -244,24 +248,26 @@ class WearableArmor(Item):
     ArmorValue:int = 0
     ArmorDodge:float = 0
     
-    def __init__(self, Name:str,ArmorValue:int,ArmorDodge:float):
-        self.ArmorValue = ArmorValue
-        self.ArmorDodge = ArmorDodge
+    def __init__(self, Name:str,ArmorValue:int,ArmorDodge:float,Level:int = 1):
+        self.ArmorValue = ArmorValue + int(random.uniform(-(ArmorValue * 0.2),(ArmorValue * 0.2)))
+        self.ArmorDodge = ArmorDodge + random.uniform(-0.1,0.1)
+        self.Level = Level
         super().__init__(Name, False, 1, 1)
   
 class SpecialItem(Item):
     
-    Effect = ""
-    EffectiveRounds = 0 #生效轮数
-    EffectiveObjects = []
-    Value = 0
+    Effect:str = ""
+    EffectiveRounds:int = 0 #生效轮数
+    EffectiveObjects:list = []
+    Value:float = 0
     
-    def __init__(self, Name:str, Count:int, MaxStackCount:int,Effect:str,EffectiveRounds:int,EffectiveObject:list,Value:float):
+    def __init__(self, Name:str, Count:int, MaxStackCount:int,Effect:str,EffectiveRounds:int,EffectiveObject:list,Value:float,Level:int = 1):
         super().__init__(Name, True, Count, MaxStackCount)
         self.Effect = Effect
-        self.EffectiveRounds = EffectiveRounds
+        self.EffectiveRounds = EffectiveRounds + int(random.uniform(-EffectiveRounds * 0.5,EffectiveRounds * 0.5))
         self.EffectiveObject = EffectiveObject
-        self.Value = Value
+        self.Value = Value + random.uniform(-Value * 0.5,Value * 0.5)
+        self.Level = Level
         
     def Use(self,Object) -> bool:
         canUse = False

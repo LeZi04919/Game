@@ -1,4 +1,5 @@
 import GameClass
+import sys
 
 Items:list = [
     GameClass.Weapon(
@@ -15,7 +16,6 @@ Items:list = [
         "光滑的护甲",
         1,
         0.2
-
     ),
     GameClass.SpecialItem(
         "HP恢复药",
@@ -39,7 +39,13 @@ Items:list = [
         "因果剑",
         1.5,
         15
-    )
+    ),
+    GameClass.Item(
+        "硬币",
+        True,
+        1,
+        sys.maxsize
+    )    
 ]
 
 Monsters:list[GameClass.Monster] = [
@@ -86,15 +92,37 @@ Monsters:list[GameClass.Monster] = [
     ),
     GameClass.Monster
     (
+        "精英哥布林",
+        20,
+        3,
+        6.5,
+        0.05,
+        False,
+        [],
+        1
+    ),
+    GameClass.Monster
+    (
         "兽人",
         20,
-        1,
+        4,
         8,
         0,
         False,
         [],
         1
-    ), 
+    ),
+    GameClass.Monster
+    (
+        "精英兽人",
+        30,
+        5,
+        12,
+        0,
+        False,
+        [],
+        1
+    ),
     GameClass.Monster
     (
         "史莱姆王",
@@ -118,3 +146,8 @@ Monsters:list[GameClass.Monster] = [
         1
     )
 ]
+
+MapAreas:dict[str,float] = {"草原":0.3,"平原":0.3,"火山":0.1,"冰原":0.1,"沙漠":0.05,"城市":0.15} # 区域 : 进入概率
+MapEvents:dict[str,dict[str,float]] = {
+    "草原":{"宝箱事件":0.2,"前辈":0.2,"阿哈玩偶":0.3,"动物聚会":0.1,"坎诺特":0.2}
+} 
