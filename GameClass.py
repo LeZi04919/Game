@@ -89,13 +89,14 @@ class Prefab:
         self.Experience -= self.ExpMaxLimit
         self.ExpMaxLimit += 5 * (self.Level - 1) 
         self.Health *=  math.pow(1.057,Level - 1) 
-        self.Attack *=  math.pow(1.062,Level - 1) 
-        
+        self.Attack *=  math.pow(1.062,Level - 1)
     def Injuried(self,Attack:float) -> float: #被攻击
         objectAttributes = self.ApplyBuff()
         randomNum = random.random()
-        if randomNum < self.Dodge:
-            _Attack = min(Attack - objectAttributes["Armor"],Attack * 0.1)
+        Dodge = self.Dodge + objectAttributes["Dodge"]
+        Armor = objectAttributes["Armor"]
+        if randomNum < Dodge:
+            _Attack = min(Attack - Armor,Attack * 0.1)
             self.Health -= _Attack
             if self.Health <= 0 :
                 return -1
@@ -104,8 +105,9 @@ class Prefab:
             return 0
      
     def ApplyBuff(self) ->dict[str,float]:
-        Attack = 0
-        Armor = 0        
+        Attack:float = 0
+        Armor:float = 0
+        Dodge:float = 0
         for buff in self.Buff.keys():
             if buff == "AttackUp" or buff == "AttackDown":
                 Attack = self.Attack * self.BuffValue[buff]
@@ -114,9 +116,10 @@ class Prefab:
         for equip in self.Equipment:
             if "Weapon" in type(equip): #剑
                 Attack += equip.Attack
-            elif "" in type(equip): #护甲
-                Armor += equip.ArmorValue                            
-        return {"Attack":Attack,"Armor":Armor}   
+            elif "WearableArmor" in type(equip): #护甲
+                Armor += equip.ArmorValue
+                Dodge += equip.ArmorDodge
+        return {"Attack":Attack,"Armor":Armor,"Dodge":Dodge}
     
     def ReleaseSkill(self,skill:Skill,object:Self) -> bool: #释放技能
         
@@ -239,9 +242,11 @@ class Weapon(Item):
 class WearableArmor(Item):
     
     ArmorValue:int = 0
+    ArmorDodge:float = 0
     
-    def __init__(self, Name:str,ArmorValue:int):
+    def __init__(self, Name:str,ArmorValue:int,ArmorDodge:float):
         self.ArmorValue = ArmorValue
+        self.ArmorDodge = ArmorDodge
         super().__init__(Name, False, 1, 1)
   
 class SpecialItem(Item):

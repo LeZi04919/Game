@@ -1,6 +1,6 @@
 import GameClass
 
-Items = [
+Items:list = [
     GameClass.Weapon(
         "双手剑",   
         3,
@@ -8,8 +8,15 @@ Items = [
     ),
     GameClass.WearableArmor(
         "精良的护甲",
-        2
+        2,
+        0
         ),
+    GameClass.WearableArmor(
+        "光滑的护甲",
+        1,
+        0.2
+
+    ),
     GameClass.SpecialItem(
         "HP恢复药",
         1,
@@ -27,6 +34,11 @@ Items = [
         0,
         [GameClass.Player],
         1        
+    ),
+    GameClass.Weapon(
+        "因果剑",
+        1.5,
+        15
     )
 ]
 
