@@ -14,12 +14,12 @@ def NextStep(bonus:float):
     return randomStep * bonus * levelBonus
 
 def GetNextArea() -> str:
-    Areas:list[str] = Resources.MapAreas.keys()
-    randomArea:str = ""
+    Areas:list[str] = list[str](Resources.MapAreas.keys())
+    randomArea:list[str] = []
     while True:
-        randomArea = random.choices(Areas, weights=[Resources[Areas[0]], Resources[Areas[1]], Resources[Areas[2]],Resources[Areas[3]], Resources[Areas[4]], Resources[Areas[5]]],k=1)
-        if randomArea != Game.Area and randomArea != "":
-            return randomArea
+        randomArea = random.choices(Areas,weights=[Resources.MapAreas[Areas[0]], Resources.MapAreas[Areas[1]], Resources.MapAreas[Areas[2]],Resources.MapAreas[Areas[3]], Resources.MapAreas[Areas[4]], Resources.MapAreas[Areas[5]]],k=1)
+        if Game.Area not in randomArea  and len(randomArea) != 0:
+            return randomArea[0]
 
 
 

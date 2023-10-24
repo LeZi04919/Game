@@ -146,7 +146,7 @@ Monsters:list[GameClass.Monster] = [
         1
     )
 ]
-Events:GameClass.Event = [
+Events:list[GameClass.Event] = [
     GameClass.Event("宝箱事件","Adventure",[GameClass.Monster(
         "宝箱怪",
         30,
