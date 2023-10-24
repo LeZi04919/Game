@@ -146,6 +146,7 @@ Monsters:list[GameClass.Monster] = [
         1
     )
 ]
+
 Events:list[GameClass.Event] = [
     GameClass.Event("宝箱事件","Adventure",[GameClass.Monster(
         "宝箱怪",
@@ -174,15 +175,26 @@ Events:list[GameClass.Event] = [
         0,
         False,
         [
-            GameClass.Skill("强力击","AttackUp",1,["Monster"],1.75,5),
+            GameClass.Skill("强力击","AttackUp",1,["Self"],1.75,5),
             GameClass.Skill("震慑","ArmorDown",3,["Player"],0.75,3),
-            GameClass.Skill("防护强化","ArmorUp",3,["Monster"],1.5,2)
+            GameClass.Skill("防护强化","ArmorUp",3,["Self"],1.5,2)
         ]
     )]),
     GameClass.Event("缺水","Status"),
     GameClass.Event("昏厥","Status"),
     GameClass.Event("普通商人","Shop"),
-    GameClass.Event("卫兵打劫","Trap")
+    GameClass.Event("卫兵打劫","Trap",[GameClass.Monster(
+        "城市卫兵",
+        25,
+        3,
+        10,
+        0,
+        False,
+        [
+            GameClass.Skill("强力穿刺","AttackUp",1,["Self"],1.25,3),
+            GameClass.Skill("架起护盾","ArmorUp",2,["Self"],2,3) 
+         ]        
+    )])
 
 ]
 

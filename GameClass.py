@@ -89,6 +89,7 @@ class Prefab:
         self.ExpMaxLimit += 5 * (self.Level - 1) 
         self.Health *=  math.pow(1.057,Level - 1) 
         self.Attack *=  math.pow(1.062,Level - 1)
+        
     def Injuried(self,Attack:float) -> float: #被攻击
         objectAttributes = self.ApplyBuff()
         randomNum = random.random()
