@@ -54,7 +54,8 @@ class Skill:
         self.EffectiveRounds = EffectiveRounds
         self.EffectiveObject = EffectiveObject
         self.Value = Value
-        self.CoolDown = CoolDown     
+        self.CoolDown = CoolDown
+
 class Prefab:
     MaxHealth:float
     Health:float
@@ -279,5 +280,16 @@ class SpecialItem(Item):
             else:
                 Object.Buff[self.Effect] = self.EffectiveRounds
             return True
+
+class Event:
+    Name:str = ""
+    Type:str = ""
+    EventMonsters:list[Monster] = []
+
+    def __init__(self,Name:str,Type:str,EventMonsters:list[Monster] = []):
+        self.Name = Name
+        self.Type = Type
+        self.EventMonsters = EventMonsters
+
             
         

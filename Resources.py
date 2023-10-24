@@ -146,18 +146,8 @@ Monsters:list[GameClass.Monster] = [
         1
     )
 ]
-
-MapAreas:dict[str,float] = {"草原":0.3,"平原":0.3,"火山":0.1,"冰原":0.1,"沙漠":0.05,"城市":0.15} # 区域 : 进入概率
-MapEvents:dict[str,dict[str,float]] = {
-    "草原":{"宝箱事件":0.2,"前辈":0.2,"阿哈玩偶":0.3,"动物聚会":0.1,"坎诺特":0.2},
-    "平原":{"坎诺特":0.2,"前辈":0.2,"史莱姆群":0.4,"阿哈玩偶":0.2},
-    "火山":{"灼伤":0.3,"史莱姆群":0.4,"前辈":0.3},
-    "冰原":{"冻伤":0.3,"史莱姆群":0.4,"前辈":0.2,"北极熊":0.1},
-    "沙漠":{"缺水":0.3,"前辈":0.5,"昏厥":0.3},
-    "城市":{"坎诺特":0.4,"普通商人":0.4,"卫兵打劫":0.2}
-}
-EventMonsters:dict[str,GameClass.Monster] = {
-    "宝箱事件":GameClass.Monster(
+Events:GameClass.Event = [
+    GameClass.Event("宝箱事件","Adventure",[GameClass.Monster(
         "宝箱怪",
         30,
         5,
@@ -168,8 +158,15 @@ EventMonsters:dict[str,GameClass.Monster] = {
             GameClass.Skill("宝箱护盾","DodgeUp",1,["Monster"],0.9,4),
             GameClass.Skill("强力撕咬","AttackUp",1,["Player"],2.5,4)
         ],
-    ),
-    "北极熊":GameClass.Monster(
+    )]),
+    GameClass.Event("前辈","Adventure"),
+    GameClass.Event("阿哈玩偶","Adventure"),
+    GameClass.Event("动物聚会","Adventure",[Monsters[0],Monsters[1],Monsters[2],Monsters[3],Monsters[4],Monsters[5],Monsters[6]]),
+    GameClass.Event("坎诺特","Shop"),
+    GameClass.Event("史莱姆群","Trap",[Monsters[0],Monsters[1],Monsters[2]]),
+    GameClass.Event("灼伤","Status"),
+    GameClass.Event("冻伤","Status"),
+    GameClass.Event("北极熊","Trap",[GameClass.Monster(
         "北极熊",
         35,
         5,
@@ -181,5 +178,21 @@ EventMonsters:dict[str,GameClass.Monster] = {
             GameClass.Skill("震慑","ArmorDown",3,["Player"],0.75,3),
             GameClass.Skill("防护强化","ArmorUp",3,["Monster"],1.5,2)
         ]
-    )
+    )]),
+    GameClass.Event("缺水","Status"),
+    GameClass.Event("昏厥","Status"),
+    GameClass.Event("普通商人","Shop"),
+    GameClass.Event("卫兵打劫","Trap")
+
+]
+
+MapAreas:dict[str,float] = {"草原":0.3,"平原":0.3,"火山":0.1,"冰原":0.1,"沙漠":0.05,"城市":0.15} # 区域 : 进入概率
+
+MapEvents:dict[str,dict[GameClass.Event,float]] = {
+    "草原":{Events[0]:0.2,Events[1]:0.2,Events[2]:0.3,Events[3]:0.1,Events[4]:0.2},
+    "平原":{Events[4]:0.2,Events[1]:0.2,Events[5]:0.4,Events[2]:0.2},
+    "火山":{Events[6]:0.3,Events[5]:0.4,Events[1]:0.3},
+    "冰原":{Events[7]:0.3,Events[5]:0.4,Events[1]:0.2,Events[8]:0.1},
+    "沙漠":{Events[9]:0.3,Events[1]:0.5,Events[10]:0.3},
+    "城市":{Events[4]:0.4,Events[11]:0.4,Events[12]:0.2}
 }
