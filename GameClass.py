@@ -161,6 +161,7 @@ class Monster(Prefab):
         self.Equipment = Equipment
         super().__init__(MaxHealth,MaxHealth,Attack,Armor,0,1,Level,Dodge,Skills)
         
+        
 class Player(Prefab):
     MaxHealth = 20
     Experience = 0 #经验值
@@ -175,19 +176,12 @@ class Player(Prefab):
     
 
     def __init__(self):
-        super().__init__(
-            20,
-            20,
-            5,
-            1,
-            0,
-            25,
-            1,
-            0,
+        super().__init__(20,20,5,1,0,25,1,0,
             [
                 Skill("强力击","AttackUp",1,["Self"],2.0,3),
                 Skill("广域攻击","AreaAttack",1,["Monster"],3,2)   
-    ])
+            ]
+        )
     
     def DisposeItem(self,item:Item):
         self.Items.remove(item)
