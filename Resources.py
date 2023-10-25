@@ -49,112 +49,22 @@ Items:list = [
 ]
 
 Monsters:list[GameClass.Monster] = [
-    GameClass.Monster
-    (
-        "史莱姆",
-        5,
-        0,
-        2,
-        0.5,
-        False,
-        []
-    ),
-    GameClass.Monster
-    (
-        "红史莱姆",
-        5,
-        0,
-        2,
-        0.5,
-        False,
-        []
-    ),
-    GameClass.Monster
-    (
-        "蓝史莱姆",
-        5,
-        0,
-        2,
-        0.5,
-        False,
-        []
-    ),
-    GameClass.Monster
-    (
-        "哥布林",
-        15,
-        1,
-        5,
-        0,
-        False,
-        [],
-        1
-    ),
-    GameClass.Monster
-    (
-        "精英哥布林",
-        20,
-        3,
-        6.5,
-        0.05,
-        False,
-        [],
-        1
-    ),
-    GameClass.Monster
-    (
-        "兽人",
-        20,
-        4,
-        8,
-        0,
-        False,
-        [],
-        1
-    ),
-    GameClass.Monster
-    (
-        "精英兽人",
-        30,
-        5,
-        12,
-        0,
-        False,
-        [],
-        1
-    ),
-    GameClass.Monster
-    (
-        "史莱姆王",
-        50,
-        2.5,
-        10,
-        0.75,
-        True,
-        [],
-        1
-    ),
-    GameClass.Monster
-    (
-        "龙",
-        100,
-        5,
-        15,
-        0,
-        True,
-        [],
-        1
-    )
+    GameClass.Monster("史莱姆",5,0,2,0.5,False,[]),
+    GameClass.Monster("红史莱姆",5,0,2,0.5,False,[]),
+    GameClass.Monster("蓝史莱姆",5,0,2,0.5,False,[]),
+    GameClass.Monster("哥布林",15,1,5,0,False,[],1),
+    GameClass.Monster("精英哥布林",20,3,6.5,0.05,False,[],1),
+    GameClass.Monster("兽人",20,4,8,0,False,[],1),
+    GameClass.Monster("精英兽人",30,5,12,0,False,[],1)   
+]
+
+Ringleaders:list[GameClass.Monster] = [
+    GameClass.Monster("史莱姆王",50,2.5,10,0.75,True,[],1),
+    GameClass.Monster("龙",100,5,15,0,True,[],1)
 ]
 
 Events:list[GameClass.Event] = [
-    GameClass.Event("宝箱事件","Adventure",[GameClass.Monster(
-        "宝箱怪",
-        30,
-        5,
-        10,
-        0,
-        False,
+    GameClass.Event("宝箱事件","Adventure",[GameClass.Monster("宝箱怪",30,5,10,0,False,
         [
             GameClass.Skill("宝箱护盾","DodgeUp",1,["Monster"],0.9,4),
             GameClass.Skill("强力撕咬","AttackUp",1,["Player"],2.5,4)
@@ -167,13 +77,7 @@ Events:list[GameClass.Event] = [
     GameClass.Event("史莱姆群","Trap",[Monsters[0],Monsters[1],Monsters[2]]),
     GameClass.Event("灼伤","Status"),
     GameClass.Event("冻伤","Status"),
-    GameClass.Event("北极熊","Trap",[GameClass.Monster(
-        "北极熊",
-        35,
-        5,
-        15,
-        0,
-        False,
+    GameClass.Event("北极熊","Trap",[GameClass.Monster("北极熊",35,5,15,0,False,
         [
             GameClass.Skill("强力击","AttackUp",1,["Self"],1.75,5),
             GameClass.Skill("震慑","ArmorDown",3,["Player"],0.75,3),
@@ -183,13 +87,7 @@ Events:list[GameClass.Event] = [
     GameClass.Event("缺水","Status"),
     GameClass.Event("昏厥","Status"),
     GameClass.Event("普通商人","Shop"),
-    GameClass.Event("卫兵打劫","Trap",[GameClass.Monster(
-        "城市卫兵",
-        25,
-        3,
-        10,
-        0,
-        False,
+    GameClass.Event("卫兵打劫","Trap",[GameClass.Monster("城市卫兵",25,3,10,0,False,
         [
             GameClass.Skill("强力穿刺","AttackUp",1,["Self"],1.25,3),
             GameClass.Skill("架起护盾","ArmorUp",2,["Self"],2,3) 

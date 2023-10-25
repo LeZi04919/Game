@@ -169,7 +169,7 @@ class Player(Prefab):
     Dodge:float = 0 # 闪避率
     Items:list[Item] = []
     Skills:list[Skill] = [ 
-        Skill("强力击","AttackUp",1,["Player"],2.0,3),
+        Skill("强力击","AttackUp",1,["Self"],2.0,3),
         Skill("广域攻击","AreaAttack",1,["Monster"],3,2)        
     ]
     
@@ -185,15 +185,8 @@ class Player(Prefab):
             1,
             0,
             [
-                Skill
-                (
-                    "强力击",
-                    "AttackUp",
-                    1,
-                    ["Player"],
-                    2.0,
-                    3
-                )        
+                Skill("强力击","AttackUp",1,["Self"],2.0,3),
+                Skill("广域攻击","AreaAttack",1,["Monster"],3,2)   
     ])
     
     def DisposeItem(self,item:Item):
