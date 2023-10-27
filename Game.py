@@ -8,17 +8,38 @@ Player:GameClass.Player = GameClass.Player()
 TotalStepCount:int #总步数
 AreaStep:int #完成当前区域所需步数
 
-def Attack(targets:list[GameClass.Monster]) -> None: #攻击处理
-    for target in targets:
-        damage = Player.Attacked(target)
-        if damage > 0:
-            print(f"你对{target.Name} {targets.index(target)}造成了共计{damage}点伤害")
+def Attack(_targets:list[GameClass.Monster]) -> None: #攻击处理
+    for _target in _targets:
+        _damage = Player.Attacked(_target)
+        if _damage > 0:
+            print(f"你对{_target.Name} {_targets.index(_target)}造成了共计{_damage}点伤害")
         else:
-            print(f"你的攻击被{target.Name} {targets.index(target)}闪避了,造成了0点伤害")
+            print(f"你的攻击被{_target.Name} {_targets.index(_target)}闪避了,造成了0点伤害")
 
-def UseSkill(skill:GameClass.Skill,monsters:list[GameClass.Monster]):
-    if "Self" in skill.EffectiveObject or "Player" in skill.EffectiveObject:
+def SelectTarget(skill:GameClass.Skill,monsters:list[GameClass.Monster],indexRange:list[str] = ["Monster"]) -> None: #选择目标
+    os.system('cls')
+    print("#############################################################")
+    print("                          请选择目标")
+    if {"Self","Player"} & set(indexRange):
+        print("[S] Player")
+    for monster in monsters:
+        print(f"[{monsters.index(monster)}] {monster.Name} ({monster.Health}/{monster.MaxHealth})")
+    userInput = input("请输入序号:")
+    if "S" in userInput:
         Player.ReleaseSkill(skill,Player)
+    userInput = int(userInput)
+    if userInput > len(monsters) - 1:
+        input("无效输入，请重新输入")
+        SelectTarget(skill,monsters,indexRange)
+    Player.ReleaseSkill(skill,monsters[userInput])
+    input(f"你对[{userInput}] {monsters[userInput].Name} 使用了技能 {skill.Name} !")
+    Combat(monsters)
+        
+def UseSkill(skill:GameClass.Skill,monsters:list[GameClass.Monster]):
+    if {"Self","Player"} & set(skill.EffectiveObject):
+        Player.ReleaseSkill(skill,Player)
+    else:
+        SelectTarget(skill,monsters,skill.EffectiveObject)
 
 def SkillDetails(skill:GameClass.Skill,monsters:list[GameClass.Monster]) -> None: #查看技能详情
     os.system('cls')
@@ -33,6 +54,11 @@ def SkillDetails(skill:GameClass.Skill,monsters:list[GameClass.Monster]) -> None
         userInput = input("1.使用该技能\n2.返回")
         if "2" in userInput:
             ViewSkills(monsters)
+        if "1" in userInput:
+            if "AreaAttack" in skill.Effect:
+                Combat(monsters,int(skill.Value))
+            else:
+                UseSkill(skill,monsters)
     else:
         input()
 
@@ -41,7 +67,7 @@ def ViewSkills(monsters:list[GameClass.Monster]) -> bool: #查看技能
     skills = Player.Skills
     coolDownList = Player.inCoolDown
     print("#############################################################")
-    print("                           技能                              \n")    
+    print("                           技能                              \n")
     for skill in skills:
         if skill in coolDownList.keys():
             print(f"[{skills.index(skill)}] {skill.Name} (CD剩余回合:{coolDownList[skill]})")
