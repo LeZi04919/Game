@@ -44,7 +44,7 @@ class Skill:
     Name = ""
     Effect = ""
     EffectiveRounds = 0 #生效轮数
-    EffectiveObject = [] #生效目标，参数一般为"Self","Player","Monster"
+    EffectiveObject:list = [] #生效目标，参数一般为"Self","Player","Monster"
     Value = 0
     CoolDown = 0 #单位为轮
     
@@ -65,10 +65,10 @@ class Prefab:
     ExpMaxLimit:float
     Level:int = 1
     Dodge:float = 0 # 闪避率
-    Buff:dict[str,int] = {} # Buff/DeBuff名 : Buff层数
+    Buff:dict[str,int] = {} # Buff/DeBuff名 : Buff持续轮数
     BuffValue:dict[str,float] = {} # Buff名 : Buff效果
     Skills:list[Skill] = []
-    inCoolDown:list[Skill] = []
+    inCoolDown:dict[Skill,int] = {}
     Equipment:list = []
     
     def __init__(self,MaxHealth,Health,Attack,Armor,Experience,ExpMaxLimit,Level,Dodge,Skills):
@@ -126,7 +126,7 @@ class Prefab:
         return {"Attack":Attack,"Armor":Armor,"Dodge":Dodge}
     
     def ReleaseSkill(self,skill:Skill,object:"Prefab") -> bool: #释放技能      
-        if skill in self.inCoolDown: #判断skill是否仍在CD
+        if skill in self.inCoolDown.keys(): #判断skill是否仍在CD
             return False
         else:
             if skill.Effect in object.Buff.keys(): #同类Buff判断
@@ -137,7 +137,8 @@ class Prefab:
                     object.BuffValue[skill.Effect] = min(object.BuffValue[skill.Effect],skill.Value)
             else:
                 object.Buff[skill.Effect] = skill.EffectiveRounds
-                object.BuffValue[skill.Effect] = skill.Value
+                object.BuffValue[skill.Effect] = skill.Value 
+            self.inCoolDown[skill] = skill.CoolDown
             return True
       
     def Attacked(self,object:"Prefab") -> float: #攻击
@@ -241,7 +242,7 @@ class SpecialItem(Item):
     
     Effect:str = ""
     EffectiveRounds:int = 0 #生效轮数
-    EffectiveObjects:list = []
+    EffectiveObjects:list = [] #生效目标，参数一般为"Self","Player","Monster"
     Value:float = 0
     
     def __init__(self, Name:str, Count:int, MaxStackCount:int,Effect:str,EffectiveRounds:int,EffectiveObject:list,Value:float,Level:int = 1):
