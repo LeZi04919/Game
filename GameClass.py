@@ -44,7 +44,7 @@ class Skill:
     Name = ""
     Effect = ""
     EffectiveRounds = 0 #生效轮数
-    EffectiveObject = []
+    EffectiveObject = [] #生效目标，参数一般为"Self","Player","Monster"
     Value = 0
     CoolDown = 0 #单位为轮
     
@@ -101,7 +101,7 @@ class Prefab:
             if self.Health <= 0 :
                 return -1
             return _Attack
-        else:
+        else: #被闪避
             return 0
      
     def ApplyBuff(self) ->dict[str,float]:
@@ -125,12 +125,11 @@ class Prefab:
                 Dodge += equip.ArmorDodge
         return {"Attack":Attack,"Armor":Armor,"Dodge":Dodge}
     
-    def ReleaseSkill(self,skill:Skill,object:Self) -> bool: #释放技能
-        
-        if skill in self.inCoolDown:
+    def ReleaseSkill(self,skill:Skill,object:"Prefab") -> bool: #释放技能      
+        if skill in self.inCoolDown: #判断skill是否仍在CD
             return False
         else:
-            if skill.Effect in object.Buff.keys():
+            if skill.Effect in object.Buff.keys(): #同类Buff判断
                 object.Buff[skill.Effect] += skill.EffectiveRounds
                 if "Up" in skill.Effect:
                     object.BuffValue[skill.Effect] = max(object.BuffValue[skill.Effect],skill.Value)
@@ -141,9 +140,9 @@ class Prefab:
                 object.BuffValue[skill.Effect] = skill.Value
             return True
       
-    def Attacked(self,object:Self): #攻击
+    def Attacked(self,object:"Prefab") -> float: #攻击
         objectAttributes = self.ApplyBuff()
-        object.Injuried(objectAttributes["Attack"])          
+        return object.Injuried(objectAttributes["Attack"])          
 
 class Monster(Prefab):
     Name = ""  #怪物名称
@@ -160,8 +159,7 @@ class Monster(Prefab):
         self.Level = Level
         self.Equipment = Equipment
         super().__init__(MaxHealth,MaxHealth,Attack,Armor,0,1,Level,Dodge,Skills)
-        
-        
+           
 class Player(Prefab):
     MaxHealth = 20
     Experience = 0 #经验值
@@ -227,8 +225,7 @@ class Weapon(Item):
             return True
         else:
             return False
-
-        
+       
 class WearableArmor(Item):
     
     ArmorValue:int = 0
