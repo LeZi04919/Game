@@ -8,13 +8,13 @@ Player:GameClass.Player = GameClass.Player()
 TotalStepCount:int #总步数
 AreaStep:int #完成当前区域所需步数
 
-def Attack(_targets:list[GameClass.Monster]) -> None: #攻击处理
-    for _target in _targets:
-        _damage = Player.Attacked(_target)
-        if _damage > 0:
-            print(f"你对{_target.Name} {_targets.index(_target)}造成了共计{_damage}点伤害")
+def Attack(targets:list[GameClass.Monster]) -> None: #攻击处理
+    for target in targets:
+        damage = Player.Attacked(target)
+        if damage > 0:
+            print(f"你对{target.Name} {targets.index(target)}造成了共计{damage}点伤害")
         else:
-            print(f"你的攻击被{_target.Name} {_targets.index(_target)}闪避了,造成了0点伤害")
+            print(f"你的攻击被{target.Name} {targets.index(target)}闪避了,造成了0点伤害")
 
 def SelectTarget(skill:GameClass.Skill,monsters:list[GameClass.Monster],indexRange:list[str] = ["Monster"]) -> None: #选择目标
     os.system('cls')
