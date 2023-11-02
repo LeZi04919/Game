@@ -10,6 +10,12 @@
         DodgeDown,
         Dizziness,
         Freeze,
-        Firing
+        Firing,
+        AreaAttack
+    }
+    public enum SkillType
+    {
+        Normal,
+        Buff
     }
 }
