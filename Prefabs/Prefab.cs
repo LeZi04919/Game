@@ -11,7 +11,7 @@ namespace PyGame.Prefabs
         public int Level;//等级
         public float Dodge
         { get; set; }//闪避
-        public Buff[] Buffs = { };
+        public BuffCollection Buffs = new();
         
     }
 }

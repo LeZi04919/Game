@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace PyGame
@@ -29,6 +28,10 @@ namespace PyGame
     internal class BuffCollection :IEnumerable
     {
         List<Buff> Buffs = new();
+        public int Count
+        {
+            get { return Buffs.Count; }
+        }        
         Buff this[int index] 
         {
             get { return Buffs[index]; }
@@ -100,13 +103,27 @@ namespace PyGame
         {
             Buffs.Remove(this[buffName]);
         }
+        public void Clear()
+        {
+            Buffs.Clear();
+        }
         public void NextRound()
         {
-            Buffs.ForEach(buff =>
+            ForEach(buff =>
             {
                 if (--buff.Rounds <= 0)
                     Buffs.Remove(buff);
             });
+        }
+        public void AddRange(IEnumerable<Buff> target)
+        {
+            foreach(var buff in target)
+                Add(buff);
+        }
+        public void ForEach(Action<Buff> action)
+        {
+            foreach(var buff in Buffs)
+                action(buff);
         }
     }
 }
