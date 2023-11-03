@@ -13,9 +13,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\PyGame.csproj",
-      "projectName": "PyGame",
-      "projectPath": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\PyGame.csproj",
+      "projectUniqueName": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\Game.csproj",
+      "projectName": "Game",
+      "projectPath": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\Game.csproj",
       "packagesPath": "C:\\Users\\syh17\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\obj\\",
       "projectStyle": "PackageReference",
