@@ -9,7 +9,8 @@ namespace PyGame.Prefabs
         public float Health;//目前血量
         public float Armor;//防御力
         public int Level;//等级
-        public float Dodge;//闪避
+        public float Dodge
+        { get; set; }//闪避
         public Buff[] Buffs = { };
         
     }

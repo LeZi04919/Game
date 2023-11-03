@@ -29,27 +29,30 @@ namespace PyGame
     internal class BuffCollection :IEnumerable
     {
         List<Buff> Buffs = new();
-        Buff? this[int index] 
+        Buff this[int index] 
         {
             get { return Buffs[index]; }
+            set { this[index] = value; }
         }
-        Buff? this[string buffName]
+        Buff this[string buffName]
         {
             get 
             {
                 if (!Contains(buffName))
-                    return null;
+                    throw new ArgumentOutOfRangeException($"在{this}中未找到buffname为{buffName}的对象");
                 return Buffs.Where((buff) => buff.Name.Equals(buffName)).ToArray()[0];
             }
+            set { this[buffName] = value; }
         }
-        Buff? this[BuffEffect effect]
+        Buff this[BuffEffect effect]
         {
             get
             {
                 if (!this.Contains(effect))
-                    return null;
+                    throw new ArgumentOutOfRangeException($"在{this}中未找到buffeffect为{effect}的对象");
                 return Buffs.Where((buff) => buff.Effect.Equals(effect)).ToArray()[0];
             }
+            set { this[effect] = value; }
         }    
         public bool Contains(string buffName)
         {
@@ -73,14 +76,37 @@ namespace PyGame
         {
             if(Contains(newBuff.Effect))
             {
-                switch(newBuff.OverlayType)
-                {
-                    case Overlay.Add:
-                        break;
-                    case Overlay.Mul:
-                        break;
-                }
+                var effect = newBuff.Effect;
+                var oldBuff = this[effect];
+                oldBuff.Rounds = Math.Max(oldBuff.Rounds, newBuff.Rounds);
+                if(newBuff.OverlayType.Equals(Overlay.Add))
+                    oldBuff.Value += newBuff.Value;
+                else
+                    oldBuff.Value *= newBuff.Value;
+                this[effect] = oldBuff;
             }
+            else
+                Buffs.Add(newBuff);
+        }
+        public void Remove(Buff oldBuff)
+        {
+            Buffs.Remove(oldBuff);
+        }
+        public void Remove(BuffEffect effect)
+        {
+            Buffs.Remove(this[effect]);
+        }
+        public void Remove(string buffName)
+        {
+            Buffs.Remove(this[buffName]);
+        }
+        public void NextRound()
+        {
+            Buffs.ForEach(buff =>
+            {
+                if (--buff.Rounds <= 0)
+                    Buffs.Remove(buff);
+            });
         }
     }
 }
