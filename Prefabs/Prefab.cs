@@ -1,7 +1,7 @@
 ﻿using System;
+using Game.Class;
 
-
-namespace PyGame.Prefabs
+namespace Game.Prefabs
 {
     internal class Prefab
     {
@@ -12,6 +12,7 @@ namespace PyGame.Prefabs
         public float Dodge
         { get; set; }//闪避
         public BuffCollection Buffs = new();
+        public SkillCollection Skills = new();
         
     }
 }

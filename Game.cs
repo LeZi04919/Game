@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PyGame
+namespace Game
 {
     internal class Game
     {

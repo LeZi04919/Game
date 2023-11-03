@@ -1,4 +1,4 @@
-﻿namespace PyGame
+﻿namespace Game
 {
     public enum BuffEffect
     {
