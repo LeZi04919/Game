@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Game
+namespace RoguelikeGame
 {
-    internal class Game
+    internal partial class Game
     {
         static void Main(string[] args)
         {

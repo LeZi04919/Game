@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PyGame.Interfaces
+namespace RoguelikeGame.Interfaces
 {
     internal interface IPrefab
     {

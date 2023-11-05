@@ -1,4 +1,4 @@
-﻿namespace Game
+﻿namespace RoguelikeGame
 {
     public enum BuffEffect
     {
@@ -22,5 +22,10 @@
     {
         Normal, //直接造成伤害
         Buff    //施加正面或负面Buff
+    }
+    public enum PrefabType
+    {
+        Player,
+        Monster
     }
 }

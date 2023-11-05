@@ -1,11 +1,11 @@
-﻿using Game;
-using Game.Prefabs;
+﻿using RoguelikeGame;
+using RoguelikeGame.Prefabs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Game.Class
+namespace RoguelikeGame.Class
 {
     internal class Buff
     {

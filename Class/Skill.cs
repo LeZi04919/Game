@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using Game;
+using RoguelikeGame;
 
-namespace Game.Class
+namespace RoguelikeGame.Class
 {
     internal class Skill
     {
         public required string Name;
         public required SkillType Type;
-        public Buff[]? Effect;
-        public float? Value;
-        public required int CoolDown;
-        public Skill(string Name, SkillType Type, Buff[]? Effect, float? Value, int CoolDown)
+        public Buff[] Effect;
+        public float Value;
+        public required int CoolDown;//CD轮数
+        public Skill(string Name, SkillType Type, Buff[] Effect, float Value, int CoolDown)
         {
             this.Name = Name;
             this.Type = Type;
@@ -22,11 +21,11 @@ namespace Game.Class
             this.Value = Value;
             this.CoolDown = CoolDown;
         }
-        public Skill(string Name, SkillType Type, Buff[] Effect, int CoolDown) : this(Name, Type, Effect, null, CoolDown)
+        public Skill(string Name, SkillType Type, Buff[] Effect, int CoolDown) : this(Name, Type, Effect, 0, CoolDown)
         {
 
         }
-        public Skill(string Name, SkillType Type, float Value, int CoolDown) : this(Name, Type, null, Value, CoolDown)
+        public Skill(string Name, SkillType Type, float Value, int CoolDown) : this(Name, Type, new Buff[] { }, Value, CoolDown)
         {
 
         }
@@ -59,6 +58,10 @@ namespace Game.Class
         {
             return CoolDownList.ContainsKey(skill);
         }
+        public void ToCoolDown(Skill skill)
+        {
+            CoolDownList.Add(skill, skill.CoolDown);
+        }
         public void NextRound()
         {
             foreach (var skill in CoolDownList.Keys)
@@ -68,6 +71,10 @@ namespace Game.Class
         public IEnumerator GetEnumerator()
         {
             return ((IEnumerable)Skills).GetEnumerator();
+        }
+        public void ForEach(Action<Skill> action)
+        {
+            Skills.ForEach(action);
         }
     }
 }
