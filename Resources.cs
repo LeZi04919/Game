@@ -28,4 +28,11 @@
         Player,
         Monster
     }
+    public enum ItemType
+    {
+        Common,
+        Weapon,
+        Armor,
+        Drug
+    }
 }

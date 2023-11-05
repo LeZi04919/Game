@@ -5,10 +5,13 @@ namespace RoguelikeGame.Prefabs
 {
     internal class Prefab
     {
-        public float MaxHealth;//最大血量
-        public float Health;//目前血量
-        public float Armor;//防御力
-        public int Level;//等级
+        public long MaxHealth;//最大血量
+        public long Health;//目前血量
+        public long Armor;//防御力
+        public long Attack;//攻击力
+        public long Level;//等级
+        public long Experience;//目前经验值
+        public long ExpMaxLimit;//下一级
         public PrefabType Type;
         public float Dodge
         { get; set; }//闪避
@@ -28,6 +31,18 @@ namespace RoguelikeGame.Prefabs
             }
             Skills.ToCoolDown(skill);
         }        
+        public bool Upgrade()
+        {
+            if (Experience >= ExpMaxLimit)
+            {
+                Level++;
+                Experience -= ExpMaxLimit;
+                ExpMaxLimit += 5 * (Level - 1);
+                MaxHealth *= (long)Math.Pow(1.057, Level - 1);
+                Attack *= (long)Math.Pow(1.062,Level - 1);
+            }
+            return false;
+        }
     }
     internal class Player : Prefab
     {

@@ -13,9 +13,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\Game.csproj",
-      "projectName": "Game",
-      "projectPath": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\Game.csproj",
+      "projectUniqueName": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\RoguelikeGame.csproj",
+      "projectName": "RoguelikeGame",
+      "projectPath": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\RoguelikeGame.csproj",
       "packagesPath": "C:\\Users\\syh17\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\obj\\",
       "projectStyle": "PackageReference",
