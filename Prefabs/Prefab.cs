@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Threading.Tasks;
 using RoguelikeGame.Class;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace RoguelikeGame.Prefabs
 {
@@ -56,14 +59,22 @@ namespace RoguelikeGame.Prefabs
             }
             set { Dodge = value; } }//闪避
         public long Level;//等级
-        public long Experience;//目前经验值
-        public long ExpMaxLimit;//下一级
         public PrefabType Type;
         
         public BuffCollection Buffs = new();
-        public SkillCollection Skills = new();
+        public SkillCollection Skills;
         
-
+        public Prefab(long MaxHealth, long Armor, long Damage, float Dodge, long Level, PrefabType Type, SkillCollection Skills)
+        {
+            this.MaxHealth = MaxHealth;
+            this.Health = MaxHealth;
+            this.Armor = Armor;
+            this.Damage = Damage;
+            this.Dodge = Dodge;
+            this.Level = Level;
+            this.Type = Type;
+            this.Skills = Skills;
+        }
         public void ReleaseSkill(Prefab target,Skill skill)
         {
             switch(skill.Type)
@@ -79,20 +90,10 @@ namespace RoguelikeGame.Prefabs
         }        
         public virtual bool Upgrade()
         {
-            if (Experience >= ExpMaxLimit)
-            {
-                Level++;
-                Experience -= ExpMaxLimit;
-                ExpMaxLimit += 5 * (Level - 1);
-                MaxHealth *= (long)Math.Pow(1.057, Level - 1);
-                Damage *= (long)Math.Pow(1.062,Level - 1);
-                if (Experience >= ExpMaxLimit)
-                    Upgrade();
-                return true;
-            }
-            return false;
+            MaxHealth *= (long)Math.Pow(1.057, Level - 1);
+            Damage *= (long)Math.Pow(1.062, Level - 1);
+            return true;
         }
-
         public long Attack(Prefab target)
         {
             var targetArmor = target.Armor;
@@ -103,11 +104,29 @@ namespace RoguelikeGame.Prefabs
             target.Health -= damage;
             return damage;
         }
+        public async void NextRound()
+        {
+            await Task.Run(() => 
+            {
+                Buffs.NextRound();
+                Skills.NextRound();
+            });
+        }
     }
     internal class Player : Prefab
     {
-        public ItemCollection Items = new();
+        public long Experience;//目前经验值
+        public long ExpMaxLimit;//下一级
 
+        public ItemCollection Items = new();
+        public Player(long MaxHealth,long Health, long Armor, long Damage, float Dodge, long Level, SkillCollection Skills):base(MaxHealth,Armor,Damage,Dodge,Level,PrefabType.Player,Skills)
+        {
+            this.Health = Health;
+        }
+        public Player(long MaxHealth, long Armor, long Damage, float Dodge, long Level,SkillCollection Skills) : this(MaxHealth,MaxHealth, Armor, Damage, Dodge, Level,Skills)
+        {
+
+        }
         public override bool Upgrade()
         {
             if (Experience >= ExpMaxLimit)
@@ -123,9 +142,21 @@ namespace RoguelikeGame.Prefabs
             }
             return false;
         }
+        public bool AddExp(long exp)
+        {
+            Experience += exp;
+            return Upgrade();
+        }
+        public void DisposeItem(int index)
+        {
+            Items.Remove(index);
+        }
     }
     internal class Monster : Prefab
     {
-        
+        public Monster(long MaxHealth, long Armor, long Damage, float Dodge, long Level, PrefabType Type, SkillCollection Skills) : base(MaxHealth, Armor, Damage, Dodge, Level, PrefabType.Monster, Skills)
+        {
+
+        }
     }
 }

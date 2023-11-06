@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Schema;
 
 namespace RoguelikeGame.Class
 {
@@ -88,11 +87,12 @@ namespace RoguelikeGame.Class
         }
         public bool Add(Item sItem)
         {
-            items.ForEach(item =>
-            {
-                if (item.Equals(sItem))
-                    item.StackItem(sItem);
-            });
+            if (sItem.Stackable)
+                items.ForEach(item =>
+                {
+                    if (item.Equals(sItem))
+                        item.StackItem(sItem);
+                });
             if (sItem.Count > 0)
                 if (items.Count > 15)
                     return false;
@@ -104,10 +104,28 @@ namespace RoguelikeGame.Class
         {
             items.Remove(this[index]);
         }
-
         public IEnumerator GetEnumerator()
         {
             return items.GetEnumerator();
+        }
+    }
+    internal class Wear : Item
+    {
+        public new int Count
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public new int MaxStackCount
+        {
+            get { return 1; }
+        }
+        public long Value;
+        public Wear(string Name,ItemType Type,long Value): base(Name, false, Type)
+        {
+            this.Value = Value;
         }
     }
 }
