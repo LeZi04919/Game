@@ -8,19 +8,24 @@
     "net7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\syh17\\.nuget\\packages\\": {}
+    "C:\\Users\\syh17\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\RoguelikeGame.csproj",
+      "projectUniqueName": "C:\\Users\\syh17\\Source\\Repos\\LeZi9916\\Game\\RoguelikeGame.csproj",
       "projectName": "RoguelikeGame",
-      "projectPath": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\RoguelikeGame.csproj",
+      "projectPath": "C:\\Users\\syh17\\Source\\Repos\\LeZi9916\\Game\\RoguelikeGame.csproj",
       "packagesPath": "C:\\Users\\syh17\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\syh17\\source\\repos\\LeZi04919\\PyGame\\obj\\",
+      "outputPath": "C:\\Users\\syh17\\Source\\Repos\\LeZi9916\\Game\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
         "C:\\Users\\syh17\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -28,6 +33,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -61,7 +67,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
       }
     }
   }

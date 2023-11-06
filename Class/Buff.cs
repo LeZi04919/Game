@@ -33,30 +33,42 @@ namespace RoguelikeGame.Class
         {
             get { return Buffs.Count; }
         }
-        Buff this[int index]
+        public Buff this[int index]
         {
             get { return Buffs[index]; }
-            set { this[index] = value; }
+            set { Buffs[index] = value; }
         }
-        Buff this[string buffName]
+        public Buff[] this[string buffName]
         {
             get
             {
                 if (!Contains(buffName))
-                    throw new ArgumentOutOfRangeException($"在{this}中未找到buffname为{buffName}的对象");
-                return Buffs.Where((buff) => buff.Name.Equals(buffName)).ToArray()[0];
+                    return new Buff[] { };
+                return (from buff in Buffs
+                       where buff.Name == buffName
+                       select buff).ToArray();
             }
-            set { this[buffName] = value; }
         }
-        Buff this[BuffEffect effect]
+        public Buff[] this[BuffEffect effect]
         {
             get
             {
                 if (!Contains(effect))
-                    throw new ArgumentOutOfRangeException($"在{this}中未找到buffeffect为{effect}的对象");
-                return Buffs.Where((buff) => buff.Effect.Equals(effect)).ToArray()[0];
+                    return new Buff[] { };
+                return (from buff in Buffs
+                        where buff.Effect == effect
+                        select buff).ToArray();
             }
-            set { this[effect] = value; }
+        }
+        public Buff[] this[BuffEffect[] effects]
+        {
+            get
+            {
+                List<Buff> Buffs = new();
+                foreach (var effect in effects)
+                    Buffs.AddRange(this[effect]);
+                return Buffs.ToArray();
+            }
         }
         public bool Contains(string buffName)
         {
@@ -81,13 +93,22 @@ namespace RoguelikeGame.Class
             if (Contains(newBuff.Effect))
             {
                 var effect = newBuff.Effect;
-                var oldBuff = this[effect];
-                oldBuff.Rounds = Math.Max(oldBuff.Rounds, newBuff.Rounds);
-                if (newBuff.OverlayType.Equals(Overlay.Add))
-                    oldBuff.Value += newBuff.Value;
-                else
-                    oldBuff.Value *= newBuff.Value;
-                this[effect] = oldBuff;
+                var oldBuffs = this[effect];
+                foreach(var oldBuff in oldBuffs)
+                {
+                    var index = Buffs.IndexOf(oldBuff);
+                    oldBuff.Rounds = Math.Max(oldBuff.Rounds, newBuff.Rounds);
+                    if (newBuff.OverlayType == oldBuff.OverlayType)
+                    {
+                        if (newBuff.OverlayType.Equals(Overlay.Add))
+                            oldBuff.Value += newBuff.Value;
+                        else
+                            oldBuff.Value *= newBuff.Value;
+                    }
+                    else
+                        continue;
+                    this[index] = oldBuff;
+                }
             }
             else
                 Buffs.Add(newBuff);
@@ -98,11 +119,15 @@ namespace RoguelikeGame.Class
         }
         public void Remove(BuffEffect effect)
         {
-            Buffs.Remove(this[effect]);
+            var buffs = this[effect];
+            foreach (var buff in buffs)
+                Buffs.Remove(buff);
         }
         public void Remove(string buffName)
         {
-            Buffs.Remove(this[buffName]);
+            var buffs = this[buffName];
+            foreach(var buff in buffs)
+                Buffs.Remove(buff);
         }
         public void Clear()
         {

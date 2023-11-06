@@ -33,7 +33,8 @@
         Common,
         Weapon,
         Armor,
-        Drug
+        Drug,
+        Currency
     }
     public enum TargetType
     {
