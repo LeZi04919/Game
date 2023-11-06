@@ -10,22 +10,24 @@ namespace RoguelikeGame.Class
     {
         public required string Name;
         public required SkillType Type;
+        public required TargetType Target;
         public Buff[] Effect;
         public float Value;
         public required int CoolDown;//CD轮数
-        public Skill(string Name, SkillType Type, Buff[] Effect, float Value, int CoolDown)
+        public Skill(string Name, SkillType Type, TargetType Target,Buff[] Effect, float Value, int CoolDown)
         {
             this.Name = Name;
             this.Type = Type;
+            this.Target = Target;
             this.Effect = Effect;
             this.Value = Value;
             this.CoolDown = CoolDown;
         }
-        public Skill(string Name, SkillType Type, Buff[] Effect, int CoolDown) : this(Name, Type, Effect, 0, CoolDown)
+        public Skill(string Name, SkillType Type, TargetType Target,Buff[] Effect, int CoolDown) : this(Name, Type,Target, Effect, 0, CoolDown)
         {
 
         }
-        public Skill(string Name, SkillType Type, float Value, int CoolDown) : this(Name, Type, new Buff[] { }, Value, CoolDown)
+        public Skill(string Name, SkillType Type, TargetType Target, float Value, int CoolDown) : this(Name, Type, Target,new Buff[] { }, Value, CoolDown)
         {
 
         }

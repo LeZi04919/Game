@@ -35,4 +35,11 @@
         Armor,
         Drug
     }
+    public enum TargetType
+    {
+        All,//对所有目标生效
+        Self,//仅对自身生效
+        Monster,//对Monster及敌对Player生效
+        Player //对自身及友方Player生效
+    }
 }

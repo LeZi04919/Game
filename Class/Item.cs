@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Schema;
 
 namespace RoguelikeGame.Class
 {
@@ -53,7 +54,7 @@ namespace RoguelikeGame.Class
         {
             items = new(capacity);
         }
-        //indexer用于查询,不包含set
+        //indexer用于查询，无set
         public Item this[int index]
         {
             get { return items[index]; }
@@ -85,7 +86,7 @@ namespace RoguelikeGame.Class
                         select item).ToArray();
             }
         }
-        public void Add(Item sItem)
+        public bool Add(Item sItem)
         {
             items.ForEach(item =>
             {
@@ -93,7 +94,15 @@ namespace RoguelikeGame.Class
                     item.StackItem(sItem);
             });
             if (sItem.Count > 0)
-                items.Add(sItem);
+                if (items.Count > 15)
+                    return false;
+                else
+                    items.Add(sItem);
+            return true;
+        }
+        public void Remove(int index)
+        {
+            items.Remove(this[index]);
         }
 
         public IEnumerator GetEnumerator()
