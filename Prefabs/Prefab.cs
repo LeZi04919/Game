@@ -26,13 +26,40 @@ namespace RoguelikeGame.Prefabs
             }
             set { Armor = value; }
         }//防御力
-        public long Damage;//攻击力
+        public long Damage
+        {
+            get
+            {
+                var _Damage = Damage;
+                List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.DamageUp }]);
+                buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.DamageDown }]);
+                foreach (var buff in from buff in buffs where buff.OverlayType == Overlay.Add select buff)
+                    _Damage += (long)buff.Value;
+                foreach (var deBuff in from buff in buffs where buff.OverlayType == Overlay.Mul select buff)
+                    _Damage = (long)(_Damage * deBuff.Value);
+                return _Damage;
+            } 
+            set {  Damage = value; } 
+        }//攻击力
+        public float Dodge
+        { 
+            get
+            {
+                var _Dodge = Dodge;
+                List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.DamageUp }]);
+                buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.DamageDown }]);
+                foreach (var buff in from buff in buffs where buff.OverlayType == Overlay.Add select buff)
+                    _Dodge += (long)buff.Value;
+                foreach (var deBuff in from buff in buffs where buff.OverlayType == Overlay.Mul select buff)
+                    _Dodge = (long)(_Dodge * deBuff.Value);
+                return _Dodge;
+            }
+            set { Dodge = value; } }//闪避
         public long Level;//等级
         public long Experience;//目前经验值
         public long ExpMaxLimit;//下一级
         public PrefabType Type;
-        public float Dodge
-        { get; set; }//闪避
+        
         public BuffCollection Buffs = new();
         public SkillCollection Skills = new();
         

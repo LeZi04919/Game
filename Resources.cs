@@ -2,8 +2,8 @@
 {
     public enum BuffEffect
     {
-        AttackUp,
-        AttackDown, 
+        DamageUp,
+        DamageDown, 
         ArmorUp,
         ArmorDown,
         DodgeUp,
