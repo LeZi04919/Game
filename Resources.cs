@@ -43,4 +43,10 @@
         Monster,//对Monster及敌对Player生效
         Player //对自身及友方Player生效
     }
+    public enum MonsterType
+    {
+        Common,
+        Elite,
+        Boss
+    }
 }

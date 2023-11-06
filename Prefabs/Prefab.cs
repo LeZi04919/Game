@@ -154,9 +154,10 @@ namespace RoguelikeGame.Prefabs
     }
     internal class Monster : Prefab
     {
-        public Monster(long MaxHealth, long Armor, long Damage, float Dodge, long Level, PrefabType Type, SkillCollection Skills) : base(MaxHealth, Armor, Damage, Dodge, Level, PrefabType.Monster, Skills)
+        public MonsterType Rank;
+        public Monster(long MaxHealth, long Armor, long Damage, float Dodge, long Level, MonsterType Rank,SkillCollection Skills) : base(MaxHealth, Armor, Damage, Dodge, Level, PrefabType.Monster, Skills)
         {
-
+            this.Rank = Rank;
         }
     }
 }
