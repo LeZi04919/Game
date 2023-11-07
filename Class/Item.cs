@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RoguelikeGame.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -137,6 +138,22 @@ namespace RoguelikeGame.Class
         {
             this.ArmorProvide = ArmorProvide;
             this.Value = Value;
+        }
+    }
+    internal class Drug : Item, IReleasable
+    {
+        public required float Value { get; set; }
+        public required Buff[] Effect { get; set; }
+
+        public required ReleaseType ReleaseType { get; set; }
+        public required TargetType Target { get; set; }
+        
+        public Drug() { }
+        public Drug(string Name, ItemType Type, RarityType Rarity,long Value,ReleaseType ReleaseType,Buff[] Effect) : base(Name, true, Type, Rarity)
+        {
+            this.Effect = Effect;
+            this.Value = Value;
+            this.ReleaseType = ReleaseType;
         }
     }
 }

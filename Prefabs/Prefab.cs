@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using RoguelikeGame.Class;
+using RoguelikeGame.Interfaces;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace RoguelikeGame.Prefabs
@@ -96,19 +97,23 @@ namespace RoguelikeGame.Prefabs
             this.Type = Type;
             this.Skills = Skills;
         }
-        public void ReleaseSkill(Prefab target,Skill skill)
+        public void ReleaseSkill(Prefab target, Skill skill)
         {
-            switch(skill.Type)
+            Release(target, skill);
+            Skills.ToCoolDown(skill);
+        }
+        void Release<T>(Prefab target,T released) where T: IReleasable
+        {
+            switch (released.ReleaseType)
             {
-                case SkillType.Normal:
+                case ReleaseType.AtOnce:
                     //选择目标
                     break;
-                case SkillType.Buff:
-                    target.Buffs.AddRange(skill.Effect);
+                case ReleaseType.Buff:
+                    target.Buffs.AddRange(released.Effect);
                     break;
             }
-            Skills.ToCoolDown(skill);
-        }        
+        }
         public virtual bool Upgrade()
         {
             MaxHealth *= (long)Math.Pow(1.057, Level - 1);

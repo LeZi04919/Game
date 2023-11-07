@@ -18,9 +18,9 @@
         Add,
         Mul
     }
-    public enum SkillType
+    public enum ReleaseType
     {
-        Normal, //直接造成伤害
+        AtOnce, //直接造成伤害
         Buff    //施加正面或负面Buff
     }
     public enum PrefabType
