@@ -10,14 +10,11 @@ namespace RoguelikeGame.Class
         public required string Name;
         public required bool Stackable;
         public required ItemType Type;
+        public required RarityType Rarity;
         public int Count = 1;
         public int MaxStackCount = 40;
-        public Item(string Name,bool Stackable, ItemType Type) 
-        {
-            this.Name = Name;
-            this.Stackable = Stackable;
-            this.Type = Type;
-        }
+        public Item() { }
+        public Item(string Name, bool Stackable, ItemType Type, RarityType Rarity) => (this.Name, this.Stackable, this.Type,this.Rarity) = (Name, Stackable, Type, Rarity);
         public bool Equals(Item targetItem)
         {
             if(targetItem.Name.Equals(Name) && targetItem.Type.Equals(Type))
@@ -85,8 +82,10 @@ namespace RoguelikeGame.Class
                         select item).ToArray();
             }
         }
-        public bool Add(Item sItem)
+        public bool Add(Item? sItem)
         {
+            if (sItem is null)
+                return true;
             if (sItem.Stackable)
                 items.ForEach(item =>
                 {
@@ -122,9 +121,12 @@ namespace RoguelikeGame.Class
         {
             get { return 1; }
         }
-        public long Value;
-        public Wear(string Name,ItemType Type,long Value): base(Name, false, Type)
+        public ArmorType? ArmorProvide;
+        public required long Value;
+        public Wear() { }
+        public Wear(string Name,ItemType Type, RarityType Rarity,ArmorType ArmorProvide,long Value): base(Name, false, Type, Rarity)
         {
+            this.ArmorProvide = ArmorProvide;
             this.Value = Value;
         }
     }

@@ -49,4 +49,16 @@
         Elite,
         Boss
     }
+    public enum ArmorType
+    {
+        Physical,
+        Dodge
+    }
+    public enum RarityType
+    {
+        Common,
+        Rare,
+        Epic,
+        Legacy
+    }
 }

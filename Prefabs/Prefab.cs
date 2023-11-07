@@ -12,15 +12,22 @@ namespace RoguelikeGame.Prefabs
     internal class Prefab
     {
         static Random rd = new();
-        public long MaxHealth;//最大血量
+        public required long MaxHealth;//最大血量
         public long Health;//目前血量
-        public long Armor
+        public required long Armor
         {
             get 
             {
                 var _Armor = Armor;
+                long bodyProvide = 0;
+                if(Body is not null)
+                    if (Body.ArmorProvide is not null and ArmorType.Physical)
+                        bodyProvide = Body.Value;
+                _Armor += bodyProvide;
+
                 List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.ArmorUp }]);
                 buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.ArmorDown }]);
+
                 foreach (var buff in from buff in buffs where buff.OverlayType == Overlay.Add select buff)
                     _Armor += (long)buff.Value;
                 foreach (var deBuff in from buff in buffs where buff.OverlayType == Overlay.Mul select buff)
@@ -29,13 +36,17 @@ namespace RoguelikeGame.Prefabs
             }
             set { Armor = value; }
         }//防御力
-        public long Damage
+        public required long Damage
         {
             get
             {
                 var _Damage = Damage;
+                if (Hand is not null)
+                    _Damage += Hand.Value;
+
                 List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.DamageUp }]);
                 buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.DamageDown }]);
+
                 foreach (var buff in from buff in buffs where buff.OverlayType == Overlay.Add select buff)
                     _Damage += (long)buff.Value;
                 foreach (var deBuff in from buff in buffs where buff.OverlayType == Overlay.Mul select buff)
@@ -44,25 +55,35 @@ namespace RoguelikeGame.Prefabs
             } 
             set {  Damage = value; } 
         }//攻击力
-        public float Dodge
+        public required float Dodge
         { 
             get
             {
                 var _Dodge = Dodge;
+                float bodyProvide = 0;
+                if(Body is not null)
+                    if (Body.ArmorProvide is not null and ArmorType.Dodge)
+                        bodyProvide = Body.Value / 100;
+                _Dodge += bodyProvide;
+
                 List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.DamageUp }]);
                 buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.DamageDown }]);
+
                 foreach (var buff in from buff in buffs where buff.OverlayType == Overlay.Add select buff)
                     _Dodge += (long)buff.Value;
                 foreach (var deBuff in from buff in buffs where buff.OverlayType == Overlay.Mul select buff)
                     _Dodge = (long)(_Dodge * deBuff.Value);
-                return _Dodge;
+                return Math.Min(1, _Dodge);
             }
             set { Dodge = value; } }//闪避
-        public long Level;//等级
-        public PrefabType Type;
-        
-        public BuffCollection Buffs = new();
-        public SkillCollection Skills;
+        public required long Level;//等级
+        public required PrefabType Type;
+
+        protected Wear? Hand;//手部穿戴物
+        protected Wear? Body;//身体穿戴物
+
+        protected BuffCollection Buffs = new();
+        public required SkillCollection Skills;
         
         public Prefab(long MaxHealth, long Armor, long Damage, float Dodge, long Level, PrefabType Type, SkillCollection Skills)
         {
@@ -104,6 +125,8 @@ namespace RoguelikeGame.Prefabs
             target.Health -= damage;
             return damage;
         }
+
+        
         public async void NextRound()
         {
             await Task.Run(() => 
@@ -115,8 +138,8 @@ namespace RoguelikeGame.Prefabs
     }
     internal class Player : Prefab
     {
-        public long Experience;//目前经验值
-        public long ExpMaxLimit;//下一级
+        public required long Experience;//目前经验值
+        public required long ExpMaxLimit;//下一级
 
         public ItemCollection Items = new();
         public Player(long MaxHealth,long Health, long Armor, long Damage, float Dodge, long Level, SkillCollection Skills):base(MaxHealth,Armor,Damage,Dodge,Level,PrefabType.Player,Skills)
@@ -147,9 +170,55 @@ namespace RoguelikeGame.Prefabs
             Experience += exp;
             return Upgrade();
         }
-        public void DisposeItem(int index)
+        public void DisposeItem(int index)//丢弃物品
         {
             Items.Remove(index);
+        }
+        public Wear? Dress(Wear wear)
+        {
+            switch (wear.Type)
+            {
+                case ItemType.Weapon:
+                    if (Hand is null)
+                        Hand = wear;
+                    else
+                    {
+                        if (!Items.Add(Hand))
+                            return Hand;
+                        else
+                            Hand = wear;
+                    }
+                    break;
+                case ItemType.Armor:
+                    if (Body is null)
+                        Body = wear;
+                    else
+                    {
+                        if (!Items.Add(Body))
+                            return Body;
+                        else
+                            Body = wear;
+                    }
+                    break;
+            }
+            return null;
+        }
+        public Wear? UnDress(ItemType wearType)
+        {
+            switch(wearType) 
+            {
+                case ItemType.Weapon:
+                    if (!Items.Add(Hand))
+                        return Hand;
+                    Hand = null;
+                    break;
+                case ItemType.Armor:
+                    if (!Items.Add(Body))
+                        return Body;
+                    Body = null;
+                    break;
+            }
+            return null;
         }
     }
     internal class Monster : Prefab
