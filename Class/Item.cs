@@ -82,6 +82,15 @@ namespace RoguelikeGame.Class
                         select item).ToArray();
             }
         }
+        public Item[] this[RarityType rarity]
+        {
+            get 
+            {
+                return (from item in items
+                        where item.Rarity == rarity
+                        select item).ToArray();
+            }
+        }
         public bool Add(Item? sItem)
         {
             if (sItem is null)
