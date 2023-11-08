@@ -294,6 +294,18 @@ namespace RoguelikeGame.Prefabs
                         select monster).ToArray();
             }
         }
+        public Monster[] this[MonsterType[] ranks]
+        {
+            get
+            {
+                List<Monster> results = new();
+                foreach(var rank in ranks)
+                    results.AddRange(from monster in Search<Monster>()
+                                     where monster.Rank == rank
+                                     select monster);
+                return results.ToArray();
+            }
+        }
         public void Add(Prefab newPrefab)
         {
             Prefabs.Add(newPrefab);
