@@ -10,11 +10,27 @@ namespace RoguelikeGame.Class
     internal class Skill : IReleasable
     {
         public required string Name;
+        /// <summary>
+        /// 表示该Skill释放类型；分为一次性或对目标施加Buff
+        /// </summary>
         public required ReleaseType ReleaseType { get; set; }
+        /// <summary>
+        /// 表示该Skill作用范围
+        /// </summary>
         public required TargetType Target { get; set; }
+        /// <summary>
+        /// 表示该Skill附带的Buff
+        /// </summary>
         public required Buff[] Effect { get; set; }
+        /// <summary>
+        /// 倍数，造成相当于自身攻击力Value倍的伤害；为0时，仅生效Buff；不为0时，造成伤害的同时给目标附加Buff；
+        /// Value为正数时，造成伤害；Value为负数时，造成回复效果
+        /// </summary>
         public required float Value { get; set; }
-        public required int CoolDown;//CD轮数
+        /// <summary>
+        /// Skill冷却所需轮数
+        /// </summary>
+        public required int CoolDown;
         public Skill(string Name, ReleaseType ReleaseType, TargetType Target,Buff[] Effect, float Value, int CoolDown)
         {
             this.Name = Name;
@@ -54,18 +70,34 @@ namespace RoguelikeGame.Class
                 }).ToArray();
             }
         }
+        /// <summary>
+        /// 添加新Skill
+        /// </summary>
+        /// <param name="newSkill"></param>
         public void Add(Skill newSkill)
         {
             Skills.Add(newSkill);
         }
-        public bool inCoolDown(Skill skill)
+        /// <summary>
+        /// 获取该Skill是否处于CD状态
+        /// </summary>
+        /// <param name="skill"></param>
+        /// <returns></returns>
+        public bool InCoolDown(Skill skill)
         {
             return CoolDownList.ContainsKey(skill);
         }
+        /// <summary>
+        /// 将目标Skill设置为CD状态
+        /// </summary>
+        /// <param name="skill"></param>
         public void ToCoolDown(Skill skill)
         {
             CoolDownList.Add(skill, skill.CoolDown);
         }
+        /// <summary>
+        /// 刷新Skill剩余CD轮数
+        /// </summary>
         public void NextRound()
         {
             foreach (var skill in CoolDownList.Keys)

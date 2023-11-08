@@ -6,7 +6,6 @@ using System.Reflection.Emit;
 using System.Threading.Tasks;
 using RoguelikeGame.Class;
 using RoguelikeGame.Interfaces;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace RoguelikeGame.Prefabs
 {
@@ -14,7 +13,17 @@ namespace RoguelikeGame.Prefabs
     {
         static Random rd = new();
         public required long MaxHealth;//最大血量
-        public long Health;//目前血量
+        public long Health
+        {
+            get
+            {
+                return Health;
+            }
+            set
+            {
+                Health = Math.Min(MaxHealth,value); 
+            }
+        }//目前血量
         public required long Armor
         {
             get 
@@ -107,13 +116,20 @@ namespace RoguelikeGame.Prefabs
             switch (released.ReleaseType)
             {
                 case ReleaseType.AtOnce:
-                    //选择目标
+                    if (released.Value > 0)
+                        target.Health -= (long)(Damage * released.Value);
                     break;
                 case ReleaseType.Buff:
+                    if (released.Value > 0)
+                        target.Health -= (long)(Damage * released.Value);
                     target.Buffs.AddRange(released.Effect);
                     break;
             }
         }
+        /// <summary>
+        /// 刷新Prefab等级
+        /// </summary>
+        /// <returns></returns>
         public virtual bool Upgrade()
         {
             MaxHealth *= (long)Math.Pow(1.057, Level - 1);
@@ -130,8 +146,9 @@ namespace RoguelikeGame.Prefabs
             target.Health -= damage;
             return damage;
         }
-
-        
+        /// <summary>
+        /// 刷新Skill与Buff剩余轮数
+        /// </summary>
         public async void NextRound()
         {
             await Task.Run(() => 
@@ -179,6 +196,11 @@ namespace RoguelikeGame.Prefabs
         {
             Items.Remove(index);
         }
+        /// <summary>
+        /// 装备武器
+        /// </summary>
+        /// <param name="wear"></param>
+        /// <returns></returns>
         public Wear? Dress(Wear wear)
         {
             switch (wear.Type)
@@ -208,6 +230,11 @@ namespace RoguelikeGame.Prefabs
             }
             return null;
         }
+        /// <summary>
+        /// 卸下装备
+        /// </summary>
+        /// <param name="wearType"></param>
+        /// <returns></returns>
         public Wear? UnDress(ItemType wearType)
         {
             switch(wearType) 
@@ -228,6 +255,9 @@ namespace RoguelikeGame.Prefabs
     }
     internal class Monster : Prefab
     {
+        /// <summary>
+        /// 表示Monster的危险程度，分为普通、精英、首领三种
+        /// </summary>
         public MonsterType Rank;
         public Monster(long MaxHealth, long Armor, long Damage, float Dodge, long Level, MonsterType Rank,SkillCollection Skills) : base(MaxHealth, Armor, Damage, Dodge, Level, PrefabType.Monster, Skills)
         {
