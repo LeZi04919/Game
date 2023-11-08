@@ -28,6 +28,15 @@ namespace RoguelikeGame.Class
     }
     internal class BuffCollection : IEnumerable
     {
+        static BuffEffect[] NegativeEffect = new BuffEffect[]
+        {
+            BuffEffect.DamageDown,
+            BuffEffect.ArmorDown,
+            BuffEffect.DodgeDown,
+            BuffEffect.Dizziness,
+            BuffEffect.Freeze,
+            BuffEffect.Firing,
+        };
         List<Buff> Buffs = new();
         public int Count
         {
@@ -90,28 +99,33 @@ namespace RoguelikeGame.Class
         }
         public void Add(Buff newBuff)
         {
-            if (Contains(newBuff.Effect))
-            {
-                var effect = newBuff.Effect;
-                var oldBuffs = this[effect];
-                foreach(var oldBuff in oldBuffs)
-                {
-                    var index = Buffs.IndexOf(oldBuff);
-                    oldBuff.Rounds = Math.Max(oldBuff.Rounds, newBuff.Rounds);
-                    if (newBuff.OverlayType == oldBuff.OverlayType)
-                    {
-                        if (newBuff.OverlayType.Equals(Overlay.Add))
-                            oldBuff.Value += newBuff.Value;
-                        else
-                            oldBuff.Value *= newBuff.Value;
-                    }
-                    else
-                        continue;
-                    this[index] = oldBuff;
-                }
-            }
+            if (newBuff.Effect == BuffEffect.ClearNegativeBuff)
+                Buffs.Clear();
             else
-                Buffs.Add(newBuff);
+            {
+                if (Contains(newBuff.Effect))
+                {
+                    var effect = newBuff.Effect;
+                    var oldBuffs = this[effect];
+                    foreach (var oldBuff in oldBuffs)
+                    {
+                        var index = Buffs.IndexOf(oldBuff);
+                        oldBuff.Rounds = Math.Max(oldBuff.Rounds, newBuff.Rounds);
+                        if (newBuff.OverlayType == oldBuff.OverlayType)
+                        {
+                            if (newBuff.OverlayType.Equals(Overlay.Add))
+                                oldBuff.Value += newBuff.Value;
+                            else
+                                oldBuff.Value *= newBuff.Value;
+                        }
+                        else
+                            continue;
+                        this[index] = oldBuff;
+                    }
+                }
+                else
+                    Buffs.Add(newBuff);
+            }
         }
         public void Remove(Buff oldBuff)
         {
@@ -131,7 +145,9 @@ namespace RoguelikeGame.Class
         }
         public void Clear()
         {
-            Buffs.Clear();
+            var negativeBuffs = this[NegativeEffect];
+            foreach (var buff in negativeBuffs)
+                Remove(buff);
         }
         public void NextRound()
         {

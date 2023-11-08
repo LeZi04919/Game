@@ -11,7 +11,8 @@
         Dizziness,
         Freeze,
         Firing,
-        AreaAttack
+        AreaAttack,
+        ClearNegativeBuff
     }
     enum Overlay
     {
