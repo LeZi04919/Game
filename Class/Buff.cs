@@ -9,21 +9,21 @@ namespace RoguelikeGame.Class
 {
     internal class Buff
     {
-        public required string Name;
         public required BuffEffect Effect;
         public required int Rounds;
         public required Overlay OverlayType;
-        public required Prefab[] EffectiveObjects;
         public required float Value;
 
-        public Buff(string Name, BuffEffect Effect, int Rounds, Overlay OverlayType, Prefab[] EffectiveObjects, float Value)
+        public Buff()
         {
-            this.Name = Name;
+
+        }
+        public Buff(BuffEffect Effect, int Rounds, Overlay OverlayType,float Value)
+        {
             this.Effect = Effect;
             this.OverlayType = OverlayType;
             this.Rounds = Rounds;
             this.Value = Value;
-            this.EffectiveObjects = EffectiveObjects;
         }
     }
     internal class BuffCollection : IEnumerable
@@ -47,17 +47,6 @@ namespace RoguelikeGame.Class
             get { return Buffs[index]; }
             set { Buffs[index] = value; }
         }
-        public Buff[] this[string buffName]
-        {
-            get
-            {
-                if (!Contains(buffName))
-                    return new Buff[] { };
-                return (from buff in Buffs
-                       where buff.Name == buffName
-                       select buff).ToArray();
-            }
-        }
         public Buff[] this[BuffEffect effect]
         {
             get
@@ -78,13 +67,6 @@ namespace RoguelikeGame.Class
                     Buffs.AddRange(this[effect]);
                 return Buffs.ToArray();
             }
-        }
-        public bool Contains(string buffName)
-        {
-            foreach (var buff in Buffs)
-                if (buff.Name.Equals(buffName))
-                    return true;
-            return false;
         }
         public bool Contains(BuffEffect effect)
         {
@@ -135,12 +117,6 @@ namespace RoguelikeGame.Class
         {
             var buffs = this[effect];
             foreach (var buff in buffs)
-                Buffs.Remove(buff);
-        }
-        public void Remove(string buffName)
-        {
-            var buffs = this[buffName];
-            foreach(var buff in buffs)
                 Buffs.Remove(buff);
         }
         public void Clear()

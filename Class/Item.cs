@@ -9,6 +9,7 @@ namespace RoguelikeGame.Class
     internal class Item
     {
         public required string Name;
+        public string Description = "";
         public required bool Stackable;
         public required ItemType Type;
         public required RarityType Rarity;
@@ -132,6 +133,9 @@ namespace RoguelikeGame.Class
             get { return 1; }
         }
         public ArmorType? ArmorProvide;
+        /// <summary>
+        /// 提供的的值,当Item为护盾，并且提供闪避时，闪避数值需乘100
+        /// </summary>
         public required long Value;
         public Wear() { }
         public Wear(string Name,ItemType Type, RarityType Rarity,ArmorType ArmorProvide,long Value): base(Name, false, Type, Rarity)
@@ -144,7 +148,7 @@ namespace RoguelikeGame.Class
     {
         /// <summary>
         /// 倍数，造成相当于自身攻击力Value倍的伤害；为0时，仅生效Buff；不为0时，造成伤害的同时给目标附加Buff；
-        /// Value为正数时，造成伤害；Value为负数时，造成回复效果
+        /// Value为正数时，造成伤害；Value为负数时，造成回复效果，回复量为当前血量百分比
         /// </summary>
         public required float Value { get; set; }
         /// <summary>
