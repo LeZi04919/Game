@@ -9,10 +9,11 @@ using RoguelikeGame.Interfaces;
 
 namespace RoguelikeGame.Prefabs
 {
-    internal class Prefab
+    internal class Prefab : IPrefab
     {
         static Random rd = new();
-        public required long MaxHealth;//最大血量
+        public required long MaxHealth
+        { get; set; }//最大血量
         public long Health
         {
             get
@@ -86,14 +87,14 @@ namespace RoguelikeGame.Prefabs
                 return Math.Min(1, _Dodge);
             }
             set { Dodge = value; } }//闪避
-        public required long Level;//等级
-        public required PrefabType Type;
+        public required long Level { get; set; }//等级
+        public required PrefabType Type { get; set; }
 
         protected Wear? Hand;//手部穿戴物
         protected Wear? Body;//身体穿戴物
 
         protected BuffCollection Buffs = new();
-        public required SkillCollection Skills;
+        public required SkillCollection Skills {  get; set; }
         
         public Prefab(long MaxHealth, long Armor, long Damage, float Dodge, long Level, PrefabType Type, SkillCollection Skills)
         {
