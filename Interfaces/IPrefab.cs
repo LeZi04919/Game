@@ -14,7 +14,6 @@ namespace RoguelikeGame.Interfaces
         PrefabType Type { get; set; }
         SkillCollection Skills { get; set; }
 
-
         bool Upgrade();
         void ReleaseSkill(Prefab target, Skill skill);
         long Attack(Prefab target);

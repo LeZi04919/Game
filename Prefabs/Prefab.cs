@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using RoguelikeGame.Class;
 using RoguelikeGame.Interfaces;
@@ -95,7 +97,7 @@ namespace RoguelikeGame.Prefabs
 
         protected BuffCollection Buffs = new();
         public required SkillCollection Skills {  get; set; }
-        
+        public Prefab() {  }
         public Prefab(long MaxHealth, long Armor, long Damage, float Dodge, long Level, PrefabType Type, SkillCollection Skills)
         {
             this.MaxHealth = MaxHealth;
@@ -165,6 +167,10 @@ namespace RoguelikeGame.Prefabs
         public required long ExpMaxLimit;//下一级
 
         public ItemCollection Items = new();
+        public Player()
+        {
+            Type = PrefabType.Player;
+        }
         public Player(long MaxHealth,long Health, long Armor, long Damage, float Dodge, long Level, SkillCollection Skills):base(MaxHealth,Armor,Damage,Dodge,Level,PrefabType.Player,Skills)
         {
             this.Health = Health;
@@ -260,9 +266,55 @@ namespace RoguelikeGame.Prefabs
         /// 表示Monster的危险程度，分为普通、精英、首领三种
         /// </summary>
         public MonsterType Rank;
+        public Monster()
+        {
+            Type = PrefabType.Monster;
+        }
         public Monster(long MaxHealth, long Armor, long Damage, float Dodge, long Level, MonsterType Rank,SkillCollection Skills) : base(MaxHealth, Armor, Damage, Dodge, Level, PrefabType.Monster, Skills)
         {
             this.Rank = Rank;
+        }
+    }
+    internal class PrefabCollection : IEnumerable 
+    {
+        List<Prefab> Prefabs = new();
+
+        public PrefabCollection() { }
+        public Prefab this[int index]
+        {
+            get { return Prefabs[index]; }
+            set { Prefabs[index] = value; }
+        }
+        public Monster[] this[MonsterType rank]
+        {
+            get
+            {
+                return (from monster in Search<Monster>()
+                        where monster.Rank == rank
+                        select monster).ToArray();
+            }
+        }
+        public void Add(Prefab newPrefab)
+        {
+            Prefabs.Add(newPrefab);
+        }
+        public void Remove(Prefab oldPrefab)
+        {
+            Prefabs.Remove(oldPrefab);
+        }
+        public Prefab[] GetAllPrefab()
+        {
+            return Prefabs.ToArray();
+        }
+        public T[] Search<T>() where T: Prefab
+        {
+            return Enumerable.Cast<T>(from prefab in Prefabs
+                                       where prefab.GetType() == typeof(T)
+                                       select prefab).ToArray();            
+        }
+        public IEnumerator GetEnumerator()
+        {
+            return ((IEnumerable)Prefabs).GetEnumerator();
         }
     }
 }
