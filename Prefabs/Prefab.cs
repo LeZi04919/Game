@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using RoguelikeGame.Class;
 using RoguelikeGame.Interfaces;
@@ -118,18 +115,11 @@ namespace RoguelikeGame.Prefabs
         }
         void Release<T>(Prefab target,T released) where T: IReleasable
         {
-            switch (released.ReleaseType)
-            {
-                case ReleaseType.AtOnce:
-                    if (released.Value > 0)
-                        target.Health -= (long)(Damage * released.Value);
-                    break;
-                case ReleaseType.Buff:
-                    if (released.Value > 0)
-                        target.Health -= (long)(Damage * released.Value);
-                    target.Buffs.AddRange(released.Effect);
-                    break;
-            }
+            if(released.ReleaseType == ReleaseType.Damage)
+                target.Health -= (long)(Damage * released.Value);
+            else
+                target.Health -= (long)(MaxHealth * released.Value);
+            target.Buffs.AddRange(released.Effect);
         }
         /// <summary>
         /// 刷新Prefab等级

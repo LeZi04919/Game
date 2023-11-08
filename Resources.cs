@@ -25,8 +25,8 @@ namespace RoguelikeGame
     }
     public enum ReleaseType
     {
-        AtOnce, //直接造成伤害
-        Buff    //施加正面或负面Buff
+        Damage,   //以当前Damage结算
+        Health    //以HP最大值结算
     }
     public enum PrefabType
     {
@@ -106,7 +106,7 @@ namespace RoguelikeGame
                 Stackable = true,
                 Type = ItemType.Drug,
                 Rarity = RarityType.Common,
-                ReleaseType = ReleaseType.AtOnce,
+                ReleaseType = ReleaseType.Health,
                 Target = TargetType.Player,
                 Effect = new Buff[] { },
                 Count = 1
@@ -120,7 +120,7 @@ namespace RoguelikeGame
                 Stackable = true,
                 Type = ItemType.Drug,
                 Rarity = RarityType.Common,
-                ReleaseType = ReleaseType.AtOnce,
+                ReleaseType = ReleaseType.Health,
                 Target = TargetType.Player,
                 Effect = new Buff[] { },
                 Count = 1
@@ -134,7 +134,7 @@ namespace RoguelikeGame
                 Stackable = true,
                 Type = ItemType.Drug,
                 Rarity = RarityType.Rare,
-                ReleaseType = ReleaseType.AtOnce,
+                ReleaseType = ReleaseType.Health,
                 Target = TargetType.Player,
                 Effect = new Buff[] { },
                 Count = 1
@@ -148,7 +148,7 @@ namespace RoguelikeGame
                 Stackable = true,
                 Type = ItemType.Drug,
                 Rarity = RarityType.Epic,
-                ReleaseType = ReleaseType.Buff,
+                ReleaseType = ReleaseType.Health,
                 Target = TargetType.Player,
                 Effect = new Buff[]
                 {
@@ -171,7 +171,7 @@ namespace RoguelikeGame
                 Stackable = true,
                 Type = ItemType.Drug,
                 Rarity = RarityType.Legacy,
-                ReleaseType = ReleaseType.Buff,
+                ReleaseType = ReleaseType.Health,
                 Target = TargetType.Player,
                 Effect = new Buff[]
                 {

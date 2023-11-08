@@ -64,7 +64,6 @@ namespace RoguelikeGame.Class
                 return Skills.Where(skill =>
                 {
                     if (skill.ReleaseType == ReleaseType)
-                    if (skill.ReleaseType == ReleaseType)
                         return true;
                     return false;
                 }).ToArray();
