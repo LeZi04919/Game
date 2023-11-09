@@ -91,7 +91,7 @@ namespace RoguelikeGame.Prefabs
         public required long Level { get; set; }//等级
         public required PrefabType Type { get; set; }
 
-        protected Wear? Hand;//手部穿戴物
+        protected Weapon? Hand;//手部穿戴物
         protected Wear? Body;//身体穿戴物
 
         protected BuffCollection Buffs = new();
