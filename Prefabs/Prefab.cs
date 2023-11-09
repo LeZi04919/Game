@@ -33,16 +33,16 @@ namespace RoguelikeGame.Prefabs
                 var _Armor = Armor;
                 long bodyProvide = 0;
                 if(Body is not null)
-                    if (Body.ArmorProvide is not null and ArmorType.Physical)
+                    if (Body.ArmorProvide is ArmorType.Physical)
                         bodyProvide = Body.Value;
                 _Armor += bodyProvide;
 
                 List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.ArmorUp }]);
                 buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.ArmorDown }]);
 
-                foreach (var buff in from buff in buffs where buff.OverlayType == Overlay.Add select buff)
+                foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Add select buff)
                     _Armor += (long)buff.Value;
-                foreach (var deBuff in from buff in buffs where buff.OverlayType == Overlay.Mul select buff)
+                foreach (var deBuff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
                     _Armor = (long)(_Armor * deBuff.Value);
                 return _Armor; 
             }
@@ -59,9 +59,9 @@ namespace RoguelikeGame.Prefabs
                 List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.DamageUp }]);
                 buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.DamageDown }]);
 
-                foreach (var buff in from buff in buffs where buff.OverlayType == Overlay.Add select buff)
+                foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Add select buff)
                     _Damage += (long)buff.Value;
-                foreach (var deBuff in from buff in buffs where buff.OverlayType == Overlay.Mul select buff)
+                foreach (var deBuff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
                     _Damage = (long)(_Damage * deBuff.Value);
                 return _Damage;
             } 
@@ -74,16 +74,16 @@ namespace RoguelikeGame.Prefabs
                 var _Dodge = Dodge;
                 float bodyProvide = 0;
                 if(Body is not null)
-                    if (Body.ArmorProvide is not null and ArmorType.Dodge)
+                    if (Body.ArmorProvide is ArmorType.Dodge)
                         bodyProvide = Body.Value / 100;
                 _Dodge += bodyProvide;
 
                 List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.DamageUp }]);
                 buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.DamageDown }]);
 
-                foreach (var buff in from buff in buffs where buff.OverlayType == Overlay.Add select buff)
+                foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Add select buff)
                     _Dodge += (long)buff.Value;
-                foreach (var deBuff in from buff in buffs where buff.OverlayType == Overlay.Mul select buff)
+                foreach (var deBuff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
                     _Dodge = (long)(_Dodge * deBuff.Value);
                 return Math.Min(1, _Dodge);
             }
@@ -92,22 +92,11 @@ namespace RoguelikeGame.Prefabs
         public required PrefabType Type { get; set; }
 
         protected Weapon? Hand;//手部穿戴物
-        protected Wear? Body;//身体穿戴物
+        protected Armor? Body;//身体穿戴物
 
         protected BuffCollection Buffs = new();
         public required SkillCollection Skills {  get; set; }
         public Prefab() {  }
-        public Prefab(long MaxHealth, long Armor, long Damage, float Dodge, long Level, PrefabType Type, SkillCollection Skills)
-        {
-            this.MaxHealth = MaxHealth;
-            this.Health = MaxHealth;
-            this.Armor = Armor;
-            this.Damage = Damage;
-            this.Dodge = Dodge;
-            this.Level = Level;
-            this.Type = Type;
-            this.Skills = Skills;
-        }
         public void ReleaseSkill(Prefab target, Skill skill)
         {
             Release(target, skill);

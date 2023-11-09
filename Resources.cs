@@ -72,7 +72,7 @@ namespace RoguelikeGame
     {
         static readonly ItemCollection ItemList = new()
         {
-            new Wear()
+            new Weapon()
             {
                 Name = "单手剑",
                 Rarity = RarityType.Common,
@@ -80,7 +80,7 @@ namespace RoguelikeGame
                 Stackable = false,
                 Value = 3
             },
-            new Wear()
+            new Armor()
             {
                 Name = "破烂的护甲",
                 Rarity = RarityType.Common,
@@ -89,7 +89,7 @@ namespace RoguelikeGame
                 Stackable = false,
                 Value = 2
             },
-            new Wear()
+            new Armor()
             {
                 Name = "光滑的护甲",
                 Rarity = RarityType.Rare,

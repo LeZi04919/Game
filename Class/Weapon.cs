@@ -1,14 +1,12 @@
+using RoguelikeGame.Interfaces;
 
 namespace RoguelikeGame.Class
 {
-    internal class Weapon : Item
+    internal class Weapon : Item, IWearable
     {
         public new int Count
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
         public new int MaxStackCount
         {
@@ -17,11 +15,7 @@ namespace RoguelikeGame.Class
         /// <summary>
         /// 提供的的攻击力
         /// </summary>
-        public required long Value;
+        public required long Value { get; set; }
         public Weapon() { }
-        public Weapon(string Name,RarityType Rarity,long Value): base(Name, false, ItemType.Weapon, Rarity)
-        {
-            this.Value = Value;
-        }
     }
 }

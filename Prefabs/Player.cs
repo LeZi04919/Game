@@ -1,5 +1,6 @@
 using System;
 using RoguelikeGame.Class;
+using RoguelikeGame.Interfaces;
 
 namespace RoguelikeGame.Prefabs
 {
@@ -12,14 +13,6 @@ namespace RoguelikeGame.Prefabs
         public Player()
         {
             Type = PrefabType.Player;
-        }
-        public Player(long MaxHealth,long Health, long Armor, long Damage, float Dodge, long Level, SkillCollection Skills):base(MaxHealth,Armor,Damage,Dodge,Level,PrefabType.Player,Skills)
-        {
-            this.Health = Health;
-        }
-        public Player(long MaxHealth, long Armor, long Damage, float Dodge, long Level,SkillCollection Skills) : this(MaxHealth,MaxHealth, Armor, Damage, Dodge, Level,Skills)
-        {
-
         }
         public override bool Upgrade()
         {
@@ -50,31 +43,31 @@ namespace RoguelikeGame.Prefabs
         /// </summary>
         /// <param name="wear"></param>
         /// <returns></returns>
-        public Wear? Dress(Wear wear)
+        public Item? Dress(Item wear)
         {
             switch (wear.Type)
             {
                 case ItemType.Weapon:
-                    if (Hand is null)
-                        Hand = wear;
-                    else
+                    if (Hand is not null )
                     {
-                        if (!Items.Add(Hand))
-                            return Hand;
-                        else
-                            Hand = wear;
+                        var _Hand = Hand;
+                        Hand = wear as Weapon;
+                        if(!Items.Add(_Hand))
+                            return _Hand;
                     }
+                    else
+                        Hand = wear as Weapon;
                     break;
                 case ItemType.Armor:
-                    if (Body is null)
-                        Body = wear;
-                    else
+                    if (Body is not null)
                     {
-                        if (!Items.Add(Body))
-                            return Body;
-                        else
-                            Body = wear;
+                        var _Body = Body;
+                        Body = wear as Armor;
+                        if (!Items.Add(_Body))
+                            return _Body;
                     }
+                    else
+                        Body = wear as Armor;
                     break;
             }
             return null;
@@ -84,7 +77,7 @@ namespace RoguelikeGame.Prefabs
         /// </summary>
         /// <param name="wearType"></param>
         /// <returns></returns>
-        public Wear? UnDress(ItemType wearType)
+        public Item? UnDress(ItemType wearType)
         {
             switch(wearType) 
             {

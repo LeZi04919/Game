@@ -18,13 +18,6 @@ namespace RoguelikeGame.Class
         {
 
         }
-        public Buff(BuffEffect Effect, int Rounds, Overlay OverlayType,float Value)
-        {
-            this.Effect = Effect;
-            this.OverlayType = OverlayType;
-            this.Rounds = Rounds;
-            this.Value = Value;
-        }
     }
     internal class BuffCollection : IEnumerable
     {

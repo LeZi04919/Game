@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using RoguelikeGame.Interfaces;
 
 namespace RoguelikeGame.Class
 {
-    internal class Armor : Item
+    internal class Armor : Item, IWearable
     {
         public new int Count
         {
@@ -15,8 +12,8 @@ namespace RoguelikeGame.Class
         {
             get { return 1; }            
         }
-        public required ArmorType ArmorType;
-        public required long Value;
+        public required ArmorType ArmorProvide { get; set; }
+        public required long Value { get; set; }
         public Armor() { }
     }
 }
