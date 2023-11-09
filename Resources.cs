@@ -16,7 +16,8 @@ namespace RoguelikeGame
         Firing,
         AreaAttack,
         ClearNegativeBuff,
-        HPRecovery
+        HPRecovery,
+        CoolDownBoost
     }
     enum Overlay
     {
@@ -157,10 +158,10 @@ namespace RoguelikeGame
                         Rounds = 3,
                         Effect = BuffEffect.HPRecovery,
                         OverlayType = Overlay.Add,
-                        Value = -0.10F                        
+                        Value = -0.10F
                     }
                 },
-                Count = 1                
+                Count = 1
             },
             new Drug()
             {
@@ -180,10 +181,42 @@ namespace RoguelikeGame
                         Rounds = 7,
                         Effect = BuffEffect.HPRecovery,
                         OverlayType = Overlay.Add,
-                        Value = -0.25F                        
+                        Value = -0.25F
                     }
                 },
-                Count = 1                
+                Count = 1
+            },
+            new Drug()
+            {
+                Name = "技能冷却加速剂",
+                Description = "一管药剂，闻起来很清甜;可以使所有处于冷却的技能减少1轮的冷却时间",
+                Value = 0,
+                MaxStackCount = 20,
+                Stackable = true,
+                Type = ItemType.Drug,
+                Rarity = RarityType.Rare,
+                ReleaseType = ReleaseType.Health,
+                Target = TargetType.Self,
+                Effect = new Buff[]
+                {
+                    new Buff()
+                    {
+                        Rounds = 1,
+                        Effect = BuffEffect.CoolDownBoost,
+                        OverlayType = Overlay.Add,
+                        Value = 1
+                    }
+                },
+                Count = 1
+            },
+            new Item()
+            {
+                Name = "通用货币",
+                Description = "这个大陆上的通用货币，可以与普通商人进行交易",
+                Stackable = true,
+                MaxStackCount = long.MaxValue,
+                Type = ItemType.Currency,
+                Rarity = RarityType.Common
             }
 
         };

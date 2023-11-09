@@ -13,8 +13,8 @@ namespace RoguelikeGame.Class
         public required bool Stackable;
         public required ItemType Type;
         public required RarityType Rarity;
-        public int Count = 1;
-        public int MaxStackCount = 40;
+        public long Count = 1;
+        public long MaxStackCount = 40;
         public Item() { }
         public Item(string Name, bool Stackable, ItemType Type, RarityType Rarity) => (this.Name, this.Stackable, this.Type,this.Rarity) = (Name, Stackable, Type, Rarity);
         public bool Equals(Item targetItem)
