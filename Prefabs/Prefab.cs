@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using RoguelikeGame.Class;
 using RoguelikeGame.Interfaces;
@@ -104,7 +105,7 @@ namespace RoguelikeGame.Prefabs
         }
         void Release<T>(Prefab target,T released) where T: IReleasable
         {
-            if(released.ReleaseType == ReleaseType.Damage)
+            if(released.ReleaseType is ReleaseType.Damage)
                 target.Health -= (long)(Damage * released.Value);
             else
                 target.Health -= (long)(MaxHealth * released.Value);

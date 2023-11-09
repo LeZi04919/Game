@@ -68,6 +68,25 @@ namespace RoguelikeGame
         Legacy
     }
 
+    public enum FeatureType
+    {
+        IgnoreDodge
+    }
+    public struct Feature
+    {
+        /// <summary>
+        /// 特性类型
+        /// </summary>
+        public FeatureType Type;
+        /// <summary>
+        /// 该特性出现的概率，最大100
+        /// </summary>
+        public int Probability;
+        /// <summary>
+        /// 该特性造成的伤害，单位为百分比
+        /// </summary>
+        public float Value;
+    }
     public static class GameResources
     {
         static readonly ItemCollection ItemList = new()

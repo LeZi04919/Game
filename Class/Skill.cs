@@ -11,7 +11,7 @@ namespace RoguelikeGame.Class
     {
         public required string Name;
         /// <summary>
-        /// 表示该Skill释放类型；分为一次性或对目标施加Buff
+        /// 表示该Skill的值基准，可为攻击力或生命上限
         /// </summary>
         public required ReleaseType ReleaseType { get; set; }
         /// <summary>

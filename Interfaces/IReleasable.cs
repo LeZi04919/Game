@@ -14,7 +14,7 @@ namespace RoguelikeGame.Interfaces
         /// </summary>
         Buff[] Effect { get; }
         /// <summary>
-        /// 表示该Skill释放类型；分为一次性或对目标施加Buff
+        /// 表示值基准，可为攻击力或生命上限
         /// </summary>
         ReleaseType ReleaseType { get; set; }
         /// <summary>
