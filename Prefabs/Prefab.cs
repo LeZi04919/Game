@@ -38,8 +38,8 @@ namespace RoguelikeGame.Prefabs
                         bodyProvide = Body.Value;
                 _Armor += bodyProvide;
 
-                List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.ArmorUp }]);
-                buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.ArmorDown }]);
+                List<Buff> buffs = new(Buffs[BuffEffect.ArmorUp]);
+                buffs.AddRange(Buffs[BuffEffect.ArmorDown]);
 
                 foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Add select buff)
                     _Armor += (long)buff.Value;
@@ -57,8 +57,8 @@ namespace RoguelikeGame.Prefabs
                 if (Hand is not null)
                     _Damage += Hand.Value;
 
-                List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.DamageUp }]);
-                buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.DamageDown }]);
+                List<Buff> buffs = new(Buffs[BuffEffect.DamageUp]);
+                buffs.AddRange(Buffs[BuffEffect.DamageDown]);
 
                 foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Add select buff)
                     _Damage += (long)buff.Value;
@@ -73,20 +73,18 @@ namespace RoguelikeGame.Prefabs
             get
             {
                 var _Dodge = Dodge;
-                float bodyProvide = 0;
                 if(Body is not null)
                     if (Body.ArmorProvide is ArmorType.Dodge)
-                        bodyProvide = Body.Value / 100;
-                _Dodge += bodyProvide;
+                        _Dodge += Body.Value / 100;
 
-                List<Buff> buffs = new(Buffs[new BuffEffect[] { BuffEffect.DamageUp }]);
-                buffs.AddRange(Buffs[new BuffEffect[] { BuffEffect.DamageDown }]);
+                List<Buff> buffs = new(Buffs[BuffEffect.DodgeUp]);
+                buffs.AddRange(Buffs[BuffEffect.DodgeDown]);
 
                 foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Add select buff)
                     _Dodge += (long)buff.Value;
                 foreach (var deBuff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
                     _Dodge = (long)(_Dodge * deBuff.Value);
-                return Math.Min(1, _Dodge);
+                return Math.Min(0.95F, _Dodge);
             }
             set { Dodge = value; } }//闪避
         public required long Level { get; set; }//等级
