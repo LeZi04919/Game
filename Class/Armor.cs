@@ -14,6 +14,7 @@ namespace RoguelikeGame.Class
         }
         public required ArmorType ArmorProvide { get; set; }
         public required long Value { get; set; }
+        public required Feature? Feature { get; set; }
         public Armor() { }
     }
 }

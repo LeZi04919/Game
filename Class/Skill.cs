@@ -31,23 +31,11 @@ namespace RoguelikeGame.Class
         /// Skill冷却所需轮数
         /// </summary>
         public required int CoolDown;
-        public Skill(string Name, ReleaseType ReleaseType, TargetType Target,Buff[] Effect, float Value, int CoolDown)
-        {
-            this.Name = Name;
-            this.ReleaseType = ReleaseType;
-            this.Target = Target;
-            this.Effect = Effect;
-            this.Value = Value;
-            this.CoolDown = CoolDown;
-        }
-        public Skill(string Name, ReleaseType Type, TargetType Target,Buff[] Effect, int CoolDown) : this(Name, Type,Target, Effect, 0, CoolDown)
+        public Skill()
         {
 
         }
-        public Skill(string Name, ReleaseType Type, TargetType Target, float Value, int CoolDown) : this(Name, Type, Target,new Buff[] { }, Value, CoolDown)
-        {
 
-        }
     }
     internal class SkillCollection : IEnumerable
     {

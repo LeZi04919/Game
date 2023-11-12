@@ -79,11 +79,11 @@ namespace RoguelikeGame
         /// </summary>
         public FeatureType Type;
         /// <summary>
-        /// 该特性出现的概率，最大100
+        /// 该特性出现的概率，最大1
         /// </summary>
-        public int Probability;
+        public float Probability;
         /// <summary>
-        /// 该特性造成的伤害，单位为百分比
+        /// 该特性的值
         /// </summary>
         public float Value;
     }
@@ -96,6 +96,7 @@ namespace RoguelikeGame
                 Name = "单手剑",
                 Rarity = RarityType.Common,
                 Type = ItemType.Weapon,
+                Feature = null,
                 Stackable = false,
                 Value = 3
             },
@@ -104,6 +105,7 @@ namespace RoguelikeGame
                 Name = "破烂的护甲",
                 Rarity = RarityType.Common,
                 Type = ItemType.Armor,
+                Feature = null,
                 ArmorProvide = ArmorType.Physical,
                 Stackable = false,
                 Value = 2
@@ -113,6 +115,12 @@ namespace RoguelikeGame
                 Name = "光滑的护甲",
                 Rarity = RarityType.Rare,
                 Type = ItemType.Armor,
+                Feature = new Feature()
+                {
+                    Type = FeatureType.IgnoreDodge,
+                    Probability = 1,
+                    Value = 0
+                },
                 ArmorProvide = ArmorType.Dodge,
                 Stackable = false,
                 Value = 20

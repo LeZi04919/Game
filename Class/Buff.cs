@@ -74,7 +74,7 @@ namespace RoguelikeGame.Class
         }
         public void Add(Buff newBuff)
         {
-            if (newBuff.Effect == BuffEffect.ClearNegativeBuff)
+            if (newBuff.Effect is BuffEffect.ClearNegativeBuff)
                 Buffs.Clear();
             else
             {

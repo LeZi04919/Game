@@ -16,6 +16,7 @@ namespace RoguelikeGame.Class
         /// 提供的的攻击力
         /// </summary>
         public required long Value { get; set; }
+        public required Feature? Feature { get; set; }
         public Weapon() { }
     }
 }

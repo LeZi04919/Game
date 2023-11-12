@@ -123,13 +123,36 @@ namespace RoguelikeGame.Prefabs
         }
         public long Attack(Prefab target)
         {
+            var FeatureAvailability = GetFeatureAvailability(Hand);
             var targetArmor = target.Armor;
             var targetDodge = target.Dodge;
+            if(FeatureAvailability)
+            {
+                var feature = (Feature)Hand.Feature;
+                switch (feature.Type)
+                {
+                    case FeatureType.IgnoreDodge:
+                        targetDodge *= feature.Value; 
+                        break;
+                }
+            }
             if (rd.NextDouble() <= targetDodge)
                 return 0;//闪避生效
             var damage = (long)Math.Max(Damage * 0.2, Damage - targetArmor);
             target.Health -= damage;
             return damage;
+        }
+        bool GetFeatureAvailability(IWearable? item)
+        {
+            if (item is null )
+                return false;
+            if(item.Feature is not null)
+            {
+                if (rd.NextDouble() > ((Feature)item.Feature).Probability)
+                    return true;
+            }
+            return false;
+
         }
         /// <summary>
         /// 刷新Skill与Buff剩余轮数
