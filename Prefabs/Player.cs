@@ -6,6 +6,13 @@ namespace RoguelikeGame.Prefabs
 {
     internal class Player : Prefab
     {
+        /// <summary>
+        /// Player默认一级数据为:
+        /// MaxHealth = 20
+        /// Damage = 5
+        /// Armor = 2
+        /// ExpMaxLimit = 25
+        /// </summary>
         public required long Experience;//目前经验值
         public required long ExpMaxLimit;//下一级
 
@@ -14,15 +21,22 @@ namespace RoguelikeGame.Prefabs
         {
             Type = PrefabType.Player;
         }
-        public override bool Upgrade()
+        public override bool Upgrade(long newLevel)
+        {
+            var oldLevel = Level;
+            MaxHealth = (long)(MaxHealth * Math.Pow(1.055, newLevel - oldLevel));
+            Health = MaxHealth;
+            Damage = (long)(Damage * Math.Pow(1.06, newLevel - oldLevel));
+            Armor = (long)(Armor * Math.Pow(1.06, newLevel - oldLevel));
+            return true;
+        }
+        public bool Upgrade()
         {
             if (Experience >= ExpMaxLimit)
             {
-                Level++;
+                Upgrade(++Level);
                 Experience -= ExpMaxLimit;
                 ExpMaxLimit += 5 * (Level - 1);
-                MaxHealth *= (long)Math.Pow(1.055, Level - 1);
-                Damage *= (long)Math.Pow(1.06, Level - 1);
                 if (Experience >= ExpMaxLimit)
                     Upgrade();
                 return true;

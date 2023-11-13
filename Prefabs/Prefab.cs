@@ -9,7 +9,7 @@ using RoguelikeGame.Interfaces;
 
 namespace RoguelikeGame.Prefabs
 {
-    internal class Prefab : IPrefab
+    internal class Prefab : IPrefab, IUpgradeable
     {
         static Random rd = new();
         public required string Name
@@ -97,7 +97,7 @@ namespace RoguelikeGame.Prefabs
             }
             set { Dodge = value; } }//闪避
         public required long Level { get; set; }//等级
-        public required PrefabType Type { get; set; }
+        public required PrefabType Type { get; set; }//实体类别
 
         protected Weapon? Hand;//手部穿戴物
         protected Armor? Body;//身体穿戴物
@@ -122,12 +122,19 @@ namespace RoguelikeGame.Prefabs
         /// 刷新Prefab等级
         /// </summary>
         /// <returns></returns>
-        public virtual bool Upgrade()
+        public virtual bool Upgrade(long newLevel)
         {
-            MaxHealth *= (long)Math.Pow(1.057, Level - 1);
-            Damage *= (long)Math.Pow(1.062, Level - 1);
+            var oldLevel = Level;
+            MaxHealth = (long)(MaxHealth * Math.Pow(1.057, newLevel - oldLevel));
+            Damage = (long)(Damage * Math.Pow(1.062, newLevel - oldLevel));
+            Armor = (long)(Armor * Math.Pow(1.064, newLevel - oldLevel));
             return true;
         }
+        /// <summary>
+        /// 普通攻击
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public long Attack(Prefab target)
         {
             var FeatureAvailability = GetFeatureAvailability(Hand);

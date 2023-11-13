@@ -85,7 +85,7 @@ namespace RoguelikeGame
         /// </summary>
         public float Probability;
         /// <summary>
-        /// 该特性的值
+        /// 该特性的百分比值
         /// </summary>
         public float Value;
     }
@@ -101,6 +101,20 @@ namespace RoguelikeGame
                 Feature = null,
                 Stackable = false,
                 Value = 3
+            },
+            new Weapon()
+            {
+                Name = "因果剑",
+                Rarity = RarityType.Epic,
+                Type = ItemType.Weapon,
+                Feature = new Feature()
+                {
+                    Type = FeatureType.IgnoreDodge,
+                    Probability = 1,
+                    Value = 0
+                },
+                Stackable = false,
+                Value = 6
             },
             new Armor()
             {
@@ -254,10 +268,10 @@ namespace RoguelikeGame
             new Monster()
             {
                 Name = "史莱姆",
-                MaxHealth = 5,
-                Health = 5,
+                MaxHealth = 7,
+                Health = 7,
                 Armor = 0,
-                Damage = 2,
+                Damage = 4,
                 Dodge = 0.5F,
                 Level = 1,
                 Type = PrefabType.Monster,
@@ -267,10 +281,10 @@ namespace RoguelikeGame
             new Monster()
             {
                 Name = "红史莱姆",
-                MaxHealth = 5,
-                Health = 5,
+                MaxHealth = 7,
+                Health = 7,
                 Armor = 0,
-                Damage = 2,
+                Damage = 4,
                 Dodge = 0.5F,
                 Level = 1,
                 Type = PrefabType.Monster,
@@ -280,10 +294,10 @@ namespace RoguelikeGame
             new Monster()
             {
                 Name = "蓝史莱姆",
-                MaxHealth = 5,
-                Health = 5,
+                MaxHealth = 7,
+                Health = 7,
                 Armor = 0,
-                Damage = 2,
+                Damage = 4,
                 Dodge = 0.5F,
                 Level = 1,
                 Type = PrefabType.Monster,
@@ -296,7 +310,7 @@ namespace RoguelikeGame
                 MaxHealth = 10,
                 Health = 10,
                 Armor = 1,
-                Damage = 5,
+                Damage = 4,
                 Dodge = 0,
                 Level = 1,
                 Type = PrefabType.Monster,
@@ -306,10 +320,10 @@ namespace RoguelikeGame
             new Monster()
             {
                 Name = "精英哥布林",
-                MaxHealth = 20,
-                Health = 20,
+                MaxHealth = 16,
+                Health = 16,
                 Armor = 3,
-                Damage = 7,
+                Damage = 8,
                 Dodge = 0.05F,
                 Level = 1,
                 Type = PrefabType.Monster,
@@ -319,10 +333,10 @@ namespace RoguelikeGame
             new Monster()
             {
                 Name = "兽人",
-                MaxHealth = 20,
-                Health = 20,
-                Armor = 4,
-                Damage = 8,
+                MaxHealth = 14,
+                Health = 14,
+                Armor = 1,
+                Damage = 5,
                 Dodge = 0,
                 Level = 1,
                 Type = PrefabType.Monster,
@@ -332,10 +346,10 @@ namespace RoguelikeGame
             new Monster()
             {
                 Name = "精英兽人",
-                MaxHealth = 30,
-                Health = 30,
-                Armor = 6,
-                Damage = 12,
+                MaxHealth = 20,
+                Health = 20,
+                Armor = 3,
+                Damage = 10,
                 Dodge = 0,
                 Level = 1,
                 Type = PrefabType.Monster,
@@ -345,10 +359,10 @@ namespace RoguelikeGame
             new Monster()
             {
                 Name = "史莱姆王",
-                MaxHealth = 50,
-                Health = 50,
-                Armor = 3,
-                Damage = 10,
+                MaxHealth = 40,
+                Health = 40,
+                Armor = 2,
+                Damage = 8,
                 Dodge = 0.75F,
                 Level = 1,
                 Type = PrefabType.Monster,
@@ -358,8 +372,8 @@ namespace RoguelikeGame
             new Monster()
             {
                 Name = "龙",
-                MaxHealth = 100,
-                Health = 100,
+                MaxHealth = 50,
+                Health = 50,
                 Armor = 5,
                 Damage = 15,
                 Dodge = 0,
