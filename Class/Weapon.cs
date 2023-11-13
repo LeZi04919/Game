@@ -1,4 +1,5 @@
 using RoguelikeGame.Interfaces;
+using System;
 
 namespace RoguelikeGame.Class
 {
@@ -34,8 +35,29 @@ namespace RoguelikeGame.Class
         {
             this.Stackable = false;
         }
+        long GetRandomValue(long input)
+        {
+            Random rd = new();
+            var ratio = rd.Next(80, 120) / 100;
+            return (long)(input * ratio);
+        }
+        double GetRandomValue(double input)
+        {
+            Random rd = new();
+            var ratio = rd.Next(80, 120) / 100;
+            return input * ratio;
+        }
         public bool Upgrade(long newLevel)
         {
+            var oldLevel = Level;
+            Value = (long)(GetRandomValue(Value) * Math.Pow(GetRandomValue(1.062), newLevel - oldLevel));
+            if (Feature is not null)
+            {
+                var feature = (Feature)Feature;
+                feature.Probability = (float)Math.Min(1, GetRandomValue(feature.Probability));
+                feature.Value = (float)Math.Min(1, GetRandomValue(feature.Probability));
+                Feature = feature;
+            }
             return false;
         }
     }

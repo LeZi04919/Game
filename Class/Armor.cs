@@ -1,6 +1,5 @@
 using RoguelikeGame.Interfaces;
 using System;
-using System.ComponentModel.Design;
 
 namespace RoguelikeGame.Class
 {
@@ -54,8 +53,19 @@ namespace RoguelikeGame.Class
         }
         public bool Upgrade(long newLevel)
         {
-            return false;
-
+            var oldLevel = Level;
+            if (ArmorProvide is ArmorType.Dodge)
+                Value = Math.Min(100, GetRandomValue(Value));
+            else
+                Value = (long)(GetRandomValue(Value) * Math.Pow(GetRandomValue(1.062), newLevel - oldLevel));
+            if(Feature is not null)
+            {
+                var feature = (Feature)Feature;
+                feature.Probability = (float)Math.Min(1, GetRandomValue(feature.Probability));
+                feature.Value = (float)Math.Min(1, GetRandomValue(feature.Probability));
+                Feature = feature;
+            }    
+            return true;
         }
     }
 }
