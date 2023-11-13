@@ -32,11 +32,9 @@ namespace RoguelikeGame.Prefabs
             get 
             {
                 var _Armor = Armor;
-                long bodyProvide = 0;
                 if(Body is not null)
                     if (Body.ArmorProvide is ArmorType.Physical)
-                        bodyProvide = Body.Value;
-                _Armor += bodyProvide;
+                        _Armor += Body.Value;
 
                 List<Buff> buffs = new(Buffs[BuffEffect.ArmorUp]);
                 buffs.AddRange(Buffs[BuffEffect.ArmorDown]);
@@ -72,6 +70,17 @@ namespace RoguelikeGame.Prefabs
         { 
             get
             {
+                var FeatureAvailability = GetFeatureAvailability(Body);
+                if (FeatureAvailability)
+                {
+                    var feature = (Feature)Body.Feature;
+                    switch (feature.Type)
+                    {
+                        case FeatureType.IgnoreDamage:
+                            return 1;
+                    }
+                }
+
                 var _Dodge = Dodge;
                 if(Body is not null)
                     if (Body.ArmorProvide is ArmorType.Dodge)
@@ -140,17 +149,21 @@ namespace RoguelikeGame.Prefabs
             target.Health -= damage;
             return damage;
         }
+        /// <summary>
+        /// 判断是否触发随机特性；触发返回True，传入参数为Null、传入参数的Feature属性为Null及未触发返回False
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         bool GetFeatureAvailability(IWearable? item)
         {
-            if (item is null )
+            if (item is null)
                 return false;
             if(item.Feature is not null)
             {
-                if (rd.NextDouble() > ((Feature)item.Feature).Probability)
+                if (rd.NextDouble() <= ((Feature)item.Feature).Probability)
                     return true;
             }
             return false;
-
         }
         /// <summary>
         /// 刷新Skill与Buff剩余轮数

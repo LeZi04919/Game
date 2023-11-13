@@ -70,7 +70,9 @@ namespace RoguelikeGame
 
     public enum FeatureType
     {
-        IgnoreDodge
+        IgnoreDodge,
+        IgnoreArmor,
+        IgnoreDamage
     }
     public struct Feature
     {
