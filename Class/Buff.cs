@@ -80,23 +80,43 @@ namespace RoguelikeGame.Class
             {
                 if (Contains(newBuff.Effect))
                 {
-                    var effect = newBuff.Effect;
-                    var oldBuffs = this[effect];
-                    foreach (var oldBuff in oldBuffs)
+                    var oldBuffs = from buff in this[newBuff.Effect]
+                                  where buff.OverlayType == newBuff.OverlayType
+                                  select buff;
+                    if(oldBuffs.Count() != 0)
                     {
+                        var oldBuff = oldBuffs.ToArray()[0];
                         var index = Buffs.IndexOf(oldBuff);
-                        oldBuff.Rounds = Math.Max(oldBuff.Rounds, newBuff.Rounds);
-                        if (newBuff.OverlayType == oldBuff.OverlayType)
+                        if(oldBuff.OverlayType is Overlay.Add)
                         {
-                            if (newBuff.OverlayType.Equals(Overlay.Add))
-                                oldBuff.Value += newBuff.Value;
-                            else
-                                oldBuff.Value *= newBuff.Value;
+                            oldBuff.Value += newBuff.Value;
+                            this[index] = oldBuff;
                         }
                         else
-                            continue;
-                        this[index] = oldBuff;
+                        {
+                            oldBuff.Value *= newBuff.Value;
+                            this[index] = oldBuff;
+                        }
                     }
+                    else
+                        Buffs.Add(newBuff);
+                    //var effect = newBuff.Effect;
+                    //var oldBuffs = this[effect];
+                    //foreach (var oldBuff in oldBuffs)
+                    //{
+                    //    var index = Buffs.IndexOf(oldBuff);
+                    //    oldBuff.Rounds = Math.Max(oldBuff.Rounds, newBuff.Rounds);
+                    //    if (newBuff.OverlayType == oldBuff.OverlayType)
+                    //    {
+                    //        if (newBuff.OverlayType.Equals(Overlay.Add))
+                    //            oldBuff.Value += newBuff.Value;
+                    //        else
+                    //            oldBuff.Value *= newBuff.Value;
+                    //    }
+                    //    else
+                    //        continue;
+                    //    this[index] = oldBuff;
+                    //}
                 }
                 else
                     Buffs.Add(newBuff);

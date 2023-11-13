@@ -43,8 +43,8 @@ namespace RoguelikeGame.Prefabs
 
                 foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Add select buff)
                     _Armor += (long)buff.Value;
-                foreach (var deBuff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
-                    _Armor = (long)(_Armor * deBuff.Value);
+                foreach (var Buff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
+                    _Armor = (long)(_Armor * Buff.Value);
                 return _Armor; 
             }
             set { Armor = value; }
