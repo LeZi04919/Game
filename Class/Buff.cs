@@ -9,14 +9,26 @@ namespace RoguelikeGame.Class
 {
     internal class Buff
     {
+        /// <summary>
+        /// 表示该Buff的影响
+        /// </summary>
         public required BuffEffect Effect;
+        /// <summary>
+        /// 表示该Buff的生效轮数
+        /// </summary>
         public required int Rounds;
+        /// <summary>
+        /// 表示该Buff叠加时的计算方式
+        /// </summary>
         public required Overlay OverlayType;
+        /// <summary>
+        /// 表示该Buff的值，可为整数亦可为百分比；当Effect属于DamageEffect或HPRecovery时，此值表示百分比，且必定为正数
+        /// </summary>
         public required float Value;
 
         public Buff()
         {
-
+        
         }
     }
     internal class BuffCollection : IEnumerable
@@ -29,6 +41,11 @@ namespace RoguelikeGame.Class
             BuffEffect.Dizziness,
             BuffEffect.Freeze,
             BuffEffect.Firing,
+        };
+        static BuffEffect[] DamageEffect = new BuffEffect[]
+        {
+            BuffEffect.Firing,
+            BuffEffect.Freeze
         };
         List<Buff> Buffs = new();
         public int Count
@@ -138,10 +155,18 @@ namespace RoguelikeGame.Class
             foreach (var buff in negativeBuffs)
                 Remove(buff);
         }
-        public void NextRound()
+        public void NextRound(Prefab target)
         {
             ForEach(buff =>
             {
+                target.Skills.CoolDownRatio = target.CoolDownRatio;
+
+                if (DamageEffect.Contains(buff.Effect))
+                    target.Health -= (long)(target.MaxHealth * buff.Value);
+                else if (buff.Effect is BuffEffect.CoolDownBoost)
+                    target.Skills.CoolDownRatio *= buff.Value;
+                else if (buff.Effect is BuffEffect.HPRecovery)
+                    target.Health += (long)(target.MaxHealth * buff.Value);
                 if (--buff.Rounds <= 0)
                     Buffs.Remove(buff);
             });

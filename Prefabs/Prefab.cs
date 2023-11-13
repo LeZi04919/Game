@@ -96,6 +96,7 @@ namespace RoguelikeGame.Prefabs
                 return Math.Min(0.95F, _Dodge);
             }
             set { Dodge = value; } }//闪避
+        public float CoolDownRatio { get; set; }
         public required long Level { get; set; }//等级
         public required PrefabType Type { get; set; }//实体类别
 
@@ -104,7 +105,10 @@ namespace RoguelikeGame.Prefabs
 
         protected BuffCollection Buffs = new();
         public required SkillCollection Skills {  get; set; }
-        public Prefab() {  }
+        public Prefab() 
+        {
+            CoolDownRatio = 1.0F;
+        }
         public void ReleaseSkill(Prefab target, Skill skill)
         {
             Release(target, skill);
@@ -179,7 +183,7 @@ namespace RoguelikeGame.Prefabs
         {
             await Task.Run(() => 
             {
-                Buffs.NextRound();
+                Buffs.NextRound(this);
                 Skills.NextRound();
             });
         }

@@ -10,6 +10,7 @@ namespace RoguelikeGame.Interfaces
         long Armor { get; set; }
         long Damage { get; set; }
         float Dodge { get; set; }
+        float CoolDownRatio { get; set; } 
         PrefabType Type { get; set; }
         SkillCollection Skills { get; set; }
 

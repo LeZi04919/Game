@@ -15,7 +15,7 @@ namespace RoguelikeGame.Class
         /// </summary>
         public required ReleaseType ReleaseType { get; set; }
         /// <summary>
-        /// 表示该Skill作用范围
+        /// 表示该Skill作用对象
         /// </summary>
         public required TargetType Target { get; set; }
         /// <summary>
@@ -40,7 +40,8 @@ namespace RoguelikeGame.Class
     internal class SkillCollection : IEnumerable
     {
         List<Skill> Skills = new();
-        Dictionary<Skill, int> CoolDownList = new();
+        Dictionary<Skill, float> CoolDownList = new();
+        public float CoolDownRatio = 1.0F;
         public Skill this[int index]
         {
             get { return Skills[index]; }
@@ -88,7 +89,7 @@ namespace RoguelikeGame.Class
         public void NextRound()
         {
             foreach (var skill in CoolDownList.Keys)
-                if (--CoolDownList[skill] <= 0)
+                if ((CoolDownList[skill] -= CoolDownRatio)<= 0)
                     CoolDownList.Remove(skill);
         }
         public IEnumerator GetEnumerator()

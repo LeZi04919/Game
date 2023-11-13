@@ -4,19 +4,58 @@ using RoguelikeGame.Prefabs;
 namespace RoguelikeGame
 {
     public enum BuffEffect
-    {
+    {        
+        /// <summary>
+        /// 指示该Buff会使目标攻击力上升
+        /// </summary>
         DamageUp,
-        DamageDown, 
+        /// <summary>
+        /// 指示该Buff会使目标攻击力下降
+        /// </summary>
+        DamageDown,
+        /// <summary>
+        /// 指示该Buff会使目标防御力上升
+        /// </summary>
         ArmorUp,
+        /// <summary>
+        /// 指示该Buff会使目标防御力下降
+        /// </summary>
         ArmorDown,
+        /// <summary>
+        /// 指示该Buff会提高目标闪避值
+        /// </summary>
         DodgeUp,
+        /// <summary>
+        /// 指示该Buff会降低目标闪避值
+        /// </summary>
         DodgeDown,
+        /// <summary>
+        /// 指示该Buff会使目标陷入眩晕状态；该状态会使目标当前回合无法行动
+        /// </summary>
         Dizziness,
+        /// <summary>
+        /// 指示该Buff会使目标陷入冻伤状态；根据目标的生命上限造成伤害
+        /// </summary>
         Freeze,
+        /// <summary>
+        /// 指示该Buff会使目标陷入灼烧状态；根据目标的生命上限造成伤害
+        /// </summary>
         Firing,
+        /// <summary>
+        /// 指示该Buff可以使目标攻击多个敌人
+        /// </summary>
         AreaAttack,
+        /// <summary>
+        /// 指示该Buff会清除目标的负面Buff
+        /// </summary>
         ClearNegativeBuff,
+        /// <summary>
+        /// 指示该Buff会使目标生命值持续上升；根据目标生命上限进行回复
+        /// </summary>
         HPRecovery,
+        /// <summary>
+        /// 指示该Buff会使目标技能冷却加速
+        /// </summary>
         CoolDownBoost
     }
     enum Overlay
@@ -201,7 +240,7 @@ namespace RoguelikeGame
                         Rounds = 3,
                         Effect = BuffEffect.HPRecovery,
                         OverlayType = Overlay.Add,
-                        Value = -0.10F
+                        Value = 0.10F
                     }
                 },
                 Count = 1
@@ -224,7 +263,7 @@ namespace RoguelikeGame
                         Rounds = 7,
                         Effect = BuffEffect.HPRecovery,
                         OverlayType = Overlay.Add,
-                        Value = -0.25F
+                        Value = 0.25F
                     }
                 },
                 Count = 1
@@ -232,7 +271,7 @@ namespace RoguelikeGame
             new Drug()
             {
                 Name = "技能冷却加速剂",
-                Description = "一管药剂，闻起来很清甜;可以使所有处于冷却的技能减少1轮的冷却时间",
+                Description = "一管药剂，闻起来很清甜;可以使所有处于冷却的技能回复速度提高1.5倍，持续2轮",
                 Value = 0,
                 MaxStackCount = 20,
                 Stackable = true,
@@ -244,10 +283,10 @@ namespace RoguelikeGame
                 {
                     new Buff()
                     {
-                        Rounds = 1,
+                        Rounds = 2,
                         Effect = BuffEffect.CoolDownBoost,
-                        OverlayType = Overlay.Add,
-                        Value = 1
+                        OverlayType = Overlay.Mul,
+                        Value = 1.5F
                     }
                 },
                 Count = 1
