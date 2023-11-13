@@ -43,8 +43,8 @@ namespace RoguelikeGame.Prefabs
 
                 foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Add select buff)
                     _Armor += (long)buff.Value;
-                foreach (var Buff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
-                    _Armor = (long)(_Armor * Buff.Value);
+                foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
+                    _Armor = (long)(_Armor * buff.Value);
                 return _Armor; 
             }
             set { Armor = value; }
@@ -62,8 +62,8 @@ namespace RoguelikeGame.Prefabs
 
                 foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Add select buff)
                     _Damage += (long)buff.Value;
-                foreach (var deBuff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
-                    _Damage = (long)(_Damage * deBuff.Value);
+                foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
+                    _Damage = (long)(_Damage * buff.Value);
                 return _Damage;
             } 
             set {  Damage = value; } 
@@ -82,8 +82,8 @@ namespace RoguelikeGame.Prefabs
 
                 foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Add select buff)
                     _Dodge += (long)buff.Value;
-                foreach (var deBuff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
-                    _Dodge = (long)(_Dodge * deBuff.Value);
+                foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
+                    _Dodge = (long)(_Dodge * buff.Value);
                 return Math.Min(0.95F, _Dodge);
             }
             set { Dodge = value; } }//闪避
