@@ -14,7 +14,17 @@ namespace RoguelikeGame.Prefabs
         public required string Name
         { get; set; }
         public required long MaxHealth
-        { get; set; }//最大血量
+        { 
+            get
+            {
+                return MaxHealth;
+            }
+            set 
+            {
+                MaxHealth = value;
+                Health = MaxHealth;
+            }
+        }//最大血量
         public long Health
         {
             get

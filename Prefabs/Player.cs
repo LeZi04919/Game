@@ -25,7 +25,6 @@ namespace RoguelikeGame.Prefabs
         {
             var oldLevel = Level;
             MaxHealth = (long)(MaxHealth * Math.Pow(1.055, newLevel - oldLevel));
-            Health = MaxHealth;
             Damage = (long)(Damage * Math.Pow(1.06, newLevel - oldLevel));
             Armor = (long)(Armor * Math.Pow(1.06, newLevel - oldLevel));
             return true;
