@@ -21,6 +21,7 @@ namespace RoguelikeGame
         };
         static void Main(string[] args)
         {
+            var result = CreateMonsters(MonsterType.Boss);
             Console.WriteLine("Hello World");
             Console.ReadKey();
         }

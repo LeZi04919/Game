@@ -130,7 +130,7 @@ namespace RoguelikeGame
     }
     public static class GameResources
     {
-        static readonly ItemCollection ItemList = new()
+        internal static readonly ItemCollection ItemList = new()
         {
             new Weapon()
             {
@@ -302,7 +302,7 @@ namespace RoguelikeGame
             }
 
         };
-        static readonly PrefabCollection MonsterList = new()
+        internal static readonly PrefabCollection MonsterList = new()
         {
             new Monster()
             {

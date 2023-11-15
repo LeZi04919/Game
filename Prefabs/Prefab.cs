@@ -11,17 +11,22 @@ namespace RoguelikeGame.Prefabs
     internal class Prefab : IPrefab, IUpgradeable
     {
         static Random rd = new();
+        long _maxHealth;
+        long _health;
+        long _armor;
+        long _damage;
+        float _dodge;
         public required string Name
         { get; set; }
         public required long MaxHealth
         { 
             get
             {
-                return MaxHealth;
+                return _maxHealth;
             }
             set 
             {
-                MaxHealth = value;
+                _maxHealth = value;
                 Health = MaxHealth;
             }
         }//最大血量
@@ -29,18 +34,18 @@ namespace RoguelikeGame.Prefabs
         {
             get
             {
-                return Health;
+                return _health;
             }
             set
             {
-                Health = Math.Min(MaxHealth,value); 
+                _health = Math.Min(MaxHealth,value); 
             }
         }//目前血量
         public required long Armor
         {
             get 
             {
-                var _Armor = Armor;
+                var _Armor = _armor;
                 if(Body is not null)
                     if (Body.ArmorProvide is ArmorType.Physical)
                         _Armor += Body.Value;
@@ -54,13 +59,13 @@ namespace RoguelikeGame.Prefabs
                     _Armor = (long)(_Armor * buff.Value);
                 return _Armor; 
             }
-            set { Armor = value; }
+            set { _armor = value; }
         }//防御力
         public required long Damage
         {
             get
             {
-                var _Damage = Damage;
+                var _Damage = _damage;
                 if (Hand is not null)
                     _Damage += Hand.Value;
 
@@ -73,7 +78,7 @@ namespace RoguelikeGame.Prefabs
                     _Damage = (long)(_Damage * buff.Value);
                 return _Damage;
             } 
-            set {  Damage = value; } 
+            set {  _damage = value; } 
         }//攻击力
         public required float Dodge
         { 
@@ -89,8 +94,7 @@ namespace RoguelikeGame.Prefabs
                             return 1;
                     }
                 }
-
-                var _Dodge = Dodge;
+                var _Dodge = _dodge;
                 if(Body is not null)
                     if (Body.ArmorProvide is ArmorType.Dodge)
                         _Dodge += Body.Value / 100;
@@ -104,7 +108,7 @@ namespace RoguelikeGame.Prefabs
                     _Dodge = (long)(_Dodge * buff.Value);
                 return Math.Min(0.95F, _Dodge);
             }
-            set { Dodge = value; } }//闪避
+            set { _dodge = value; } }//闪避
         public float CoolDownRatio { get; set; }
         public required long Level { get; set; }//等级
         public required PrefabType Type { get; set; }//实体类别
