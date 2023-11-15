@@ -1,4 +1,5 @@
-﻿using RoguelikeGame.Prefabs;
+﻿using RoguelikeGame.Class;
+using RoguelikeGame.Prefabs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,19 +10,90 @@ namespace RoguelikeGame
     internal static partial class Game
     {
         static Random rd = new();
-        static PrefabCollection Prefabs = new();//当前场景下的实体集合
+        static PrefabCollection Prefabs = new();//当前场景下的实体集合   
         static event Action<Prefab> PrefabKilledEvent = prefab => 
         {
             if(prefab.Type is PrefabType.Monster)
                 Console.WriteLine("");
         };//被杀死对象
-        static event Action<Prefab,Prefab,long> PrefabAttacked;//Source(攻击者)，Target(受击者),伤害大小
+        static event Action<Prefab, Prefab, long> PrefabAttacked;//Source(攻击者)，Target(受击者),伤害大小
 
-        public static Monster[] CreateMonsters(MonsterType maxLevel)
+        static readonly Item[] commonItems = ItemList[RarityType.Common];
+        static readonly Item[] rareItems = ItemList[RarityType.Rare];
+        static readonly Item[] epicItems = ItemList[RarityType.Epic];
+        static readonly Item[] legacyItems = ItemList[RarityType.Legacy];
+
+
+       /// <summary>
+       /// 根据预设权重，随机生成指定数量的Item
+       /// </summary>
+       /// <param name="maxRank"></param>
+       /// <param name="count"></param>
+       /// <returns></returns>
+        public static Item[] CreateItems(RarityType maxRank,int count)
         {
-            var count = WeightedRandom(new int[] { 1, 2, 3,4}, new double[] { 0.35, 0.35, 0.2,0.1 });
+            const double legacyP = 0.02;
+            const double epicP = 0.1;
+            const double rareP = 0.20;
+            const double commonP = 0.68;
+
+            return CreateItems(maxRank, count, commonP, rareP, epicP, legacyP);
+        }
+        /// <summary>
+        /// 根据权重，随机生成指定数量的Item
+        /// </summary>
+        /// <param name="maxRank"></param>
+        /// <param name="count"></param>
+        /// <param name="commonP"></param>
+        /// <param name="rareP"></param>
+        /// <param name="epicP"></param>
+        /// <param name="legacyP"></param>
+        /// <returns></returns>
+        public static Item[] CreateItems(RarityType maxRank, int count,double commonP,double rareP,double epicP,double legacyP)
+        {
+            List<Item> items = new();
+            while (items.Count != count)
+            {
+                var legacy = RandomChoose(legacyItems);
+                var epic = RandomChoose(epicItems);
+                var rare = RandomChoose(rareItems);
+                var common = RandomChoose(commonItems);
+                switch (maxRank)
+                {
+                    case RarityType.Legacy:
+                        items.Add(WeightedRandom(new Item[] { common, rare, epic, legacy }, new double[] { commonP, rareP, epicP, legacyP }));
+                        break;
+                    case RarityType.Epic:
+                        items.Add(WeightedRandom(new Item[] { common, rare, epic }, new double[] { commonP, rareP, epicP }));
+                        break;
+                    case RarityType.Rare:
+                        items.Add(WeightedRandom(new Item[] { common, rare }, new double[] { commonP, rareP }));
+                        break;
+                    default:
+                        items.Add(common);
+                        break;
+                }
+            }
+            return items.ToArray();
+        }
+        /// <summary>
+        /// 随机生成一个或一组不超过指定阶级的Monster
+        /// </summary>
+        /// <param name="maxLevel"></param>
+        /// <returns></returns>
+        public static Monster[] CreateMonsters(MonsterType maxRank)
+        {
+            return CreateMonsters(maxRank, WeightedRandom(new int[] { 1, 2, 3, 4 }, new double[] { 0.35, 0.35, 0.2, 0.1 }));
+        }
+        /// <summary>
+        /// 随机生成指定数量不超过指定阶级的Monster
+        /// </summary>
+        /// <param name="maxLevel"></param>
+        /// <returns></returns>
+        public static Monster[] CreateMonsters(MonsterType maxRank,int count)
+        { 
             List<Monster> monsters;
-            if(maxLevel is MonsterType.Boss)
+            if(maxRank is MonsterType.Boss)
             {
                 count = Math.Max(2, count);
                 var boss = RandomChoose(MonsterList[MonsterType.Boss]);
@@ -36,7 +108,7 @@ namespace RoguelikeGame
                 monsters.AddRange(common);
                 return monsters.ToArray();
             }
-            else if(maxLevel is MonsterType.Elite)
+            else if(maxRank is MonsterType.Elite)
             {
                 monsters = new(RandomChoose(MonsterList[MonsterType.Elite], rd.Next(0, count)));
                 monsters.AddRange(RandomChoose(MonsterList[MonsterType.Common], count - monsters.Count));
@@ -46,6 +118,13 @@ namespace RoguelikeGame
                 return RandomChoose(MonsterList[MonsterType.Elite], count);
 
         }
+        /// <summary>
+        /// 随机从Array中选取指定数量的对象并返回
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public static T[] RandomChoose<T>(IList<T> array,int count)
         {
             List<T> results = new();
