@@ -1,9 +1,13 @@
 ﻿using RoguelikeGame.Class;
 using RoguelikeGame.Prefabs;
+using System;
 
 namespace RoguelikeGame
 {
-    public enum BuffEffect
+    /// <summary>
+    /// 表示Buff的效果
+    /// </summary>
+    internal enum BuffEffect
     {        
         /// <summary>
         /// 指示该Buff会使目标攻击力上升
@@ -58,22 +62,34 @@ namespace RoguelikeGame
         /// </summary>
         CoolDownBoost
     }
-    enum Overlay
+    /// <summary>
+    /// 表示Buff的结算方式
+    /// </summary>
+    internal enum Overlay
     {
         Add,
         Mul
     }
-    public enum ReleaseType
+    /// <summary>
+    /// 表示Skill采用哪个数值进行结算
+    /// </summary>
+    internal enum ReleaseType
     {
         Damage,   //以当前Damage结算
         Health    //以HP最大值结算
     }
-    public enum PrefabType
+    /// <summary>
+    /// 表示Prefab的类型
+    /// </summary>
+    internal enum PrefabType
     {
         Player,
         Monster
     }
-    public enum ItemType
+    /// <summary>
+    /// 表示Item的种类
+    /// </summary>
+    internal enum ItemType
     {
         Common,
         Weapon,
@@ -81,39 +97,109 @@ namespace RoguelikeGame
         Drug,
         Currency
     }
-    public enum TargetType
+    /// <summary>
+    /// 表示索敌范围
+    /// </summary>
+    internal enum TargetType
     {
         All,//对所有目标生效
         Self,//仅对自身生效
         Monster,//对Monster及敌对Player生效
         Player //对自身及友方Player生效
     }
-    public enum MonsterType
+    /// <summary>
+    /// 表示Monster的阶级，Event表示该Monster为Event特有
+    /// </summary>
+    internal enum MonsterType
     {
         Common,
         Elite,
         Boss
     }
-    public enum ArmorType
+    /// <summary>
+    /// 表示Armor提供的防御类型
+    /// </summary>
+    internal enum ArmorType
     {
         Physical,
         Dodge
     }
-    public enum RarityType
+    /// <summary>
+    /// 表示Item的稀有度
+    /// </summary>
+    internal enum RarityType
     {
         Common,
         Rare,
         Epic,
         Legacy
     }
-
-    public enum FeatureType
+    /// <summary>
+    /// 表示Feature的效果
+    /// </summary>
+    internal enum FeatureType
     {
         IgnoreDodge,
         IgnoreArmor,
         IgnoreDamage
     }
-    public struct Feature
+    /// <summary>
+    /// 表示区域种类
+    /// </summary>
+    internal enum AreaType
+    {
+        /// <summary>
+        /// 城市区域
+        /// </summary>
+        Ciry,
+        /// <summary>
+        /// 冰原区域
+        /// </summary>
+        Icefield,
+        /// <summary>
+        /// 草原区域
+        /// </summary>
+        Grassland,
+        /// <summary>
+        /// 平原区域
+        /// </summary>
+        Plain,
+        /// <summary>
+        /// 火山区域
+        /// </summary>
+        Volcano,
+        /// <summary>
+        /// 沙漠区域
+        /// </summary>
+        Desert,
+        /// <summary>
+        /// 全区域
+        /// </summary>
+        Common
+    }
+    /// <summary>
+    /// 表示Event种类
+    /// </summary>
+    internal enum EventType
+    {
+        /// <summary>
+        /// 奇遇类Event
+        /// </summary>
+        Adventure,
+        /// <summary>
+        /// 商店类Event
+        /// </summary>
+        Shop,
+        /// <summary>
+        /// 陷阱类Event
+        /// </summary>
+        Trap,
+        /// <summary>
+        /// 会施加负面Buff的Event；如冻伤、灼伤
+        /// </summary>
+        Status
+    }
+    internal struct Feature
     {
         /// <summary>
         /// 特性类型
@@ -128,7 +214,31 @@ namespace RoguelikeGame
         /// </summary>
         public float Value;
     }
-    public static class GameResources
+    
+    internal struct AreaEvent
+    {
+        /// <summary>
+        /// 该Event名称
+        /// </summary>
+        public required string Name;
+        /// <summary>
+        /// 表示Event的种类
+        /// </summary>
+        public required EventType Type;
+        /// <summary>
+        /// 该Event可出现的区域
+        /// </summary>
+        public required AreaType Area;
+        /// <summary>
+        /// 该Event特有Monster
+        /// </summary>
+        public required Monster[] Monsters;
+        /// <summary>
+        /// 当EventType为Status时，默认以目标生命上限百分比造成伤害
+        /// </summary>
+        public required double Value;
+    }
+    internal static class GameResources
     {
         internal static readonly ItemCollection ItemList = new()
         {
@@ -422,5 +532,117 @@ namespace RoguelikeGame
                 Skills = new SkillCollection() { }
             }
         };
+        internal static readonly AreaEvent[] EventList = new AreaEvent[]
+        {
+            new AreaEvent()
+            {
+                Name = "宝箱事件",
+                Type = EventType.Adventure,
+                Area = AreaType.Grassland,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0
+            },
+            new AreaEvent()
+            {
+                Name = "前辈",
+                Type = EventType.Adventure,
+                Area = AreaType.Common,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0
+            },
+            new AreaEvent()
+            {
+                Name = "阿哈玩偶",
+                Type = EventType.Adventure,
+                Area = AreaType.Common,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0
+            },
+            new AreaEvent()
+            {
+                Name = "动物聚会",
+                Type = EventType.Adventure,
+                Area = AreaType.Plain,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0
+            },
+            new AreaEvent()
+            {
+                Name = "坎诺特",
+                Type = EventType.Shop,
+                Area = AreaType.Common,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0
+            },
+            new AreaEvent()
+            {
+                Name = "史莱姆群",
+                Type = EventType.Trap,
+                Area = AreaType.Grassland,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0
+            },
+            new AreaEvent()
+            {
+                Name = "灼伤",
+                Type = EventType.Status,
+                Area = AreaType.Volcano,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0.05
+            },
+            new AreaEvent()
+            {
+                Name = "冻伤",
+                Type = EventType.Status,
+                Area = AreaType.Volcano,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0.05
+            },
+            new AreaEvent()
+            {
+                Name = "北极熊窝",
+                Type = EventType.Trap,
+                Area = AreaType.Icefield,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0
+            },
+            new AreaEvent()
+            {
+                Name = "缺水",
+                Type = EventType.Status,
+                Area = AreaType.Desert,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0.1
+            },
+            new AreaEvent()
+            {
+                Name = "昏厥",
+                Type = EventType.Status,
+                Area = AreaType.Plain,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0.1
+            },
+            new AreaEvent()
+            {
+                Name = "普通商人",
+                Type = EventType.Shop,
+                Area = AreaType.Ciry,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0
+            },
+            new AreaEvent()
+            {
+                Name = "卫兵打劫",
+                Type = EventType.Trap,
+                Area = AreaType.Ciry,
+                Monsters = Array.Empty<Monster>(),
+                Value = 0
+            }
+        };
+
+        internal static readonly Item[] commonItems = ItemList[RarityType.Common];
+        internal static readonly Item[] rareItems = ItemList[RarityType.Rare];
+        internal static readonly Item[] epicItems = ItemList[RarityType.Epic];
+        internal static readonly Item[] legacyItems = ItemList[RarityType.Legacy];
     }
 }

@@ -18,10 +18,7 @@ namespace RoguelikeGame
         };//被杀死对象
         static event Action<Prefab, Prefab, long> PrefabAttacked;//Source(攻击者)，Target(受击者),伤害大小
 
-        static readonly Item[] commonItems = ItemList[RarityType.Common];
-        static readonly Item[] rareItems = ItemList[RarityType.Rare];
-        static readonly Item[] epicItems = ItemList[RarityType.Epic];
-        static readonly Item[] legacyItems = ItemList[RarityType.Legacy];
+        
 
 
        /// <summary>
