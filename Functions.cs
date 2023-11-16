@@ -10,6 +10,7 @@ namespace RoguelikeGame
     internal static partial class Game
     {
         static Random rd = new();
+        static int AreaStep = 90;
         static PrefabCollection Prefabs = new();//当前场景下的实体集合   
         static event Action<Prefab> PrefabKilledEvent = prefab => 
         {
@@ -18,8 +19,15 @@ namespace RoguelikeGame
         };//被杀死对象
         static event Action<Prefab, Prefab, long> PrefabAttacked;//Source(攻击者)，Target(受击者),伤害大小
 
-        
+        public static void NextStep()
+        {
+            //var bonus = rd.Next(70, 130) / 100;
+            var step = rd.Next(1,7);
+        }
+        public static void EventHandle()
+        {
 
+        }
 
        /// <summary>
        /// 根据预设权重，随机生成指定数量的Item
@@ -107,7 +115,7 @@ namespace RoguelikeGame
             }
             else if(maxRank is MonsterType.Elite)
             {
-                monsters = new(RandomChoose(MonsterList[MonsterType.Elite], rd.Next(0, count)));
+                monsters = new(RandomChoose(MonsterList[MonsterType.Elite], rd.Next(1, count)));
                 monsters.AddRange(RandomChoose(MonsterList[MonsterType.Common], count - monsters.Count));
                 return monsters.ToArray();
             }

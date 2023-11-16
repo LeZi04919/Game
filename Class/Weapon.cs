@@ -38,13 +38,13 @@ namespace RoguelikeGame.Class
         long GetRandomValue(long input)
         {
             Random rd = new();
-            var ratio = rd.Next(80, 120) / 100;
+            var ratio = rd.Next(80, 121) / 100;
             return (long)(input * ratio);
         }
         double GetRandomValue(double input)
         {
             Random rd = new();
-            var ratio = rd.Next(80, 120) / 100;
+            var ratio = rd.Next(80, 121) / 100;
             return input * ratio;
         }
         public bool Upgrade(long newLevel)

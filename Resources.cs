@@ -114,7 +114,8 @@ namespace RoguelikeGame
     {
         Common,
         Elite,
-        Boss
+        Boss,
+        Special
     }
     /// <summary>
     /// 表示Armor提供的防御类型
@@ -198,6 +199,19 @@ namespace RoguelikeGame
         /// 会施加负面Buff的Event；如冻伤、灼伤
         /// </summary>
         Status
+    }
+    internal enum ResultType
+    {
+        Nothing,
+        Event,
+        Battle,
+        AreaFinish
+    }
+    internal struct Result
+    {
+        public ResultType Type;
+        public AreaEvent Event;
+        public Monster[] Monsters;
     }
     internal struct Feature
     {
@@ -539,7 +553,50 @@ namespace RoguelikeGame
                 Name = "宝箱事件",
                 Type = EventType.Adventure,
                 Area = AreaType.Grassland,
-                Monsters = Array.Empty<Monster>(),
+                Monsters = new Monster[]
+                {
+                    new Monster()
+                    {
+                        Name = "宝箱怪",
+                        MaxHealth = 15,
+                        Armor = 2,
+                        Damage = 3,
+                        Dodge = 0,
+                        Level = 1,
+                        Type = PrefabType.Monster,
+                        Rank = MonsterType.Special,
+                        Skills = new SkillCollection()
+                        {
+                            new Skill()
+                            {
+                                Name = "强力撕咬",
+                                ReleaseType = ReleaseType.Damage,
+                                Target = TargetType.Player,
+                                Effect = Array.Empty<Buff>(),
+                                Value = 2F,
+                                CoolDown = 4
+                            },
+                            new Skill()
+                            {
+                                Name = "宝箱盾",
+                                ReleaseType = ReleaseType.Damage,
+                                Target = TargetType.Self,
+                                Effect = new Buff[]
+                                {
+                                    new Buff()
+                                    {
+                                        Effect = BuffEffect.ArmorUp,
+                                        Rounds = 2,
+                                        OverlayType = Overlay.Mul,
+                                        Value = 2F
+                                    }
+                                },
+                                Value = 0,
+                                CoolDown = 4
+                            }
+                        }
+                    }
+                },
                 Value = 0
             },
             new AreaEvent()
@@ -603,7 +660,68 @@ namespace RoguelikeGame
                 Name = "北极熊窝",
                 Type = EventType.Trap,
                 Area = AreaType.Icefield,
-                Monsters = Array.Empty<Monster>(),
+                Monsters = new Monster[]
+                {
+                    new Monster()
+                    {
+                        Name = "北极熊",
+                        MaxHealth = 20,
+                        Armor = 1,
+                        Damage = 5,
+                        Dodge = 0,
+                        Level = 1,
+                        Type = PrefabType.Monster,
+                        Rank = MonsterType.Special,
+                        Skills = new SkillCollection()
+                        {
+                            new Skill()
+                            {
+                                Name = "强力击",
+                                ReleaseType = ReleaseType.Damage,
+                                Target = TargetType.Player,
+                                Effect = Array.Empty<Buff>(),
+                                Value = 1.5F,
+                                CoolDown = 5
+                            },
+                            new Skill()
+                            {
+                                Name = "震慑",
+                                ReleaseType = ReleaseType.Damage,
+                                Target = TargetType.Player,
+                                Effect = new Buff[]
+                                {
+                                    new Buff()
+                                    {
+                                        Effect = BuffEffect.ArmorDown,
+                                        Rounds = 3,
+                                        OverlayType = Overlay.Mul,
+                                        Value = 0.75F
+                                    }
+                                },
+                                Value = 0,
+                                CoolDown = 3
+                            },
+                            new Skill()
+                            {
+                                Name = "防护强化",
+                                ReleaseType = ReleaseType.Damage,
+                                Target = TargetType.Self,
+                                Effect = new Buff[]
+                                {
+                                    new Buff()
+                                    {
+                                        Effect = BuffEffect.ArmorUp,
+                                        Rounds = 3,
+                                        OverlayType = Overlay.Mul,
+                                        Value = 1.5F
+                                    }
+                                },
+                                Value = 0,
+                                CoolDown = 2
+                            }
+                        }
+                    }
+                },
                 Value = 0
             },
             new AreaEvent()
@@ -635,7 +753,50 @@ namespace RoguelikeGame
                 Name = "卫兵打劫",
                 Type = EventType.Trap,
                 Area = AreaType.Ciry,
-                Monsters = Array.Empty<Monster>(),
+                Monsters = new Monster[]
+                {
+                    new Monster()
+                    {
+                        Name = "城市卫兵",
+                        MaxHealth = 15,
+                        Armor = 3,
+                        Damage = 5,
+                        Dodge = 0,
+                        Level = 1,
+                        Type = PrefabType.Monster,
+                        Rank = MonsterType.Special,
+                        Skills = new SkillCollection()
+                        {
+                            new Skill()
+                            {
+                                Name = "强力穿刺",
+                                ReleaseType = ReleaseType.Damage,
+                                Target = TargetType.Player,
+                                Effect = Array.Empty<Buff>(),
+                                Value = 1.25F,
+                                CoolDown = 3
+                            },
+                            new Skill()
+                            {
+                                Name = "架起护盾",
+                                ReleaseType = ReleaseType.Damage,
+                                Target = TargetType.Self,
+                                Effect = new Buff[]
+                                {
+                                    new Buff()
+                                    {
+                                        Effect = BuffEffect.ArmorUp,
+                                        Rounds = 2,
+                                        Value = 2,
+                                        OverlayType = Overlay.Mul
+                                    }
+                                },
+                                Value = 0,
+                                CoolDown = 3                                
+                            }
+                        }
+                    }
+                },
                 Value = 0
             }
         };
