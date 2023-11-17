@@ -79,11 +79,26 @@ namespace RoguelikeGame
             return RandomChoose(Events.ToList());
 
         }
-        public static void EventHandle()
+        /// <summary>
+        /// 随机选择一个地图
+        /// </summary>
+        /// <returns></returns>
+        public static AreaType NextArea()
+        {
+            var AreaTypes = new AreaType[] { AreaType.Desert, AreaType.City, AreaType.Icefield, AreaType.Grassland, AreaType.Plain, AreaType.Volcano };
+            var areaType = RandomChoose(AreaTypes);
+            double bonus = rd.Next(70,131) / 100;
+            
+            while (areaType == Area.Type )
+                areaType = RandomChoose(AreaTypes);
+            Area.AreaStep = (int)(90 * bonus);
+            Area.Type = areaType;
+            return areaType;
+        }
+        public static void EventHandle(AreaEvent e)
         {            
 
         }
-
        /// <summary>
        /// 根据预设权重，随机生成指定数量的Item
        /// </summary>
