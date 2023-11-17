@@ -1,6 +1,9 @@
-﻿using RoguelikeGame.Class;
+﻿using System.Net.NetworkInformation;
+using RoguelikeGame.Class;
 using RoguelikeGame.Prefabs;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace RoguelikeGame
 {
@@ -152,7 +155,7 @@ namespace RoguelikeGame
         /// <summary>
         /// 城市区域
         /// </summary>
-        Ciry,
+        City,
         /// <summary>
         /// 冰原区域
         /// </summary>
@@ -205,14 +208,35 @@ namespace RoguelikeGame
         Nothing,
         Event,
         Battle,
+        Boss,
         AreaFinish
+    }
+    internal struct MapArea
+    {
+        /// <summary>
+        /// 表示区域类型
+        /// </summary>
+        public AreaType Type;
+        /// <summary>
+        /// 完成该区域所需步数
+        /// </summary>
+        public int AreaStep;
+        /// <summary>
+        /// Player在该区域已走步数
+        /// </summary>
+        public int PlayerStep;
     }
     internal struct Result
     {
+        public int Step;
         public ResultType Type;
         public AreaEvent Event;
         public Monster[] Monsters;
     }
+
+    /// <summary>
+    /// 用于Weapon和Armor
+    /// </summary>
     internal struct Feature
     {
         /// <summary>
@@ -229,6 +253,9 @@ namespace RoguelikeGame
         public float Value;
     }
     
+    /// <summary>
+    /// 区域事件结构体
+    /// </summary> 
     internal struct AreaEvent
     {
         /// <summary>
@@ -744,7 +771,7 @@ namespace RoguelikeGame
             {
                 Name = "普通商人",
                 Type = EventType.Shop,
-                Area = AreaType.Ciry,
+                Area = AreaType.City,
                 Monsters = Array.Empty<Monster>(),
                 Value = 0
             },
@@ -752,7 +779,7 @@ namespace RoguelikeGame
             {
                 Name = "卫兵打劫",
                 Type = EventType.Trap,
-                Area = AreaType.Ciry,
+                Area = AreaType.City,
                 Monsters = new Monster[]
                 {
                     new Monster()
@@ -805,5 +832,12 @@ namespace RoguelikeGame
         internal static readonly Item[] rareItems = ItemList[RarityType.Rare];
         internal static readonly Item[] epicItems = ItemList[RarityType.Epic];
         internal static readonly Item[] legacyItems = ItemList[RarityType.Legacy];
+
+        //internal static IEnumerable<AreaEvent> CityEvent = EventList.Where(e => e.Area is AreaType.City or AreaType.Common);
+        //internal static IEnumerable<AreaEvent> IcefieldEvent = EventList.Where(e => e.Area is AreaType.Icefield or AreaType.Common);
+        //internal static IEnumerable<AreaEvent> GrasslandEvent = EventList.Where(e => e.Area is AreaType.Grassland or AreaType.Common);
+        //internal static IEnumerable<AreaEvent> PlainEvent = EventList.Where(e => e.Area is AreaType.Plain or AreaType.Common);
+        //internal static IEnumerable<AreaEvent> VolcanoEvent = EventList.Where(e => e.Area is AreaType.Volcano or AreaType.Common);
+        //internal static IEnumerable<AreaEvent> DesertEvent = EventList.Where(e => e.Area is AreaType.Desert or AreaType.Common);
     }
 }

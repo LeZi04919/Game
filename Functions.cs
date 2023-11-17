@@ -10,7 +10,19 @@ namespace RoguelikeGame
     internal static partial class Game
     {
         static Random rd = new();
-        static int AreaStep = 90;
+        /// <summary>
+        /// 表示当前Area信息
+        /// </summary>
+        static MapArea Area = new MapArea()
+        {
+            Type = AreaType.Plain,
+            AreaStep = 90,
+            PlayerStep = 0
+        };
+        /// <summary>
+        /// 表示Player已走步数
+        /// </summary>
+        static int TotalStep = 0;
         static PrefabCollection Prefabs = new();//当前场景下的实体集合   
         static event Action<Prefab> PrefabKilledEvent = prefab => 
         {
@@ -19,13 +31,56 @@ namespace RoguelikeGame
         };//被杀死对象
         static event Action<Prefab, Prefab, long> PrefabAttacked;//Source(攻击者)，Target(受击者),伤害大小
 
-        public static void NextStep()
+        /// <summary>
+        /// 投骰子进行下一步
+        /// </summary>
+        /// <returns></returns>
+        public static Result NextStep()
         {
-            //var bonus = rd.Next(70, 130) / 100;
+            var result = new Result();
             var step = rd.Next(1,7);
+            Area.PlayerStep += step;
+            var remainingStep = Area.AreaStep - Area.PlayerStep;
+
+            if (remainingStep <= 0)//已完成区域
+            {
+                result.Step = step + remainingStep;
+                TotalStep += result.Step;
+                Area.PlayerStep = Area.AreaStep;
+                result.Type = ResultType.Boss;
+                result.Monsters = CreateMonsters(MonsterType.Boss);
+                return result;
+            }
+            else
+            {
+                result.Step = step;
+                TotalStep += step;
+                result.Type = WeightedRandom(new ResultType[]{ ResultType.Nothing,ResultType.Event,ResultType.Battle},new double[] {0.2,0.4,0.4});
+                switch(result.Type)
+                {
+                    case ResultType.Event:
+                        result.Event = RandomEvent();
+                        break;
+                    case ResultType.Battle:
+                        result.Monsters = CreateMonsters(WeightedRandom(new MonsterType[] {MonsterType.Common,MonsterType.Elite },new double[] { 0.6,0.4 }));
+                        break;
+                }
+                return result;
+            }
+        }
+        /// <summary>
+        /// 随机生成一个事件
+        /// </summary>
+        public static AreaEvent RandomEvent()
+        {
+            var eventType = WeightedRandom(new EventType[] {EventType.Adventure,EventType.Shop,EventType.Trap,EventType.Status},new double[] {0.4,0.1,0.4,0.1});
+            var Events = EventList.Where(e => (e.Area == Area.Type || e.Area == AreaType.Common) && e.Type == eventType);
+
+            return RandomChoose(Events.ToList());
+
         }
         public static void EventHandle()
-        {
+        {            
 
         }
 
