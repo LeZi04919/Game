@@ -172,7 +172,15 @@ namespace RoguelikeGame
                             }
                             else//战斗
                             {
-
+                                var monsterCount = WeightedRandom(new int[] { 1 , 2 },new double[] { 0.9,0.1});
+                                List<Monster> monsters = new(e.Monsters);
+                                if (monsterCount == 2)
+                                    monsters.AddRange(e.Monsters);
+                                WriteLine("     突然间，人畜无害的宝箱毫无征兆地打开了",Yellow);
+                                Thread.Sleep(2500);
+                                WriteLine("     满是利齿的宝箱向你咬来",Red);
+                                Thread.Sleep(1500);
+                                WriteLine("     你陷入了一场战斗!");
                             }
                         }
                         else if(userInput == 'B')
@@ -405,6 +413,17 @@ namespace RoguelikeGame
         public static void WriteLine()
         {
             Console.WriteLine();
+        }
+        public static void Clear() 
+        {
+            Console.Clear();
+            WriteLine("##############################################");
+            WriteLine($"         Name      :{Player.Name}");
+            WriteLine($"         Health    :{Player.Health}");
+            WriteLine($"         Armor     :{Player.Armor}");
+            WriteLine($"         Level     :{Player.Level}");
+            WriteLine($"         NextLevel :{Player.ExpMaxLimit - Player.Experience}");
+            WriteLine("##############################################");
         }
     }
 }
