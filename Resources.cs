@@ -832,6 +832,7 @@ namespace RoguelikeGame
         internal static readonly Item[] rareItems = ItemList[RarityType.Rare];
         internal static readonly Item[] epicItems = ItemList[RarityType.Epic];
         internal static readonly Item[] legacyItems = ItemList[RarityType.Legacy];
+        internal static readonly Item coinItem = ItemList[ItemType.Currency][0];
 
         //internal static IEnumerable<AreaEvent> CityEvent = EventList.Where(e => e.Area is AreaType.City or AreaType.Common);
         //internal static IEnumerable<AreaEvent> IcefieldEvent = EventList.Where(e => e.Area is AreaType.Icefield or AreaType.Common);

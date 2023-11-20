@@ -3,12 +3,18 @@ using RoguelikeGame.Prefabs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using static RoguelikeGame.GameResources;
 
 namespace RoguelikeGame
 {
     internal static partial class Game
     {
+        const ConsoleColor Red = ConsoleColor.Red;
+        const ConsoleColor Green = ConsoleColor.Green;
+        const ConsoleColor Yellow = ConsoleColor.Yellow;
+        const ConsoleColor White = ConsoleColor.White;
+
         static Random rd = new();
         /// <summary>
         /// 表示当前Area信息
@@ -29,7 +35,7 @@ namespace RoguelikeGame
             if(prefab.Type is PrefabType.Monster)
                 Console.WriteLine("");
         };//被杀死对象
-        static event Action<Prefab, Prefab, long> PrefabAttacked;//Source(攻击者)，Target(受击者),伤害大小
+        static event Action<Prefab, Prefab, long> PrefabAttacked;//Source(攻击者)，Target(受击者),Damage(伤害大小)
 
         /// <summary>
         /// 投骰子进行下一步
@@ -95,9 +101,116 @@ namespace RoguelikeGame
             Area.Type = areaType;
             return areaType;
         }
+        /// <summary>
+        /// 区域事件对话处理
+        /// </summary>
+        /// <param name="e"></param>
         public static void EventHandle(AreaEvent e)
-        {            
+        {
+            Console.Clear();
+            if(e.Type is EventType.Adventure)
+            {
+                switch(e.Name)
+                {
+                    case "宝箱事件":
+                        int rdNum = rd.Next(0,101);
+                        WriteLine("     走着走着");
+                        Thread.Sleep(2500);
+                        WriteLine("     突然间，你在道路旁发现了一个宝箱\n");
+                        Thread.Sleep(2500);
+                        WriteLine("     A.打开它(说不定有奇珍异宝)",Yellow);
+                        WriteLine("     B.算了吧(多一事不如少一事)",Green);
+                        ReInput:
+                        char userInput = (char)Console.Read();
+                        if(userInput == 'A')
+                        {
+                            WriteLine("     你激动地将宝箱打开了");
+                            if (rdNum >= 50)//资源
+                            {
+                                rdNum = rd.Next(0, 101);                                
+                                if(rdNum >= 50)//非空
+                                {
+                                    Thread.Sleep(2500);
+                                    WriteLine("宝箱内部并发出一股紫色光芒");
+                                    Thread.Sleep(2500);
+                                    WriteLine("你的狗眼被亮瞎了");
+                                    Thread.Sleep(2500);
 
+                                    List<Item> bonus = new();
+                                    List<Item> failure = new();
+                                    var epicCount = WeightedRandom(new int[] { 1, 2, 3 }, new double[] { 0.85, 0.01, 0.05 });
+                                    var rareCount = WeightedRandom(new int[] { 2, 3, 4 }, new double[] { 0.7, 0.2, 0.1 });
+                                    var commonCount = rd.Next(3,6);
+                                    var coin = coinItem;
+                                    coin.Count = rd.Next(100, 400);
+
+                                    bonus.AddRange(RandomChoose(epicItems, epicCount));
+                                    bonus.AddRange(RandomChoose(rareItems, rareCount));
+                                    bonus.AddRange(RandomChoose(commonItems, commonCount));
+                                    bonus.Add(coin);
+                                    bonus.ForEach(item => 
+                                    {
+                                        if (Player.Items.Add(item))
+                                            WriteLine($"     你获得了{item.Count} {item.Name}", Green);
+                                        else
+                                            failure.Add(item);
+                                        Thread.Sleep(1500);
+                                    });
+
+                                }
+                                else//空
+                                {
+                                    WriteLine("     但事与愿违，宝箱里只有几枚陈旧的铜币");
+                                    Thread.Sleep(2500);
+                                    WriteLine("     你大失所望");
+                                    var coin = coinItem;
+                                    coin.Count = rd.Next(40, 200);
+                                    WriteLine($"     你获得了{coin.Count}枚{coin.Name}");
+                                    Player.Items.Add(coin);
+                                    Console.ReadKey();
+                                }
+                            }
+                            else//战斗
+                            {
+
+                            }
+                        }
+                        else if(userInput == 'B')
+                        {
+                            WriteLine("     你看了一眼亮闪闪的宝箱，没有留念，径直地离开了");
+                            Thread.Sleep(2500);
+                            if (rdNum >= 50)
+                                WriteLine("     一阵风吹过，宝箱依旧在那，等待着下一个人将他开启...");
+                            else
+                                WriteLine("     宝箱突然颤动了一些，但没有任何人发现...");
+                            Console.ReadKey();
+                        }
+                        else
+                        {
+                            WriteLine("     无效输入，请重新输入",Red);
+                            goto ReInput;
+                        }
+                        break;
+                    case "前辈":
+                        break;
+                    case "阿哈玩偶":
+                        break;
+                    case "动物聚会":
+                        break;
+                }
+            }
+            else if (e.Type is EventType.Trap)
+            {
+
+            }
+            else if(e.Type is EventType.Status)
+            {
+
+            }
+            else if(e.Type is EventType.Shop)
+            {
+
+            }
         }
        /// <summary>
        /// 根据预设权重，随机生成指定数量的Item
@@ -277,6 +390,21 @@ namespace RoguelikeGame
                 if ((randomResult -= weight) < 0)
                     return array[Array.IndexOf(weights,weight)];
             return array.Last();
+        }
+        public static void WriteLine(string text,ConsoleColor color)
+        {
+            var defaultColor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.WriteLine(text);
+            Console.ForegroundColor = defaultColor;
+        }
+        public static void WriteLine(string text)
+        {
+            Console.WriteLine(text);
+        }
+        public static void WriteLine()
+        {
+            Console.WriteLine();
         }
     }
 }
