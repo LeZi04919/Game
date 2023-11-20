@@ -108,27 +108,33 @@ namespace RoguelikeGame
         public static void EventHandle(AreaEvent e)
         {
             Console.Clear();
-            if(e.Type is EventType.Adventure)
+
+            List<Item> bonus;
+            List<Item> failure;
+            int epicCount, rareCount, commonCount, rdNum;
+            var coin = coinItem;
+
+            if (e.Type is EventType.Adventure)
             {
-                switch(e.Name)
+                switch (e.Name)
                 {
                     case "宝箱事件":
-                        int rdNum = rd.Next(0,101);
+                        rdNum = rd.Next(0, 101);
                         WriteLine("     走着走着");
                         Thread.Sleep(2500);
                         WriteLine("     突然间，你在道路旁发现了一个宝箱\n");
                         Thread.Sleep(2500);
-                        WriteLine("     A.打开它(说不定有奇珍异宝)",Yellow);
-                        WriteLine("     B.算了吧(多一事不如少一事)",Green);
-                        ReInput:
+                        WriteLine("     A.打开它(说不定有奇珍异宝)", Yellow);
+                        WriteLine("     B.算了吧(多一事不如少一事)", Green);
+                    ReInput:
                         char userInput = (char)Console.Read();
-                        if(userInput == 'A')
+                        if (userInput == 'A')
                         {
                             WriteLine("     你激动地将宝箱打开了");
                             if (rdNum >= 50)//资源
                             {
-                                rdNum = rd.Next(0, 101);                                
-                                if(rdNum >= 50)//非空
+                                rdNum = rd.Next(0, 101);
+                                if (rdNum >= 50)//非空
                                 {
                                     Thread.Sleep(2500);
                                     WriteLine("宝箱内部并发出一股紫色光芒");
@@ -136,19 +142,18 @@ namespace RoguelikeGame
                                     WriteLine("你的狗眼被亮瞎了");
                                     Thread.Sleep(2500);
 
-                                    List<Item> bonus = new();
-                                    List<Item> failure = new();
-                                    var epicCount = WeightedRandom(new int[] { 1, 2, 3 }, new double[] { 0.85, 0.01, 0.05 });
-                                    var rareCount = WeightedRandom(new int[] { 2, 3, 4 }, new double[] { 0.7, 0.2, 0.1 });
-                                    var commonCount = rd.Next(3,6);
-                                    var coin = coinItem;
+                                    epicCount = WeightedRandom(new int[] { 1, 2, 3 }, new double[] { 0.85, 0.01, 0.05 });
+                                    rareCount = WeightedRandom(new int[] { 2, 3, 4 }, new double[] { 0.7, 0.2, 0.1 });
+                                    commonCount = rd.Next(3, 6);
                                     coin.Count = rd.Next(100, 400);
 
+                                    bonus = new();
+                                    failure = new();
                                     bonus.AddRange(RandomChoose(epicItems, epicCount));
                                     bonus.AddRange(RandomChoose(rareItems, rareCount));
                                     bonus.AddRange(RandomChoose(commonItems, commonCount));
                                     bonus.Add(coin);
-                                    bonus.ForEach(item => 
+                                    bonus.ForEach(item =>
                                     {
                                         if (Player.Items.Add(item))
                                             WriteLine($"     你获得了{item.Count} {item.Name}", Green);
@@ -163,7 +168,7 @@ namespace RoguelikeGame
                                     WriteLine("     但事与愿违，宝箱里只有几枚陈旧的铜币");
                                     Thread.Sleep(2500);
                                     WriteLine("     你大失所望");
-                                    var coin = coinItem;
+                                    coin = coinItem;
                                     coin.Count = rd.Next(40, 200);
                                     WriteLine($"     你获得了{coin.Count}枚{coin.Name}");
                                     Player.Items.Add(coin);
@@ -172,18 +177,19 @@ namespace RoguelikeGame
                             }
                             else//战斗
                             {
-                                var monsterCount = WeightedRandom(new int[] { 1 , 2 },new double[] { 0.9,0.1});
+                                var monsterCount = WeightedRandom(new int[] { 1, 2 }, new double[] { 0.9, 0.1 });
                                 List<Monster> monsters = new(e.Monsters);
                                 if (monsterCount == 2)
                                     monsters.AddRange(e.Monsters);
-                                WriteLine("     突然间，人畜无害的宝箱毫无征兆地打开了",Yellow);
+                                WriteLine("     突然间，人畜无害的宝箱毫无征兆地打开了", Yellow);
                                 Thread.Sleep(2500);
-                                WriteLine("     满是利齿的宝箱向你咬来",Red);
+                                WriteLine("     满是利齿的宝箱向你咬来", Red);
                                 Thread.Sleep(1500);
                                 WriteLine("     你陷入了一场战斗!");
+                                //战斗处理方法
                             }
                         }
-                        else if(userInput == 'B')
+                        else if (userInput == 'B')
                         {
                             WriteLine("     你看了一眼亮闪闪的宝箱，没有留念，径直地离开了");
                             Thread.Sleep(2500);
@@ -195,14 +201,107 @@ namespace RoguelikeGame
                         }
                         else
                         {
-                            WriteLine("     无效输入，请重新输入",Red);
+                            WriteLine("     无效输入，请重新输入", Red);
                             goto ReInput;
                         }
                         break;
+
                     case "前辈":
+                        WriteLine("     你目视前方");
+                        Thread.Sleep(2500);
+                        WriteLine("     忽然间，你发现前方有一堆白色的反光物");
+                        Thread.Sleep(2500);
+                        WriteLine("     你决定走过去一探究竟");
+                        Thread.Sleep(2500);
+                        WriteLine("     走近后，你发现那是冒险者前辈留下的遗物");
+                        Thread.Sleep(2500);
+                        WriteLine("     为了继承他们的精神，你决定拾起他的遗物\n");
+                        Console.ReadKey();
+
+                        rareCount = WeightedRandom(new int[] { 1, 2, 3 }, new double[] { 0.85, 0.1, 0.05 });
+                        commonCount = rd.Next(1, 3);
+                        coin.Count = rd.Next(10, 30);
+
+                        bonus = new();
+                        failure = new();
+                        bonus.AddRange(RandomChoose(rareItems,rareCount));
+                        bonus.AddRange(RandomChoose(commonItems,commonCount));
+                        bonus.Add(coin);
+                        bonus.ForEach(item => 
+                        {
+                            if (Player.Items.Add(item))
+                                WriteLine($"     你获得了{item.Count} {item.Name}", Green);
+                            else
+                                failure.Add(item);
+                        });
                         break;
+
                     case "阿哈玩偶":
+
+                        WriteLine("     你在路旁发现了一只三等身人形玩偶，它有稻草般的麻绳头发，肚子上有一个计数器");
+                        Thread.Sleep(2500);
+                        WriteLine("     出于好奇，你把玩偶捡起并翻过来，上面写着:");
+                        Thread.Sleep(2500);
+                        WriteLine("     「阿哈按照祂的样子制成的发泄玩偶——他希望看到自己被暴揍的样子。揍得越凶他越开心，就会给您越多通用货币!注:质量品控与阿哈本人无关。」\n");
+                        Thread.Sleep(2500);
+                        WriteLine("     A. 轻轻拍他一下，至少不会弄坏他");
+                        WriteLine("     B. 狠狠重击！不能被阿哈看扁了！");
+                        Console.Read();
+
+                        if(rd.Next(0, 101) < 40)//40%
+                        {
+                            WriteLine("     阿哈玩偶的计数器数字跳转，它达到了299。再来一下?你生活里需要发泄的地方太多了\n");
+                            Thread.Sleep(2500);
+                            WriteLine("     A. 轻轻拍他一下，至少不会弄坏他");
+                            WriteLine("     B. 狠狠重击！不能被阿哈看扁了！");
+                            if(rd.Next(0,101) < 20)
+                            {
+                                WriteLine("     计数器继续跳转，最后停留在了「400」上。玩偶内嵌芯片启动，传来一首颂歌「智识是坨废铁，存护是个呆子;毁灭像个疯子，阿哈真没面子!阿哈真没面子!阿哈真没面子! ......」");
+                                Thread.Sleep(2500);
+                                WriteLine("     你获得了400枚通用货币",Green);
+                                coin.Count = 400;
+                                Player.Items.Add(coin);
+                            }
+                            else
+                            {
+                                WriteLine("     阿哈玩偶的计数器疯狂跳转，它的数值膨胀至2147483647时突然跳转至了0,数据溢出了。你鄙视在如今使用32位int类型储存数据的制造商");
+                                Thread.Sleep(2500);
+                                WriteLine("     你一无所获");
+                            }
+                        }
+                        else//60%
+                        {
+                            WriteLine("     阿哈玩偶的毫无反应，计数器上的数字没有跳转。你太逊了!\n");
+                            Thread.Sleep(2500);
+                            WriteLine("     A. 轻轻拍他一下，至少不会弄坏他");
+                            WriteLine("     B. 狠狠重击！不能被阿哈看扁了！");
+                            rdNum = rd.Next(0, 101);
+                            if (rdNum < 10)
+                            {
+                                WriteLine("     计数器继续跳转，最后停留在了「400」上。玩偶内嵌芯片启动，传来一首颂歌「智识是坨废铁，存护是个呆子;毁灭像个疯子，阿哈真没面子!阿哈真没面子!阿哈真没面子! ......」");
+                                Thread.Sleep(2500);
+                                WriteLine("     你获得了400枚通用货币", Green);
+                                coin.Count = 400;
+                                Player.Items.Add(coin);
+                            }
+                            else if(rdNum < 30)
+                            {
+                                WriteLine("     阿哈玩偶被你打爆了——它碎成几块躺在地上。内嵌芯片启动，传来一首颂歌「智识是坨废铁，存护是个呆子;星神都一根筋，阿哈真没面子!阿哈真没面子!阿哈真没面子! .....」");
+                                Thread.Sleep(2500);
+                                WriteLine("     你一无所获");
+                            }
+                            else
+                            {
+                                WriteLine("     计数器继续跳转，最后停留在了「150」上。玩偶内嵌芯片启动，传来一首颂歌「智识是坨废铁，存护是个呆子;毁灭像个疯子，阿哈真没面子!阿哈真没面子!阿哈真没面子! ......」");
+                                Thread.Sleep(2500);
+                                WriteLine("     你获得了150枚通用货币", Green);
+                                coin.Count = 150;
+                                Player.Items.Add(coin);
+                            }
+                        }
+
                         break;
+
                     case "动物聚会":
                         break;
                 }
@@ -211,11 +310,11 @@ namespace RoguelikeGame
             {
 
             }
-            else if(e.Type is EventType.Status)
+            else if (e.Type is EventType.Status)
             {
 
             }
-            else if(e.Type is EventType.Shop)
+            else if (e.Type is EventType.Shop)
             {
 
             }
