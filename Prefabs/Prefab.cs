@@ -252,6 +252,12 @@ namespace RoguelikeGame.Prefabs
                                        where prefab.GetType() == typeof(T)
                                        select prefab).ToArray();            
         }
+        public T[] Search<T>(string prefabName) where T: Prefab
+        {
+            return Enumerable.Cast<T>(from prefab in Prefabs
+                                       where (prefab.GetType() == typeof(T) && prefab.Name.Contains(prefabName))
+                                       select prefab).ToArray();            
+        }
         public IEnumerator GetEnumerator()
         {
             return ((IEnumerable)Prefabs).GetEnumerator();

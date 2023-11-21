@@ -112,6 +112,7 @@ namespace RoguelikeGame
             List<Item> bonus;
             List<Item> failure;
             int epicCount, rareCount, commonCount, rdNum;
+            char userInput;
             var coin = coinItem;
 
             if (e.Type is EventType.Adventure)
@@ -126,8 +127,7 @@ namespace RoguelikeGame
                         Thread.Sleep(2500);
                         WriteLine("     A.打开它(说不定有奇珍异宝)", Yellow);
                         WriteLine("     B.算了吧(多一事不如少一事)", Green);
-                    ReInput:
-                        char userInput = (char)Console.Read();
+                        userInput = (char)Console.Read();
                         if (userInput == 'A')
                         {
                             WriteLine("     你激动地将宝箱打开了");
@@ -189,7 +189,7 @@ namespace RoguelikeGame
                                 //战斗处理方法
                             }
                         }
-                        else if (userInput == 'B')
+                        else
                         {
                             WriteLine("     你看了一眼亮闪闪的宝箱，没有留念，径直地离开了");
                             Thread.Sleep(2500);
@@ -199,11 +199,7 @@ namespace RoguelikeGame
                                 WriteLine("     宝箱突然颤动了一些，但没有任何人发现...");
                             Console.ReadKey();
                         }
-                        else
-                        {
-                            WriteLine("     无效输入，请重新输入", Red);
-                            goto ReInput;
-                        }
+
                         break;
 
                     case "前辈":
@@ -303,21 +299,113 @@ namespace RoguelikeGame
                         break;
 
                     case "动物聚会":
+
+                        WriteLine("     你在路边远远望去");
+                        Thread.Sleep(2500);
+                        WriteLine("     发现一群动物聚在一起，像是在召开什么重要会议一般");
+                        Thread.Sleep(2500);
+                        WriteLine("     你想?\n");
+                        Thread.Sleep(2500);
+                        WriteLine("     A. 上前查看（他们还能整什么幺蛾子出来）");
+                        WriteLine("     B. 赶紧离开（看上去凶神恶煞，先走为敬）");
+                        rdNum = rd.Next(0, 101);
+                        userInput = (char)Console.Read();
+
+                        if (userInput == 'A')
+                        {
+                            if(rdNum < 10)//10%
+                            {
+                                WriteLine("     你着急地跑过去，想要一探究竟");
+                                Thread.Sleep(2500);
+                                WriteLine("     但发出的巨大动静把小猫吓到了，你被他挠了一下");
+                                Thread.Sleep(2500);
+                                WriteLine("     小动物们慌不择路地跑开了");
+                                Thread.Sleep(2500);
+                                Player.Health -= (long)(Player.MaxHealth * 0.05);
+                                WriteLine($"     你损失了{(long)(Player.MaxHealth * 0.05)}点生命值");
+                            }
+                            else if(rdNum < 40)//30%
+                            {
+                                WriteLine("     你着急地跑过去，想要一探究竟");
+                                Thread.Sleep(2500);
+                                WriteLine("     但发出的巨大动静吓到了它们");
+                                Thread.Sleep(2500);
+                                WriteLine("     小动物们慌不择路地跑开了");
+                                Thread.Sleep(2500);
+                                WriteLine("     你一无所获");
+                            }
+                            else 
+                            {
+                                WriteLine("     你轻手轻脚地走过去，想要一探究竟");
+                                Thread.Sleep(2500);
+                                WriteLine("     你被一只小松鼠发现了");
+                                Thread.Sleep(2500);
+                                WriteLine("     小松鼠递给你一些松果");
+                                Thread.Sleep(2500);
+                                WriteLine("     你发现，松果里面夹杂着一些通用货币");
+                                Thread.Sleep(2500);
+                                WriteLine("     你喜出望外；恰好，动物们的聚会结束了");
+                                Thread.Sleep(2500);
+                                coin.Count = rd.Next(20, 101);
+                                WriteLine($"     获得了{coin.Count}枚通用货币");
+                                Player.Items.Add(coin);
+                            }
+                        }
+                        else
+                            WriteLine("     为了不浪费自己的时间，你快步离开了");
                         break;
                 }
+                
             }
             else if (e.Type is EventType.Trap)
             {
+                List<Monster> monsters;
+                int count;
+                switch(e.Name)
+                {
+                    case "史莱姆群":
+                        monsters = new();
+                        count = rd.Next(2, 5);
+                        monsters.AddRange(RandomChoose(MonsterList.Search<Monster>("史莱姆"), count));
 
+                        WriteLine("     突然间，一群史莱姆向你冲来");
+                        Thread.Sleep(2500);
+                        WriteLine("     你躲避不及");
+                        Thread.Sleep(2500);
+                        WriteLine("     准备战斗！");
+
+                        break;
+                    case "北极熊窝":
+                        break;
+                    case "卫兵打劫":
+                        break;
+                }
             }
             else if (e.Type is EventType.Status)
             {
-
+                switch(e.Name)
+                {
+                    case "灼伤":
+                        break;
+                    case "冻伤":
+                        break;
+                    case "缺水":
+                        break;
+                    case "昏厥":
+                        break;
+                }
             }
             else if (e.Type is EventType.Shop)
             {
-
+                switch(e.Name)
+                {
+                    case "普通商人":
+                        break;
+                    case "坎诺特":
+                        break;
+                }
             }
+            Console.ReadKey();
         }
        /// <summary>
        /// 根据预设权重，随机生成指定数量的Item
