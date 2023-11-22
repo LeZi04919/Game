@@ -52,6 +52,8 @@ namespace RoguelikeGame.Class
         {
             items = new(capacity);
         }
+        public int Count
+        { get { return items.Count; } }
         //indexer用于查询，无set
         public Item this[int index]
         {
@@ -113,6 +115,10 @@ namespace RoguelikeGame.Class
         public void Remove(int index)
         {
             items.Remove(this[index]);
+        }
+        public int IndexOf(Item target)
+        {
+            return items.IndexOf(target);
         }
         public IEnumerator GetEnumerator()
         {
