@@ -312,12 +312,102 @@ namespace RoguelikeGame
             }
             else if (e.Type is EventType.Status)
             {
+                switch(e.Name)
+                {
+                    case "灼伤":
+                        WriteLine("     在行走的过程中，你发现了一处岩浆坑");
+                        Thread.Sleep(2500);
+                        WriteLine("     你好奇地凑近去查看");
+                        Thread.Sleep(2500);
+                        WriteLine("     突然，一个小泡泡爆开了，几滴岩浆溅在你身上");
+                        Thread.Sleep(2500);
+                        WriteLine("     你疼得就地翻滚");
+                        Thread.Sleep(2500);
+                        Player.Health -= (long)(Player.MaxHealth * e.Value);
+                        WriteLine($"     你损失了{(long)(Player.MaxHealth * e.Value)}点生命值");
+                        break;
 
+                    case "冻伤":
+                        WriteLine("     一阵寒风过来");
+                        Thread.Sleep(2500);
+                        WriteLine("     冷得你缩了缩脖子");
+                        Thread.Sleep(2500);
+                        WriteLine("     长期的寒冷环境使得你多了几处冻疮");
+                        Thread.Sleep(2500);
+                        WriteLine("     你叫苦不迭");
+                        Thread.Sleep(2500);
+                        Player.Health -= (long)(Player.MaxHealth * e.Value);
+                        WriteLine($"     你损失了{(long)(Player.MaxHealth * e.Value)}点生命值");
+                        break;
+
+                    case "缺水":
+                        WriteLine("     烈日当头");
+                        Thread.Sleep(2500);
+                        WriteLine("     你浑身大汗，身上没有一处地方是干燥的");
+                        Thread.Sleep(2500);
+                        WriteLine("     高强度的徒步冒险，再加上你无法及时补充水分");
+                        Thread.Sleep(2500);
+                        WriteLine("     你已濒临极限");
+                        Thread.Sleep(2500);
+                        Player.Health -= (long)(Player.MaxHealth * e.Value);
+                        WriteLine($"     你损失了{(long)(Player.MaxHealth * e.Value)}点生命值");
+                        break;
+
+                    case "昏厥":
+                        WriteLine("     长期的高强图徒步使得你疲惫不堪");
+                        Thread.Sleep(2500);
+                        WriteLine("     终于");
+                        Thread.Sleep(2500);
+                        WriteLine("     身体无法继续支撑下去，你眼前一黑");
+                        Thread.Sleep(2500);
+                        WriteLine("     晕过去了");
+                        Thread.Sleep(2500);
+                        Player.Health -= (long)(Player.MaxHealth * e.Value);
+                        WriteLine($"     你损失了{(long)(Player.MaxHealth * e.Value)}点生命值");
+                        break;
+                }
             }
             else if (e.Type is EventType.Shop)
             {
-
+                switch(e.Name)
+                {
+                    case "普通商人":
+                        break;
+                    case "坎诺特":
+                        break;
+                }
             }
+        }
+        public static void CommonShop()
+        {
+            Clear();
+            int itemCount = 8;
+            int epicItemsCount = WeightedRandom(new int[] { 0,1,2 },new double[] { 0.85,0.1,0.05 });
+            int rareItemsCount = rd.Next(0, 3);
+            int commonItemsCount = itemCount - rareItemsCount - epicItemsCount;
+            List<Item> shopItems = new();
+            Dictionary<Item, int> itemPrice = new();
+
+            shopItems.AddRange(RandomChoose(epicItems, epicItemsCount));
+            shopItems.AddRange(RandomChoose(rareItems, rareItemsCount));
+            shopItems.AddRange(RandomChoose(commonItems, commonItemsCount));
+            shopItems.ForEach(item => 
+            {
+                switch(item.Rarity)
+                {
+                    case RarityType.Common:
+                        itemPrice.Add(item, rd.Next(10, 41));
+                        break;
+                    case RarityType.Rare:
+                        itemPrice.Add(item, rd.Next(50, 126));
+                        break;
+                    case RarityType.Epic:
+                        itemPrice.Add(item, rd.Next(150, 351));
+                        break;
+                }
+            });
+            
+            WriteLine("                     商店");
         }
        /// <summary>
        /// 根据预设权重，随机生成指定数量的Item
