@@ -379,10 +379,73 @@ namespace RoguelikeGame
                         BattleUI(monsters);
                         break;
                     case "北极熊窝":
-                        //BattleUI(monsters);
+                        monsters = new(e.Monsters);
+                        count = rd.Next(1, 3);
+                        monsters.AddRange(RandomChoose(MonsterList[MonsterType.Common], count));
+                        rdNum = rd.Next(0, 101);
+
+                        WriteLine("     你发现前方有个洞穴");
+                        Thread.Sleep(2500);
+                        WriteLine("     出于好奇，你进去洞穴一探究竟");
+                        Thread.Sleep(2500);
+                        if(rdNum < 50)
+                        {
+                            coin.Count = rd.Next(10, 51);
+                            WriteLine("     你在洞穴里发现了一些通用货币");
+                            Thread.Sleep(2500);
+                            WriteLine($"     你获得了{coin.Count}枚通用货币", Green);
+                            Player.Items.Add(coin);
+                        }
+                        else
+                        {
+                            WriteLine("     你在洞穴里面发现一只正在冬眠的北极熊");
+                            Thread.Sleep(2500);
+                            WriteLine("     打醒他?");
+                            Thread.Sleep(2500);
+                            WriteLine("     Y. 打(干他娘的)");
+                            WriteLine("     N. 别了吧(感觉不是很礼貌)");
+                            if (Console.ReadLine() == "Y")
+                                BattleUI(monsters);
+                        }
                         break;
                     case "卫兵打劫":
-                        //BattleUI(monsters);
+                        monsters = new();
+                        count = rd.Next(1, 3);
+                        monsters.AddRange(RandomChoose(e.Monsters, count));
+                        var price = rd.Next(50, 151);
+
+                        WriteLine("     你在城市的道路上悠闲地散步");
+                        Thread.Sleep(2500);
+                        WriteLine("     突然，你不小心撞到了城市卫兵");
+                        Thread.Sleep(2500);
+                        WriteLine("     卫兵: 你小子不长眼的是吧？");
+                        Thread.Sleep(2500);
+                        WriteLine("     卫兵: 看你脸生，给点赔偿金，我就就此揭过了");
+                        Thread.Sleep(2500);
+                        WriteLine("     支付赔偿金？");
+                        Thread.Sleep(2500);
+                        WriteLine($"     Y. 向卫兵支付{price}枚通用货币");
+                        WriteLine("     N. 不给(这TM能忍?)");
+                        if(Console.ReadLine() == "Y")
+                        {
+                            var money = Player.Items["通用货币"][0].Count;
+                            var coinIndex = Player.Items.IndexOf(Player.Items["通用货币"][0]);
+                            if (money < price)
+                            {
+                                WriteLine("     亲，你身上的货币不足以支付哦~");
+                                Console.ReadLine();
+                                BattleUI(monsters);
+                            }
+                            else
+                            {
+                                Player.Items[coinIndex].Count -= price;
+                                WriteLine("     卫兵: 你小子还挺识相，快滚吧");
+                                Console.ReadLine();
+                            }
+                        }
+                        else
+                            BattleUI(monsters);
+
                         break;
                 }
             }

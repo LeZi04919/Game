@@ -54,11 +54,13 @@ namespace RoguelikeGame.Class
         }
         public int Count
         { get { return items.Count; } }
-        //indexer用于查询，无set
+        
         public Item this[int index]
         {
             get { return items[index]; }
+            set { items[index] = value; }
         }
+        //以下indexer用于查询，无set
         public Item[] this[ItemType Type]
         {
             get 

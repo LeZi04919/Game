@@ -62,6 +62,8 @@ namespace RoguelikeGame
                 var item = shopItems[index];
                 var price = itemPrice[item];
                 var money = Player.Items["通用货币"][0].Count;
+                var coinIndex = Player.Items.IndexOf(Player.Items["通用货币"][0]);
+
                 WriteLine($"     您持有的通用货币:{Player.Items["通用货币"][0].Count}");
                 WriteLine($"     您确定要购买{item.Name},价格为{price}吗?\n");
                 WriteLine("     Y.是的(我对他一见钟情) N.还是算了(感觉一般般)");
@@ -70,24 +72,24 @@ namespace RoguelikeGame
                 {
                     if (money > price)
                     {
-                        Player.Items["通用货币"][0].Count -= price;
+                        Player.Items[coinIndex].Count -= price;
                         if (!Player.Items.Add(item))
                             failure.Add(item);
                         shopItems.Remove(item);
                         itemPrice.Remove(item);
                         FailAddItemUI(failure);
-                        CommonShopUI(shopItems, itemPrice);
+                        ShopUI(shopItems, itemPrice);
                     }
                     else
                     {
                         WriteLine("     您身上的金钱貌似不够呢~请赚够钱后再来吧");
                         Console.ReadLine();
-                        CommonShopUI(shopItems, itemPrice);
+                        ShopUI(shopItems, itemPrice);
                     }
 
                 }
                 else
-                    CommonShopUI(shopItems, itemPrice);
+                    ShopUI(shopItems, itemPrice);
             }
         }
         /// <summary>
