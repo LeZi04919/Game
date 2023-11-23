@@ -188,6 +188,7 @@ namespace RoguelikeGame
                                 Thread.Sleep(1500);
                                 WriteLine("     你陷入了一场战斗!");
                                 //战斗处理方法
+                                BattleUI(monsters);
                             }
                         }
                         else
@@ -375,11 +376,13 @@ namespace RoguelikeGame
                         WriteLine("     你躲避不及");
                         Thread.Sleep(2500);
                         WriteLine("     准备战斗！");
-
+                        BattleUI(monsters);
                         break;
                     case "北极熊窝":
+                        //BattleUI(monsters);
                         break;
                     case "卫兵打劫":
+                        //BattleUI(monsters);
                         break;
                 }
             }
@@ -445,61 +448,66 @@ namespace RoguelikeGame
                 switch(e.Name)
                 {
                     case "普通商人":
+                        WriteLine("     你在城市中慢悠悠地散步");
+                        Thread.Sleep(2500);
+                        WriteLine("     忽然间，你发现了一家商店，店老板在向你挥手");
+                        Thread.Sleep(2500);
+                        WriteLine("     进去看看吗？");
+                        Thread.Sleep(2500);
+                        WriteLine("     Y. 进去看看");
+                        WriteLine("     N. 还是算了(钱包空空,腰带紧紧)");
+                        if (Console.ReadLine() == "Y")
+                            CommonShop();
                         break;
                     case "坎诺特":
+                        WriteLine("     你遇到了坎诺特");
+                        Thread.Sleep(2500);
+                        WriteLine("     坎诺特:最近新进了一批好货");
+                        Thread.Sleep(2500);
+                        WriteLine("     要与坎诺特进行交易吗？");
+                        Thread.Sleep(2500);
+                        WriteLine("     Y. 赶紧的赶紧的");
+                        WriteLine("     N. 还是算了(看上去老不正经的)");
+                        if (Console.ReadLine() == "Y")
+                            KannutShop();
                         break;
                 }
             }
         }
         /// <summary>
-        /// 添加物品失败时调用
+        /// 坎诺特商店货物生成方法
         /// </summary>
-        /// <param name="items"></param>
-        public static void FailAddItemUI(IList<Item> items)
+        public static void KannutShop()
         {
-            Clear();
-            var playerItems = Player.Items;
+            int itemCount = 16;
+            int legacyItemsCount = WeightedRandom(new int[] { 1, 2, 3 }, new double[] { 0.85, 0.1, 0.05 });
+            int epicItemsCount = rd.Next(2, 5);
+            int rareItemsCount = itemCount - legacyItemsCount - epicItemsCount;
+            List<Item> shopItems = new();
+            Dictionary<Item, int> itemPrice = new();
 
-            WriteLine("以下物品无法添加入背包:");
-            Console.WriteLine("     {0,-3} {0,-7}","名称","数量");
-            foreach(var item in items)
-                Console.WriteLine("     {0,-3} {0,-7}", item.Name, item.Count);
-            WriteLine("##############################################");
-            WriteLine("你背包里面有以下物品:");
-            Console.WriteLine("     {0,-2} {0,-3} {0,-7}","序号" ,"名称", "数量");
-            foreach (Item item in playerItems)
-                Console.WriteLine("     [{0,-2}] {0,-3} {0,-7}", playerItems.IndexOf(item), item.Name, item.Count);
-            WriteLine("     请输入你想舍弃的物品序号(无关输入将视为退出):");
-            int index = 0;
-            if(int.TryParse(Console.ReadLine(),out index) && index < playerItems.Count)
+            shopItems.AddRange(RandomChoose(legacyItems, legacyItemsCount));
+            shopItems.AddRange(RandomChoose(epicItems, epicItemsCount));
+            shopItems.AddRange(RandomChoose(rareItems, rareItemsCount));
+            shopItems.ForEach(item =>
             {
-                Clear();
-                Console.WriteLine("     {0,-2} {0,-3} {0,-7}", "序号", "名称", "数量");
-                foreach (Item item in items)
-                    Console.WriteLine("     [{0,-2}] {0,-3} {0,-7}", playerItems.IndexOf(item), item.Name, item.Count);
-                WriteLine("     请输入你想加入的物品序号(无关输入将视为退出):");
-                int failureIndex = 0;
-                if (int.TryParse(Console.ReadLine(), out failureIndex) && failureIndex < items.Count)
+                switch (item.Rarity)
                 {
-                    WriteLine($"     欲丢弃的物品:{playerItems[index].Name}");
-                    WriteLine($"     欲加入的物品:{items[failureIndex].Name}");
-                    WriteLine("     确定吗?");
-                    WriteLine("     Y.确定 N.还是算了");
-                    if (Console.ReadKey().KeyChar == 'Y')
-                    {
-                        playerItems.Remove(index);
-                        playerItems.Add(items[failureIndex]);
-                        items.RemoveAt(failureIndex);
-                        Player.Items = playerItems;
-                        if(items.Count > 0)
-                            FailAddItemUI(items);                        
-                    }
-                    else
-                        FailAddItemUI(items);
+                    case RarityType.Rare:
+                        itemPrice.Add(item, rd.Next(50, 126));
+                        break;
+                    case RarityType.Epic:
+                        itemPrice.Add(item, rd.Next(150, 351));
+                        break;
+                    case RarityType.Legacy:
+                        itemPrice.Add(item, rd.Next(550, 901));
+                        break;
                 }
+            });
+            shopItems.OrderBy(item => item.Rarity);
+            itemPrice.OrderBy(item => item.Key.Rarity);
 
-            }
-
+            ShopUI(shopItems, itemPrice);
         }
         /// <summary>
         /// 普通商店的货物生成方法
@@ -534,65 +542,9 @@ namespace RoguelikeGame
             shopItems.OrderBy(item => item.Rarity);
             itemPrice.OrderBy(item => item.Key.Rarity);
 
-            CommonShopUI(shopItems, itemPrice);            
+            ShopUI(shopItems, itemPrice);            
         }
         /// <summary>
-        /// 普通商店的对话UI
-        /// </summary>
-        /// <param name="shopItems"></param>
-        /// <param name="itemPrice"></param>
-        public static void CommonShopUI(List<Item> shopItems,Dictionary<Item,int> itemPrice)
-        {
-            Clear();
-            WriteLine("                     商店");
-            Console.WriteLine("     {0,-2} {1,-15} {2,-3} {3,-5}", "序号", "名称", "稀有度", "价格");
-            foreach (var keyValuePair in itemPrice)
-            {
-                var item = keyValuePair.Key;
-                var price = keyValuePair.Value;
-                Console.WriteLine("     [{0,-2}] {1,-15} {2,-3} {3,-5}$", shopItems.IndexOf(item), item.Name, item.Rarity, price);
-            }
-            WriteLine("     稀有度一览:  \n0 普通\n1 稀有\n2 史诗\n3 传奇");
-            WriteLine($"     您持有的通用货币:{Player.Items["通用货币"][0].Count}");
-            WriteLine("     请输入商品序号以购买(非相关输入视为退出):");
-            var userInput = Console.ReadLine();
-            Clear();
-            int index = 0;
-            if (int.TryParse(userInput, out index) && index < shopItems.Count)
-            {
-                List<Item> failure = new();
-                var item = shopItems[index];
-                var price = itemPrice[item];
-                var money = Player.Items["通用货币"][0].Count;
-                WriteLine($"     您持有的通用货币:{Player.Items["通用货币"][0].Count}");
-                WriteLine($"     您确定要购买{item.Name},价格为{price}吗?\n");
-                WriteLine("     Y.是的(我对他一见钟情) N.还是算了(感觉一般般)");
-                var inputKey = Console.ReadKey().KeyChar;
-                if(inputKey == 'Y')
-                {
-                    if(money > price)
-                    {
-                        Player.Items["通用货币"][0].Count -= price;
-                        if (!Player.Items.Add(item))
-                            failure.Add(item);
-                        shopItems.Remove(item);
-                        itemPrice.Remove(item);
-                        FailAddItemUI(failure);
-                        CommonShopUI(shopItems, itemPrice);
-                    }
-                    else
-                    {
-                        WriteLine("     您身上的金钱貌似不够呢~请赚够钱后再来吧");
-                        Console.ReadLine();
-                        CommonShopUI(shopItems, itemPrice);
-                    }
-
-                }
-                else
-                    CommonShopUI(shopItems, itemPrice);
-            }
-        }
-       /// <summary>
        /// 根据预设权重，随机生成指定数量的Item
        /// </summary>
        /// <param name="maxRank"></param>
