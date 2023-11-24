@@ -2,13 +2,63 @@
 using RoguelikeGame.Prefabs;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reflection;
+using static SecurityTool.Security;
 using System.Threading;
-using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Serialization;
+using static RoguelikeGame.GameResources;
 
 namespace RoguelikeGame
 {
+    internal static class Archive
+    {
+        static readonly string Path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        static readonly string GamePath = $"{Path}/RoguelikeGame";
+        static readonly string ArchivePath = $"{Path}/RoguelikeGame/save";
+        static readonly string ChecksumFilePath = $"{Path}/RoguelikeGame/save/checksum.md5";
+        public static void Init()
+        {
+            if(!Directory.Exists(GamePath))
+                Directory.CreateDirectory(GamePath);
+            if(!Directory.Exists(ArchivePath))
+                Directory.CreateDirectory(ArchivePath);
+            if (!File.Exists($"{ArchivePath}/Game.sf"))
+            {
+                var sw = File.Create($"{ArchivePath}/Game.sf");
+                sw.Close();
+            }
+            else
+                Load();
+        }
+        static void Load() => Game.Player = DecryptArchive<Player>($"{ArchivePath}/Game.sf");
+        static void Save()
+        {
+            EncryptArchive($"{ArchivePath}/Game.sf",Game.Player);
+        }
+        static void EncryptArchive<T>(string Path,T obj)//加密存档
+        {
+            //var sw = File.Open($"{ArchivePath}/Game.sf",FileMode.Open,FileAccess.Read,FileShare.ReadWrite);
+            var sw = File.Open(Path, FileMode.Open,FileAccess.Read,FileShare.ReadWrite);
+            MemoryStream ms = new();
+            XmlSerializer serializer = new(typeof(T));
+            serializer.Serialize(ms, obj);
+            byte[] buffer = ms.GetBuffer();
+            byte[] encryptBuffer = Encrypt(buffer);
+            sw.Write(encryptBuffer, 0, encryptBuffer.Length);
+            sw.Close();
+        }
+        static T? DecryptArchive<T>(string Path)//解密存档
+        {
+            var sw = File.Open(Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            byte[] buffer = new byte[sw.Length];
+            while (sw.Read(buffer, 0, buffer.Length) > 0) ;
+            byte[] DecryptBuffer = Decrypt(buffer);
+            sw.Close();
+            return (T)new XmlSerializer(typeof(T)).Deserialize(new MemoryStream(DecryptBuffer));
+        }
+
+    }
     internal static partial class Game
     {
         public static Player Player = new()
@@ -28,15 +78,26 @@ namespace RoguelikeGame
         {
             Console.ReadKey();
         }
+        public static void CommonUI()
+        {
+
+        }
         /// <summary>
         /// 战斗UI
         /// </summary>
         /// <param name="monsters"></param>
-        public static void BattleUI(IList<Monster> monsters)
+        public static bool BattleUI(IList<Monster> monsters)
         {
-            Action<Prefab, Prefab> PrefabKilledHandle = (source, target) => monsters.Remove((Monster)target);
+            Action<Prefab, Prefab> PrefabKilledHandle = (source, target) =>
+            {
+                Prefabs.Remove(target);
+                monsters.Remove((Monster)target);
+            };
             Prefab.PrefabKilledEvent += PrefabKilledHandle;
-            while (monsters.Count > 0)
+            var _monsters = monsters;
+            bool isEscaped = false;
+            Prefabs.AddRange(monsters);
+            while (monsters.Count > 0 && !isEscaped)
             {
                 Clear();
                 Prefabs.AddRange(monsters);                
@@ -58,6 +119,7 @@ namespace RoguelikeGame
                         ReleaseSkillUI(monsters);
                         //对方行动
                         MonsterBrain(monsters);
+                        NextRound();
                         break;
                     case '3':
                         var drug = SelectItemUI();
@@ -70,6 +132,7 @@ namespace RoguelikeGame
                         else
                             ReleaseItemUI(monsters, drug);
                         MonsterBrain(monsters);
+                        NextRound();
                         break;
                     case '4':
                         int rdNum = rd.Next(0, 101);
@@ -78,6 +141,8 @@ namespace RoguelikeGame
                             WriteLine("     你已成功逃跑!", Green);
                             Thread.Sleep(2500);
                             Console.ReadKey();
+                            isEscaped = true;
+                            break;
                         }
                         else
                         {
@@ -86,11 +151,47 @@ namespace RoguelikeGame
                             Console.ReadKey();
                         }
                         MonsterBrain(monsters);
+                        NextRound();
                         break;
                 }
             }
             Prefab.PrefabKilledEvent -= PrefabKilledHandle;
+            if (!isEscaped)
+            {
+                WriteLine("     抱歉喵，这次战斗您没有获得任何奖励");
+                Console.ReadKey();
+            }
+            else
+            {
+                var commonCount = _monsters.Where(monster => monster.Rank is MonsterType.Common).Count();
+                var eliteCount = _monsters.Where(monster => monster.Rank is MonsterType.Elite).Count();
+                var bossCount = _monsters.Where(monster => monster.Rank is MonsterType.Boss).Count();
+                int bonus = 0;
+                bonus += rd.Next(5, 21) * commonCount;
+                bonus += rd.Next(25, 46) * eliteCount;
+                bonus += rd.Next(50, 201) * bossCount;
+                var coin = coinItem;
+                coin.Count = bonus;
+                Player.Items.Add(coin);
+                WriteLine($"     你获得了{bonus}枚通用货币!");
+                Console.ReadKey();
+            }
+            foreach (var monster in monsters)
+            {
+                Prefabs.Remove(monster);
+            }
+            Player.Buffs.ClearAll();
+            return isEscaped;
         }
+        static void NextRound()
+        {
+            foreach (Prefab prefab in Prefabs)
+                prefab.NextRound();
+        }
+        /// <summary>
+        /// 敌方行动逻辑
+        /// </summary>
+        /// <param name="monsters"></param>
         public static void MonsterBrain(IList<Monster> monsters)
         {
             foreach(var monster in monsters)
@@ -225,6 +326,11 @@ namespace RoguelikeGame
                     BattleUI(monsters);
             }
         }
+        /// <summary>
+        /// 使用药品的对话UI
+        /// </summary>
+        /// <param name="monsters"></param>
+        /// <param name="drug"></param>
         public static void ReleaseItemUI(IList<Monster> monsters,Drug drug)
         {
             Clear();

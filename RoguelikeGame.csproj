@@ -14,4 +14,10 @@
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="SecurityTool">
+      <HintPath>SecurityTool.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -155,6 +155,7 @@ namespace RoguelikeGame.Class
             foreach (var buff in negativeBuffs)
                 Remove(buff);
         }
+        public void ClearAll() => Buffs.Clear();
         public void NextRound(Prefab target)
         {
             ForEach(buff =>

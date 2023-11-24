@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using RoguelikeGame.Class;
 using RoguelikeGame.Interfaces;
 
@@ -32,6 +33,7 @@ namespace RoguelikeGame.Prefabs
                 Health = MaxHealth;
             }
         }//最大血量
+        [XmlIgnore]
         public long Health
         {
             get
@@ -43,12 +45,13 @@ namespace RoguelikeGame.Prefabs
                 _health = Math.Min(MaxHealth,value); 
             }
         }//目前血量
+        [XmlIgnore]
         public required long Armor
         {
-            get 
+            get
             {
                 var _Armor = _armor;
-                if(Body is not null)
+                if (Body is not null)
                     if (Body.ArmorProvide is ArmorType.Physical)
                         _Armor += Body.Value;
 
@@ -59,10 +62,11 @@ namespace RoguelikeGame.Prefabs
                     _Armor += (long)buff.Value;
                 foreach (var buff in from buff in buffs where buff.OverlayType is Overlay.Mul select buff)
                     _Armor = (long)(_Armor * buff.Value);
-                return _Armor; 
+                return _Armor;
             }
             set { _armor = value; }
         }//防御力
+        [XmlIgnore]
         public required long Damage
         {
             get
@@ -82,6 +86,7 @@ namespace RoguelikeGame.Prefabs
             } 
             set {  _damage = value; } 
         }//攻击力
+        [XmlIgnore]
         public required float Dodge
         { 
             get
@@ -115,10 +120,10 @@ namespace RoguelikeGame.Prefabs
         public required long Level { get; set; }//等级
         public required PrefabType Type { get; set; }//实体类别
 
-        protected Weapon? Hand;//手部穿戴物
-        protected Armor? Body;//身体穿戴物
+        public Weapon? Hand;//手部穿戴物
+        public Armor? Body;//身体穿戴物
 
-        protected BuffCollection Buffs = new();
+        public BuffCollection Buffs = new();
         public required SkillCollection Skills {  get; set; }
         public Prefab() 
         {
