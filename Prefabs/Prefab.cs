@@ -16,6 +16,8 @@ namespace RoguelikeGame.Prefabs
         long _armor;
         long _damage;
         float _dodge;
+        public static event Action<Prefab, Prefab> PrefabKilledEvent = (source, target) => Console.WriteLine("     {0}已被{1}杀死", target.Name, source.Name);//被杀死对象
+        public static event Action<Prefab, Prefab, long> PrefabAttacked;//Source(攻击者)，Target(受击者),Damage(伤害大小)
         public required string Name
         { get; set; }
         public required long MaxHealth
@@ -127,7 +129,7 @@ namespace RoguelikeGame.Prefabs
             Release(target, skill);
             Skills.ToCoolDown(skill);
         }
-        void Release<T>(Prefab target,T released) where T: IReleasable
+        public void Release<T>(Prefab target,T released) where T: IReleasable
         {
             if(released.ReleaseType is ReleaseType.Damage)
                 target.Health -= (long)(Damage * released.Value);
@@ -169,6 +171,8 @@ namespace RoguelikeGame.Prefabs
             }
             if (rd.NextDouble() <= targetDodge)
                 return 0;//闪避生效
+            if (target.Health <= 0)
+                PrefabKilledEvent(this, target);
             var damage = (long)Math.Max(Damage * 0.2, Damage - targetArmor);
             target.Health -= damage;
             return damage;
@@ -203,7 +207,7 @@ namespace RoguelikeGame.Prefabs
     }
     
     
-    internal class PrefabCollection : IEnumerable 
+    internal class PrefabCollection : IEnumerable
     {
         List<Prefab> Prefabs = new();
 
@@ -237,6 +241,10 @@ namespace RoguelikeGame.Prefabs
         public void Add(Prefab newPrefab)
         {
             Prefabs.Add(newPrefab);
+        }
+        public void AddRange(IEnumerable<Prefab> prefabs)
+        {
+            Prefabs.AddRange(prefabs);
         }
         public void Remove(Prefab oldPrefab)
         {

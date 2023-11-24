@@ -9,7 +9,14 @@ namespace RoguelikeGame.Class
 {
     internal class Skill : IReleasable
     {
+        /// <summary>
+        /// 该技能的名称
+        /// </summary>
         public required string Name;
+        /// <summary>
+        /// 该技能的描述
+        /// </summary>
+        public string Description = "";
         /// <summary>
         /// 表示该Skill的值基准，可为攻击力或生命上限
         /// </summary>
@@ -42,6 +49,7 @@ namespace RoguelikeGame.Class
         List<Skill> Skills = new();
         Dictionary<Skill, float> CoolDownList = new();
         public float CoolDownRatio = 1.0F;
+        public int Count => Skills.Count;
         public Skill this[int index]
         {
             get { return Skills[index]; }
@@ -63,17 +71,20 @@ namespace RoguelikeGame.Class
         /// </summary>
         /// <param name="newSkill"></param>
         public void Add(Skill newSkill)
-        {
-            Skills.Add(newSkill);
-        }
+            => Skills.Add(newSkill);
         /// <summary>
         /// 获取该Skill是否处于CD状态
         /// </summary>
         /// <param name="skill"></param>
         /// <returns></returns>
         public bool InCoolDown(Skill skill)
+            => CoolDownList.ContainsKey(skill);
+        public int GetCoolDownRound(Skill skill)
         {
-            return CoolDownList.ContainsKey(skill);
+            if (InCoolDown(skill))
+                return (int)CoolDownList[skill];
+            else
+                return 0;
         }
         /// <summary>
         /// 将目标Skill设置为CD状态
@@ -92,13 +103,14 @@ namespace RoguelikeGame.Class
                 if ((CoolDownList[skill] -= CoolDownRatio)<= 0)
                     CoolDownList.Remove(skill);
         }
+        public int IndexOf(Skill skill)
+            => Skills.IndexOf(skill);
+        public Skill[] GetSkills() => Skills.ToArray();
+
+        public Skill[] GetAvailableSkills() => Skills.Where(skill => !CoolDownList.ContainsKey(skill)).ToArray();
         public IEnumerator GetEnumerator()
-        {
-            return ((IEnumerable)Skills).GetEnumerator();
-        }
+            => ((IEnumerable)Skills).GetEnumerator();
         public void ForEach(Action<Skill> action)
-        {
-            Skills.ForEach(action);
-        }
+            => Skills.ForEach(action);
     }
 }

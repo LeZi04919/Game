@@ -2,6 +2,10 @@
 using RoguelikeGame.Prefabs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace RoguelikeGame
 {
@@ -22,8 +26,6 @@ namespace RoguelikeGame
         };
         static void Main(string[] args)
         {
-            var result = CreateMonsters(MonsterType.Boss);
-            Console.WriteLine("Hello World");
             Console.ReadKey();
         }
         /// <summary>
@@ -32,7 +34,300 @@ namespace RoguelikeGame
         /// <param name="monsters"></param>
         public static void BattleUI(IList<Monster> monsters)
         {
+            Action<Prefab, Prefab> PrefabKilledHandle = (source, target) => monsters.Remove((Monster)target);
+            Prefab.PrefabKilledEvent += PrefabKilledHandle;
+            while (monsters.Count > 0)
+            {
+                Clear();
+                Prefabs.AddRange(monsters);                
+                foreach (var monster in monsters)
+                    Console.WriteLine("     [{0,-2}] {1,-5} {2,-8}", monsters.IndexOf(monster), monster.Name, $"{monster.Health}/{monster.MaxHealth}");
+                WriteLine("##############################################");
+                WriteLine("     1.战斗    2.技能    3.物品    4.逃跑");
+                WriteLine("     (选择后将无法后退,请谨慎选择)");
+                switch (Console.ReadKey().KeyChar)
+                {
+                    case '1':
+                        var target = (Monster)SelectTargetUI((IList<Prefab>)monsters);
+                        var damage = Player.Attack(target);
+                        Console.WriteLine("     你对[{0}]{1}造成了{2}点伤害", monsters.IndexOf(target), target.Name, damage);
+                        //对方行动
+                        MonsterBrain(monsters);
+                        break;
+                    case '2':
+                        ReleaseSkillUI(monsters);
+                        //对方行动
+                        MonsterBrain(monsters);
+                        break;
+                    case '3':
+                        var drug = SelectItemUI();
+                        if (drug is null)
+                        {
+                            WriteLine("     您的背包并没有任何药品/食物可供使用");
+                            Console.ReadKey();
+                            break;
+                        }
+                        else
+                            ReleaseItemUI(monsters, drug);
+                        MonsterBrain(monsters);
+                        break;
+                    case '4':
+                        int rdNum = rd.Next(0, 101);
+                        if(rdNum >=75)
+                        {
+                            WriteLine("     你已成功逃跑!", Green);
+                            Thread.Sleep(2500);
+                            Console.ReadKey();
+                        }
+                        else
+                        {
+                            WriteLine("     你尝试逃跑，但是失败了", Red);
+                            Thread.Sleep(2500);
+                            Console.ReadKey();
+                        }
+                        MonsterBrain(monsters);
+                        break;
+                }
+            }
+            Prefab.PrefabKilledEvent -= PrefabKilledHandle;
+        }
+        public static void MonsterBrain(IList<Monster> monsters)
+        {
+            foreach(var monster in monsters)
+            {
+                /// 0 = Attack
+                /// 1 = Skill
+                var action = WeightedRandom(new int[] { 0 , 1 }, new double[] { 0.75,0.25 });
+                Prefab target = RandomChoose(Prefabs.Search<Player>(),1)[0];
+                if (monster.Skills.Count is 0)
+                    action = 0;
+                if(action is 0)
+                {
+                    var damage = monster.Attack(target);
+                    WriteLine($"     {monster.Name}对{target.Name}造成了{damage}点伤害");                    
+                }
+                else
+                {
+                    var skill = RandomChoose(target.Skills.GetAvailableSkills(), 1)[0];
+                    if (skill.Target is TargetType.Self)
+                        target = monster;
+                    else if (skill.Target is TargetType.Monster)
+                        target = RandomChoose(Prefabs.Search<Monster>(), 1)[0];
+                    monster.ReleaseSkill(target, skill);
+                    WriteLine($"     {monster.Name}对{target.Name}释放了名为\"{skill.Name}\"的技能");
+                }
+                Thread.Sleep(2500);
+            }
 
+        }
+        /// <summary>
+        /// 物品详情
+        /// </summary>
+        /// <param name="item"></param>
+        public static void ViewItemUI(Item item)
+        {
+            Clear();
+            WriteLine($"                     {item.Name}");
+            WriteLine($"         {item.Description}");
+            WriteLine($"     数量:{item.Count}");
+            WriteLine($"     可堆叠:{(item.Stackable is true ? "是":"否")}");
+            WriteLine($"     稀有度:{GetItemRarity(item)}\n");
+            WriteLine("     输入非相关选项以退出");
+            if(item.Type is not ItemType.Currency or ItemType.Common)
+                WriteLine("     1. 使用 2. 丢弃");
+            else
+                WriteLine("     1. 丢弃");
+            int userInput = 0;
+            if(int.TryParse(Console.ReadLine(),out userInput))
+            {
+                if (userInput == 1 && item.Type is not ItemType.Currency or ItemType.Common)
+                {
+                    if (item.Type is ItemType.Drug)
+                        Player.Release(SelectTargetUI(Prefabs.GetAllPrefab()), (Drug)item);
+                    else
+                        Player.Dress(item);
+                }
+                else
+                    Player.Items.Remove(item);
+            }
+        }
+        /// <summary>
+        /// 日常查看背包
+        /// </summary>
+        public static void ViewBagUI()
+        {
+            while(true)
+            {
+                Clear();
+                WriteLine("                     背包");
+                Console.WriteLine("     [{0,-2}] {1,-8} {2,-3} {3}", "序号", "名称", "稀有度", "数量");
+                foreach (Item item in Player.Items)
+                    Console.WriteLine("     [{0,-2}] {1,-8} {2,-3} {3}", Player.Items.IndexOf(item), item.Name, item.Rarity, item.Count);
+                WriteLine("     请输入物品序号:");
+                WriteLine("     输入无关选项以退出");
+                int index = -1;
+                if (int.TryParse(Console.ReadLine(), out index) && (index >= 0 && index < Player.Items.Count))
+                    ViewItemUI(Player.Items[index]);
+                else
+                    break;
+            }
+            
+        }
+        /// <summary>
+        /// 释放技能UI
+        /// </summary>
+        /// <param name="monsters"></param>
+        public static void ReleaseSkillUI(IList<Monster> monsters)
+        {
+            Clear();
+            var skill = SelectSkillUI();
+            if(skill.Target is TargetType.Self)
+            {
+                WriteLine("     确认要对自己使用该技能吗?");
+                WriteLine("     Y. 是的");
+                WriteLine("     N. 不了");
+                if (Console.ReadKey().KeyChar is 'Y')
+                    Player.ReleaseSkill(Player, skill);
+                else
+                    ReleaseSkillUI(monsters);
+            }
+            else if(skill.Target is TargetType.Monster)
+            {
+                var target = SelectTargetUI(Prefabs.Search<Monster>());
+                Console.WriteLine("     确认要对[{0}]{1}使用该技能吗?",monsters.IndexOf((Monster)target),target.Name);
+                WriteLine("     Y. 是的");
+                WriteLine("     N. 不了");
+                if (Console.ReadKey().KeyChar is 'Y')
+                    Player.ReleaseSkill(target, skill);
+                else
+                    ReleaseSkillUI(monsters);
+            }
+            else if (skill.Target is TargetType.Player)
+            {
+                var target = SelectTargetUI(Prefabs.Search<Player>());
+                Console.WriteLine("     确认要对{1}使用该技能吗?", target.Name);
+                WriteLine("     Y. 是的");
+                WriteLine("     N. 不了");
+                if (Console.ReadKey().KeyChar is 'Y')
+                    Player.ReleaseSkill(target, skill);
+                else
+                    ReleaseSkillUI(monsters);
+            }
+            else
+            {
+                var target = SelectTargetUI(Prefabs.Search<Prefab>());
+                Console.WriteLine("     确认要对{1}使用该技能吗?", target.Name);
+                WriteLine("     Y. 是的");
+                WriteLine("     N. 不了");
+                if (Console.ReadKey().KeyChar is 'Y')
+                    Player.ReleaseSkill(target, skill);
+                else
+                    BattleUI(monsters);
+            }
+        }
+        public static void ReleaseItemUI(IList<Monster> monsters,Drug drug)
+        {
+            Clear();
+            if (drug.Target is TargetType.Self)
+            {
+                WriteLine("     确认要对自己使用该药品/食物吗?");
+                WriteLine("     Y. 是的");
+                WriteLine("     N. 不了");
+                if (Console.ReadKey().KeyChar is 'Y')
+                    Player.Release(Player, drug);
+                else
+                    ReleaseItemUI(monsters,drug);
+            }
+            else if (drug.Target is TargetType.Monster)
+            {
+                var target = SelectTargetUI(Prefabs.Search<Monster>());
+                Console.WriteLine("     确认要对[{0}]{1}使用该药品/食物吗?", monsters.IndexOf((Monster)target), target.Name);
+                WriteLine("     Y. 是的");
+                WriteLine("     N. 不了");
+                if (Console.ReadKey().KeyChar is 'Y')
+                    Player.Release(target, drug);
+                else
+                    ReleaseItemUI(monsters, drug);
+            }
+            else if (drug.Target is TargetType.Player)
+            {
+                var target = SelectTargetUI(Prefabs.Search<Player>());
+                Console.WriteLine("     确认要对{1}使用该药品/食物吗?", target.Name);
+                WriteLine("     Y. 是的");
+                WriteLine("     N. 不了");
+                if (Console.ReadKey().KeyChar is 'Y')
+                    Player.Release(target, drug);
+                else
+                    ReleaseItemUI(monsters, drug);
+            }
+            else
+            {
+                var target = SelectTargetUI(Prefabs.Search<Prefab>());
+                Console.WriteLine("     确认要对{1}使用该药品/食物吗?", target.Name);
+                WriteLine("     Y. 是的");
+                WriteLine("     N. 不了");
+                if (Console.ReadKey().KeyChar is 'Y')
+                    Player.Release(target, drug);
+                else
+                    BattleUI(monsters);
+            }
+        }
+        /// <summary>
+        /// 选择技能UI
+        /// </summary>
+        /// <returns></returns>
+        public static Skill SelectSkillUI()
+        {
+            Clear();
+            Console.WriteLine("     [{0,-2}] {1,-6} {2,-6}","序号","技能名称","剩余冷却轮数");
+            foreach (Skill skill in Player.Skills)
+            {
+                Console.WriteLine("     [{0,-2}] {1,-6} {2,-6}", Player.Skills.IndexOf(skill), skill.Name, Player.Skills.InCoolDown(skill) is true ? Player.Skills.GetCoolDownRound(skill) : "N/A");
+                WriteLine($"              {skill.Description}",Green);
+            }
+            int index = -1;
+            while (!(index >= 0 && index < Player.Skills.Count) && Player.Skills.InCoolDown(Player.Skills[index]))
+                int.TryParse(Console.ReadLine(), out index);
+            return Player.Skills[index];
+        }
+        /// <summary>
+        /// 选择目标UI
+        /// </summary>
+        /// <param name="targets"></param>
+        /// <returns></returns>
+        public static Prefab SelectTargetUI(IList<Prefab> targets)
+        {
+            Clear();
+            foreach(var target in targets)
+                Console.WriteLine("     [{0,-2}] {1,-5} {2,-8}", targets.IndexOf(target), target.Name, $"{target.Health}/{target.MaxHealth}");
+            WriteLine("     \n请输入你想选取的目标:");
+            int index = -1;
+            while(!(index >= 0 && index < targets.Count))
+                int.TryParse(Console.ReadLine(), out index);
+            return targets[index];
+        }
+        /// <summary>
+        /// 选择物品
+        /// </summary>
+        /// <returns></returns>
+        public static Drug? SelectItemUI()
+        {
+            Clear();
+            var drugs = Player.Items[ItemType.Drug];
+            if (drugs.Count() == 0)
+                return null;
+            WriteLine("                     背包");
+            Console.WriteLine("     [{0,-2}] {1,-8} {2,-3} {3}", "序号", "名称", "稀有度", "数量");
+            foreach (Item item in drugs)
+            {
+                Console.WriteLine("     [{0,-2}] {1,-8} {2,-3} {3}", drugs.ToList().IndexOf(item), item.Name, item.Rarity, item.Count);
+                Console.WriteLine("               {0}",item.Description);
+            }
+            WriteLine("     请输入物品序号:");
+            int index = -1;
+            while (!(index >= 0 && index < drugs.Count()))
+                int.TryParse(Console.ReadLine(), out index);
+            return (Drug)drugs[index];
         }
         /// <summary>
         /// 普通商店的对话UI
@@ -48,9 +343,10 @@ namespace RoguelikeGame
             {
                 var item = keyValuePair.Key;
                 var price = keyValuePair.Value;
-                Console.WriteLine("     [{0,-2}] {1,-15} {2,-3} {3,-5}$", shopItems.IndexOf(item), item.Name, item.Rarity, price);
+                Console.WriteLine("     [{0,-2}] {1,-15} {2,-3} {3,-5}", shopItems.IndexOf(item), item.Name, GetItemRarity(item), price);
+                Console.WriteLine("               ", item.Description);
             }
-            WriteLine("     稀有度一览:  \n0 普通\n1 稀有\n2 史诗\n3 传奇");
+            //WriteLine("     稀有度一览:  \n0 普通\n1 稀有\n2 史诗\n3 传奇");
             WriteLine($"     您持有的通用货币:{Player.Items["通用货币"][0].Count}");
             WriteLine("     请输入商品序号以购买(非相关输入视为退出):");
             var userInput = Console.ReadLine();

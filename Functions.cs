@@ -15,6 +15,21 @@ namespace RoguelikeGame
         const ConsoleColor Yellow = ConsoleColor.Yellow;
         const ConsoleColor White = ConsoleColor.White;
 
+        static Func<Item, string> GetItemRarity = item => 
+        {
+            switch (item.Rarity) 
+            {
+                case RarityType.Common:
+                    return "普通";
+                case RarityType.Rare:
+                    return "稀有";
+                case RarityType.Epic:
+                    return "史诗";
+                default:
+                    return "传奇";
+
+            }
+        };
         static Random rd = new();
         /// <summary>
         /// 表示当前Area信息
@@ -30,12 +45,7 @@ namespace RoguelikeGame
         /// </summary>
         static int TotalStep = 0;
         static PrefabCollection Prefabs = new();//当前场景下的实体集合   
-        static event Action<Prefab> PrefabKilledEvent = prefab => 
-        {
-            if(prefab.Type is PrefabType.Monster)
-                Console.WriteLine("");
-        };//被杀死对象
-        static event Action<Prefab, Prefab, long> PrefabAttacked;//Source(攻击者)，Target(受击者),Damage(伤害大小)
+        
 
         /// <summary>
         /// 投骰子进行下一步

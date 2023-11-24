@@ -58,7 +58,13 @@ namespace RoguelikeGame.Class
         public Item this[int index]
         {
             get { return items[index]; }
-            set { items[index] = value; }
+            set 
+            {
+                if (items[index].Count <=0 && items[index].Type is not ItemType.Currency)
+                    items.RemoveAt(index);
+                else
+                    items[index] = value;
+            }
         }
         //以下indexer用于查询，无set
         public Item[] this[ItemType Type]
@@ -118,6 +124,7 @@ namespace RoguelikeGame.Class
         {
             items.Remove(this[index]);
         }
+        public void Remove(Item item) => items.Remove(item);
         public int IndexOf(Item target)
         {
             return items.IndexOf(target);
