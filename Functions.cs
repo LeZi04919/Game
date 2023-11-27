@@ -10,10 +10,10 @@ namespace RoguelikeGame
 {
     internal static partial class Game
     {
-        const ConsoleColor Red = ConsoleColor.Red;
-        const ConsoleColor Green = ConsoleColor.Green;
-        const ConsoleColor Yellow = ConsoleColor.Yellow;
-        const ConsoleColor White = ConsoleColor.White;
+        internal const ConsoleColor Red = ConsoleColor.Red;
+        internal const ConsoleColor Green = ConsoleColor.Green;
+        internal const ConsoleColor Yellow = ConsoleColor.Yellow;
+        internal const ConsoleColor White = ConsoleColor.White;
 
         static Func<Item, string> GetItemRarity = item => 
         {
@@ -34,7 +34,7 @@ namespace RoguelikeGame
         /// <summary>
         /// 表示当前Area信息
         /// </summary>
-        static MapArea Area = new MapArea()
+        internal static MapArea Area = new MapArea()
         {
             Type = AreaType.Plain,
             AreaStep = 90,
@@ -43,8 +43,8 @@ namespace RoguelikeGame
         /// <summary>
         /// 表示Player已走步数
         /// </summary>
-        static int TotalStep = 0;
-        static PrefabCollection Prefabs = new();//当前场景下的实体集合   
+        internal static int TotalStep = 0;
+        internal static PrefabCollection Prefabs = new();//当前场景下的实体集合   
         
 
         /// <summary>
@@ -53,7 +53,13 @@ namespace RoguelikeGame
         /// <returns></returns>
         public static Result NextStep()
         {
-            var result = new Result();
+            if (Area.AreaStep == Area.PlayerStep)
+                return new Result()
+                {
+                    Type = ResultType.AreaFinish
+                };
+
+            var result = new Result();            
             var step = rd.Next(1,7);
             Area.PlayerStep += step;
             var remainingStep = Area.AreaStep - Area.PlayerStep;
@@ -814,13 +820,13 @@ namespace RoguelikeGame
         public static void Clear() 
         {
             Console.Clear();
-            WriteLine("##############################################");
-            WriteLine($"         Name      :{Player.Name}");
-            WriteLine($"         Health    :{Player.Health}");
-            WriteLine($"         Armor     :{Player.Armor}");
-            WriteLine($"         Level     :{Player.Level}");
-            WriteLine($"         NextLevel :{Player.ExpMaxLimit - Player.Experience}");
-            WriteLine("##############################################");
+            WriteLine("###################################################");
+            WriteLine($"              Name      :{Player.Name}");
+            WriteLine($"              Health    :{Player.Health}");
+            WriteLine($"              Armor     :{Player.Armor}");
+            WriteLine($"              Level     :{Player.Level}");
+            WriteLine($"              NextLevel :{Player.ExpMaxLimit - Player.Experience}");
+            WriteLine("###################################################");
         }
     }
 }

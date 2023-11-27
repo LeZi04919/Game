@@ -23,18 +23,35 @@ namespace RoguelikeGame
                 Directory.CreateDirectory(GamePath);
             if(!Directory.Exists(ArchivePath))
                 Directory.CreateDirectory(ArchivePath);
-            if (!File.Exists($"{ArchivePath}/Game.sf"))
+            if (!File.Exists($"{ArchivePath}/Game00.sf"))
             {
-                var sw = File.Create($"{ArchivePath}/Game.sf");
+                var sw = File.Create($"{ArchivePath}/Game00.sf");
+                sw.Close();
+            }
+            if (!File.Exists($"{ArchivePath}/Game01.sf"))
+            {
+                var sw = File.Create($"{ArchivePath}/Game01.sf");
+                sw.Close();
+            }
+            if (!File.Exists($"{ArchivePath}/Game02.sf"))
+            {
+                var sw = File.Create($"{ArchivePath}/Game02.sf");
                 sw.Close();
             }
             else
                 Load();
         }
-        static void Load() => Game.Player = DecryptArchive<Player>($"{ArchivePath}/Game.sf");
-        static void Save()
+        static void Load()
         {
-            EncryptArchive($"{ArchivePath}/Game.sf",Game.Player);
+            Game.Player = DecryptArchive<Player>($"{ArchivePath}/Game00.sf");
+            Game.TotalStep = DecryptArchive<int>($"{ArchivePath}/Game01.sf");
+            Game.Area = DecryptArchive<MapArea>($"{ArchivePath}/Game02.sf");
+        }
+        public static void Save()
+        {
+            EncryptArchive($"{ArchivePath}/Game00.sf",Game.Player);
+            EncryptArchive($"{ArchivePath}/Game01.sf",Game.TotalStep);
+            EncryptArchive($"{ArchivePath}/Game02.sf",Game.Area);
         }
         static void EncryptArchive<T>(string Path,T obj)//加密存档
         {
@@ -50,20 +67,31 @@ namespace RoguelikeGame
         }
         static T? DecryptArchive<T>(string Path)//解密存档
         {
-            var sw = File.Open(Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            byte[] buffer = new byte[sw.Length];
-            while (sw.Read(buffer, 0, buffer.Length) > 0) ;
-            byte[] DecryptBuffer = Decrypt(buffer);
-            sw.Close();
-            return (T)new XmlSerializer(typeof(T)).Deserialize(new MemoryStream(DecryptBuffer));
+            try
+            {
+                var sw = File.Open(Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                byte[] buffer = new byte[sw.Length];
+                while (sw.Read(buffer, 0, buffer.Length) > 0) ;
+                byte[] DecryptBuffer = Decrypt(buffer);
+                sw.Close();
+                return (T)new XmlSerializer(typeof(T)).Deserialize(new MemoryStream(DecryptBuffer));
+            }
+            catch
+            {
+                Game.WriteLine($"[ERROR]存档文件\"{Path}\"读取失败",Game.Red);
+                Console.ReadKey();
+                Environment.Exit(-1);
+                return default(T);
+            }
         }
 
     }
     internal static partial class Game
     {
+        static int Layer = 0;
         public static Player Player = new()
         {
-            Name = "",
+            Name = "NotDefine",
             MaxHealth = 20,
             Armor = 2,
             Damage = 5,
@@ -76,11 +104,155 @@ namespace RoguelikeGame
         };
         static void Main(string[] args)
         {
-            Console.ReadKey();
+            WriteLine("[INFO]初始化中...");
+            Thread.Sleep(2500);
+            Console.Write("Done\n");
+            WriteLine("[INFO]存档检查...");
+            Archive.Init();
+            Thread.Sleep(1000);
+            Console.Write("Done\n");
+            WriteLine("[Success]Finshed",Green);
+            Thread.Sleep(1500);
+            InitUI();
+        }
+        public static void InitUI()
+        {
+            Console.Clear();
+            WriteLine("###################################################");
+            WriteLine("                     RoguelikeGame               ");
+            Console.WriteLine("            {0,-12} : {1,-50}               ","Author","LeZi");
+            Console.WriteLine("            {0,-12} : {1,-50}               ","Version","v0.1");
+            Console.WriteLine("            {0,-12} : {1,-50}               ","Project","https://github.com/LeZi9916/Game");
+            Console.WriteLine("            {0,-12} : {1,-50}               ","Release Date","2023/11/27");
+            WriteLine("###################################################");
+            if (Player.Name == "NotDefine")
+            {
+                WriteLine("     你看上去是第一次游玩,请先给你自己起个名字吧:");
+                Player.Name = Console.ReadLine();
+                Archive.Save();
+                InitUI();
+            }
+            WriteLine($"     你好,亲爱的{Player.Name},你想?");
+            WriteLine("     A. 开始游戏");
+            WriteLine("     B. 退出");
+            WriteLine("     C. 我想薅羊毛!");
+            switch(Console.ReadKey().Key)
+            {
+                case ConsoleKey.A:
+                    CommonUI();
+                    break;
+                case ConsoleKey.B:
+                    Environment.Exit(114514);
+                    break;
+                case ConsoleKey.C:
+                    Console.Clear();
+                    Thread.Sleep(5000);
+                    Console.WriteLine("System: 好的，请稍等");
+                    Thread.Sleep(int.MaxValue);
+                    Environment.Exit(250);
+                    break;
+                default:
+                    if(Layer < 500)
+                        CommonUI();
+                    else
+                    {
+                        Console.Clear();
+                        Console.WriteLine("System: 你弱智吗?");
+                        Thread.Sleep(int.MaxValue);
+                        Environment.Exit(250);
+                    }
+                    break;
+            }
         }
         public static void CommonUI()
         {
+            while(true)
+            {
+                Clear();
+                WriteLine($"     你已走了{Area.PlayerStep}步\n");
+                WriteLine("     Enter. 投骰子");
+                WriteLine("     B.     查看背包");
+                WriteLine("     S.     查看技能");
+                WriteLine("     E.     保存并退出");
+                switch(Console.ReadKey().Key)
+                {
+                    case ConsoleKey.Enter:
+                        WriteLine("     命运的骰子正在转动...");
+                        Thread.Sleep(2500);
+                        var result = NextStep();
+                        WriteLine($"     你向前走了{result.Step}");
 
+                        if (result.Type is ResultType.Nothing)
+                            WriteLine("     你环顾四周，什么都没发生");
+                        else if (result.Type is ResultType.Event)
+                            EventHandle(result.Event);
+                        else if (result.Type is ResultType.Battle)
+                        {
+                            WriteLine($"     突然，你在前进的路上遇到了魔物");
+                            Thread.Sleep(2500);
+                            WriteLine($"     准备战斗!");
+                            Console.ReadKey();
+                            BattleUI(result.Monsters);
+                        }
+                        else if (result.Type is ResultType.Boss)
+                        {
+                            WriteLine($"     你已接近该区域的尽头，是时候挑战区域Boss了");
+                            Thread.Sleep(2500);
+                            WriteLine($"     准备战斗!");
+                            Console.ReadKey();
+                            BattleUI(result.Monsters);
+                        }
+                        else if (result.Type is ResultType.AreaFinish)
+                        {
+                            WriteLine($"     经过了无数战斗的洗礼，你在这篇区域留下了属于你的足迹");
+                            Thread.Sleep(2500);
+                            WriteLine($"     准备好前往下一区域了吗？");
+                            Thread.Sleep(2500);
+                            WriteLine("     Y. 我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了");
+                            WriteLine("     N. 我想先休息一下");
+                            Archive.Save();
+                            while (Console.ReadKey().Key is not ConsoleKey.Y) ;
+                            Clear();
+                            WriteLine("     少年祷告中...");
+                            Thread.Sleep(5000);
+                            var area = NextArea();
+                            switch(area)
+                            {
+                                case AreaType.City:
+                                    WriteLine("     你已进入城市!");
+                                    break;
+                                case AreaType.Icefield:
+                                    WriteLine("     你已进入冰川区域!");
+                                    break;
+                                case AreaType.Grassland:
+                                    WriteLine("     您已进入草原区域!");
+                                    break;
+                                case AreaType.Plain:
+                                    WriteLine("     您已进入平原区域!");
+                                    break;
+                                case AreaType.Volcano:
+                                    WriteLine("     您已进入火山区域!");
+                                    break;
+                                case AreaType.Desert:
+                                    WriteLine("     您已进入沙漠区域!");
+                                    break;
+
+                            }
+                            Console.ReadKey();
+                        }
+                        break;
+                    case ConsoleKey.B:
+                        break;
+                    case ConsoleKey.S:
+                        break;
+                    case ConsoleKey.E:
+                        WriteLine("[System]正在保存，请稍后...",Green);
+                        Thread.Sleep(2500);
+                        Archive.Save();
+                        Environment.Exit(0);
+                        break;
+                }
+            }
         }
         /// <summary>
         /// 战斗UI
