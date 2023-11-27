@@ -3,6 +3,7 @@ using RoguelikeGame.Prefabs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using static RoguelikeGame.GameResources;
 
@@ -809,14 +810,8 @@ namespace RoguelikeGame
             Console.WriteLine(text);
             Console.ForegroundColor = defaultColor;
         }
-        public static void WriteLine(string text)
-        {
-            Console.WriteLine(text);
-        }
-        public static void WriteLine()
-        {
-            Console.WriteLine();
-        }
+        public static void WriteLine(string text) => Console.WriteLine(text);
+        public static void WriteLine() => Console.WriteLine();
         public static void Clear() 
         {
             Console.Clear();
@@ -828,5 +823,10 @@ namespace RoguelikeGame
             WriteLine($"              NextLevel :{Player.ExpMaxLimit - Player.Experience}");
             WriteLine("###################################################");
         }
+        public static string GetBase64Str(string input) => Convert.ToBase64String(Encoding.UTF8.GetBytes(input));
+        public static string GetBase64Str(double input) => Convert.ToBase64String(Encoding.UTF8.GetBytes(input.ToString()));
+        public static string GetBase64Str(float input) => Convert.ToBase64String(Encoding.UTF8.GetBytes(input.ToString()));
+        public static string GetBase64Str(long input) => Convert.ToBase64String(Encoding.UTF8.GetBytes(input.ToString()));
+        public static string Base64ToStr(string base64Str) => Encoding.UTF8.GetString(Convert.FromBase64String(base64Str)); 
     }
 }

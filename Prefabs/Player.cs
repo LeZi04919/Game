@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using RoguelikeGame.Class;
-using RoguelikeGame.Interfaces;
+using static RoguelikeGame.Game;
 
 namespace RoguelikeGame.Prefabs
 {
@@ -106,6 +108,68 @@ namespace RoguelikeGame.Prefabs
                     break;
             }
             return null;
+        }
+        public string Serialize()
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            ///Player主要属性序列化
+            string serializeStr = $"{GetBase64Str(Name)};"; 
+            serializeStr += $"{GetBase64Str(Level)};";
+            serializeStr += $"{GetBase64Str(_maxHealth)};";
+            serializeStr += $"{GetBase64Str(_health)};";
+            serializeStr += $"{GetBase64Str(_armor)};";
+            serializeStr += $"{GetBase64Str(_damage)};";
+            serializeStr += $"{GetBase64Str(_dodge)};";
+            serializeStr += $"{GetBase64Str(Experience)};";
+            serializeStr += $"{GetBase64Str(ExpMaxLimit)};";
+            ///穿戴部分序列化
+            serializeStr += $"{GetBase64Str(JsonSerializer.Serialize(Hand, options))};";
+            serializeStr += $"{GetBase64Str(JsonSerializer.Serialize(Body, options))};";
+            ///ItemCollection序列化
+            serializeStr += $"{GetBase64Str(Items.Serialize())};";
+            ///SkillCollection序列化
+            serializeStr += $"{GetBase64Str(Skills.Serialize())}";
+
+            return GetBase64Str(serializeStr);
+        }
+        public static Player Deserialize(string serializeStr)
+        {
+            var deserializeArray = Base64ToStr(serializeStr).Split(";");
+            ItemCollection items = new();
+            SkillCollection skills = new();
+
+            var name = Base64ToStr(deserializeArray[0]);
+            long level = long.Parse(Base64ToStr(deserializeArray[1]));
+            long maxHealth = long.Parse(Base64ToStr(deserializeArray[2]));
+            long health = long.Parse(Base64ToStr(deserializeArray[3]));
+            long armor = long.Parse(Base64ToStr(deserializeArray[4]));
+            long damage = long.Parse(Base64ToStr(deserializeArray[5]));
+            float dodge = float.Parse(Base64ToStr(deserializeArray[6]));
+            long experience = long.Parse(Base64ToStr(deserializeArray[7]));
+            long expMaxLimit = long.Parse(Base64ToStr(deserializeArray[8]));
+            Weapon? hand = JsonSerializer.Deserialize<Weapon>(Base64ToStr(deserializeArray[9]));
+            Armor? body = JsonSerializer.Deserialize<Armor>(Base64ToStr(deserializeArray[10]));
+
+            items.Deserialize(Base64ToStr(deserializeArray[11]));
+            skills.Deserialize(Base64ToStr(deserializeArray[12]));
+            Player player = new()
+            {
+                Type = PrefabType.Player,
+                Name = name,
+                MaxHealth = maxHealth,
+                Health = health,
+                Armor = armor,
+                Dodge = dodge,
+                Damage = damage,
+                Level = level,
+                Experience = experience,
+                ExpMaxLimit = expMaxLimit,
+                Items = items,
+                Skills = skills,
+                Hand = hand,
+                Body = body
+            };
+            return player;
         }
     }
 }

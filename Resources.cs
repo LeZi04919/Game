@@ -150,7 +150,7 @@ namespace RoguelikeGame
     /// <summary>
     /// 表示区域种类
     /// </summary>
-    internal enum AreaType
+    public enum AreaType
     {
         /// <summary>
         /// 城市区域
@@ -211,7 +211,7 @@ namespace RoguelikeGame
         Boss,
         AreaFinish
     }
-    internal struct MapArea
+    public struct MapArea
     {
         /// <summary>
         /// 表示区域类型

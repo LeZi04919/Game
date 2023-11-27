@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using RoguelikeGame;
 using RoguelikeGame.Interfaces;
+using static RoguelikeGame.Game;
 
 namespace RoguelikeGame.Class
 {
@@ -112,5 +114,15 @@ namespace RoguelikeGame.Class
             => ((IEnumerable)Skills).GetEnumerator();
         public void ForEach(Action<Skill> action)
             => Skills.ForEach(action);
+        public string Serialize()
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            return GetBase64Str(JsonSerializer.Serialize(Skills, options));
+        }
+        public void Deserialize(string serializeStr)
+        {
+            var _serializeStr = Base64ToStr(serializeStr);
+            Skills = JsonSerializer.Deserialize<List<Skill>>(_serializeStr);
+        }
     }
 }

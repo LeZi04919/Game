@@ -12,11 +12,11 @@ namespace RoguelikeGame.Prefabs
     internal class Prefab : IPrefab, IUpgradeable
     {
         static Random rd = new();
-        long _maxHealth;
-        long _health;
-        long _armor;
-        long _damage;
-        float _dodge;
+        protected long _maxHealth;
+        protected long _health;
+        protected long _armor;
+        protected long _damage;
+        protected float _dodge;
         public static event Action<Prefab, Prefab> PrefabKilledEvent = (source, target) => Console.WriteLine("     {0}已被{1}杀死", target.Name, source.Name);//被杀死对象
         public static event Action<Prefab, Prefab, long> PrefabAttacked;//Source(攻击者)，Target(受击者),Damage(伤害大小)
         public required string Name
@@ -120,8 +120,8 @@ namespace RoguelikeGame.Prefabs
         public required long Level { get; set; }//等级
         public required PrefabType Type { get; set; }//实体类别
 
-        public Weapon? Hand;//手部穿戴物
-        public Armor? Body;//身体穿戴物
+        protected Weapon? Hand;//手部穿戴物
+        protected Armor? Body;//身体穿戴物
 
         public BuffCollection Buffs = new();
         public required SkillCollection Skills {  get; set; }

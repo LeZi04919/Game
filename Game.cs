@@ -8,6 +8,8 @@ using static SecurityTool.Security;
 using System.Threading;
 using System.Xml.Serialization;
 using static RoguelikeGame.GameResources;
+using System.Text;
+using System.Text.Json;
 
 namespace RoguelikeGame
 {
@@ -24,64 +26,55 @@ namespace RoguelikeGame
             if(!Directory.Exists(ArchivePath))
                 Directory.CreateDirectory(ArchivePath);
             if (!File.Exists($"{ArchivePath}/Game00.sf"))
-            {
-                var sw = File.Create($"{ArchivePath}/Game00.sf");
-                sw.Close();
-            }
+                EncryptArchive($"{ArchivePath}/Game00.sf", "");
             if (!File.Exists($"{ArchivePath}/Game01.sf"))
-            {
-                var sw = File.Create($"{ArchivePath}/Game01.sf");
-                sw.Close();
-            }
+                EncryptArchive($"{ArchivePath}/Game01.sf", "");
             if (!File.Exists($"{ArchivePath}/Game02.sf"))
-            {
-                var sw = File.Create($"{ArchivePath}/Game02.sf");
-                sw.Close();
-            }
+                EncryptArchive($"{ArchivePath}/Game02.sf", "");
             else
                 Load();
         }
         static void Load()
         {
-            Game.Player = DecryptArchive<Player>($"{ArchivePath}/Game00.sf");
-            Game.TotalStep = DecryptArchive<int>($"{ArchivePath}/Game01.sf");
-            Game.Area = DecryptArchive<MapArea>($"{ArchivePath}/Game02.sf");
+            Game.Player = Player.Deserialize(DecryptArchive($"{ArchivePath}/Game00.sf"));
+            Game.TotalStep = JsonSerializer.Deserialize<int>(Game.Base64ToStr(DecryptArchive($"{ArchivePath}/Game01.sf")));
+            Game.Area = JsonSerializer.Deserialize<MapArea>(Game.Base64ToStr(DecryptArchive($"{ArchivePath}/Game02.sf")));
         }
         public static void Save()
         {
-            EncryptArchive($"{ArchivePath}/Game00.sf",Game.Player);
-            EncryptArchive($"{ArchivePath}/Game01.sf",Game.TotalStep);
-            EncryptArchive($"{ArchivePath}/Game02.sf",Game.Area);
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            EncryptArchive($"{ArchivePath}/Game00.sf",Game.Player.Serialize());
+            EncryptArchive($"{ArchivePath}/Game01.sf",Game.GetBase64Str(JsonSerializer.Serialize(Game.TotalStep,options)));
+            EncryptArchive($"{ArchivePath}/Game02.sf", Game.GetBase64Str(JsonSerializer.Serialize(Game.Area, options)));
         }
-        static void EncryptArchive<T>(string Path,T obj)//加密存档
+        static void EncryptArchive(string Path,string serializeStr)//加密存档
         {
             //var sw = File.Open($"{ArchivePath}/Game.sf",FileMode.Open,FileAccess.Read,FileShare.ReadWrite);
-            var sw = File.Open(Path, FileMode.Open,FileAccess.Read,FileShare.ReadWrite);
-            MemoryStream ms = new();
-            XmlSerializer serializer = new(typeof(T));
-            serializer.Serialize(ms, obj);
-            byte[] buffer = ms.GetBuffer();
-            byte[] encryptBuffer = Encrypt(buffer);
-            sw.Write(encryptBuffer, 0, encryptBuffer.Length);
+            var sw = File.Open(Path, FileMode.OpenOrCreate,FileAccess.Write,FileShare.ReadWrite);
+            byte[] buffer = Encoding.UTF8.GetBytes(serializeStr);
+            //byte[] encryptBuffer = Encrypt(buffer);
+            //sw.Write(encryptBuffer, 0, encryptBuffer.Length);
+            sw.Write(buffer, 0, buffer.Length);
             sw.Close();
         }
-        static T? DecryptArchive<T>(string Path)//解密存档
+        static string DecryptArchive(string Path)//解密存档
         {
             try
             {
                 var sw = File.Open(Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 byte[] buffer = new byte[sw.Length];
                 while (sw.Read(buffer, 0, buffer.Length) > 0) ;
-                byte[] DecryptBuffer = Decrypt(buffer);
+                //byte[] DecryptBuffer = Decrypt(buffer);
+                byte[] DecryptBuffer = buffer;
                 sw.Close();
-                return (T)new XmlSerializer(typeof(T)).Deserialize(new MemoryStream(DecryptBuffer));
+                return Encoding.UTF8.GetString(DecryptBuffer);
             }
             catch
             {
                 Game.WriteLine($"[ERROR]存档文件\"{Path}\"读取失败",Game.Red);
                 Console.ReadKey();
                 Environment.Exit(-1);
-                return default(T);
+                return null;
             }
         }
 

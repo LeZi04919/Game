@@ -1,8 +1,9 @@
-﻿using RoguelikeGame.Interfaces;
+﻿using static RoguelikeGame.Game;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace RoguelikeGame.Class
 {
@@ -41,19 +42,16 @@ namespace RoguelikeGame.Class
             return true;
         }
     }
-    internal class ItemCollection :IEnumerable
+    internal class ItemCollection : IEnumerable
     {
         List<Item> items;
-        public ItemCollection():this(15)
+        public ItemCollection() : this(15)
         {
-            
+
         }
-        public ItemCollection(int capacity)
-        {
-            items = new(capacity);
-        }
+        public ItemCollection(int capacity) => items = new(capacity);
         public int Count
-        { get { return items.Count; } }
+        { get => items.Count; }
         
         public Item this[int index]
         {
@@ -120,18 +118,19 @@ namespace RoguelikeGame.Class
                     items.Add(sItem);
             return true;
         }
-        public void Remove(int index)
-        {
-            items.Remove(this[index]);
-        }
+        public void Remove(int index) => items.Remove(this[index]);
         public void Remove(Item item) => items.Remove(item);
-        public int IndexOf(Item target)
+        public int IndexOf(Item target) => items.IndexOf(target);
+        public IEnumerator GetEnumerator() => items.GetEnumerator();
+        public string Serialize()
         {
-            return items.IndexOf(target);
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            return GetBase64Str(JsonSerializer.Serialize(items, options));
         }
-        public IEnumerator GetEnumerator()
+        public void Deserialize(string serializeStr)
         {
-            return items.GetEnumerator();
+            var _serializeStr = Base64ToStr(serializeStr);
+            items = JsonSerializer.Deserialize<List<Item>>(_serializeStr);
         }
     }
 }
