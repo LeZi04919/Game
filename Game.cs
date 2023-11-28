@@ -235,6 +235,7 @@ namespace RoguelikeGame
                         }
                         break;
                     case ConsoleKey.B:
+                        ViewBagUI();
                         break;
                     case ConsoleKey.S:
                         break;
@@ -426,9 +427,9 @@ namespace RoguelikeGame
             {
                 Clear();
                 WriteLine("                     背包");
-                Console.WriteLine("     [{0,-2}] {1,-8} {2,-3} {3}", "序号", "名称", "稀有度", "数量");
+                Console.WriteLine("     {0,-7} {1,-25} {2,-6} {3}", "[Index]", "Name".PadRight(25, ' '), "Rarity".PadRight(6, ' '), "Count");
                 foreach (Item item in Player.Items)
-                    Console.WriteLine("     [{0,-2}] {1,-8} {2,-3} {3}", Player.Items.IndexOf(item), item.Name, item.Rarity, item.Count);
+                    Console.WriteLine("     {0,-7} {1,-25} {2,-6} {3}", $"[{Player.Items.IndexOf(item)}]".PadRight(7, ' '), item.Name is null ? "".PadRight(25, ' ') : item.Name.PadRight(25, ' '), item.Rarity, item.Count);
                 WriteLine("     请输入物品序号:");
                 WriteLine("     输入无关选项以退出");
                 int index = -1;
