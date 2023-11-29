@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using static SecurityTool.Security;
 using System.Threading;
-using System.Xml.Serialization;
 using static RoguelikeGame.GameResources;
 using System.Text;
 using System.Text.Json;

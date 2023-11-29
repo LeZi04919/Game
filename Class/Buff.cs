@@ -1,14 +1,14 @@
-﻿using RoguelikeGame;
-using RoguelikeGame.Prefabs;
+﻿using RoguelikeGame.Prefabs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using RoguelikeGame.Interfaces;
 using static RoguelikeGame.Game;
 
 namespace RoguelikeGame.Class
 {
-    internal class Buff
+    internal class Buff : ISerializable<Buff>
     {
         /// <summary>
         /// 表示该Buff的影响
@@ -26,13 +26,59 @@ namespace RoguelikeGame.Class
         /// 表示该Buff的值，可为整数亦可为百分比；当Effect属于DamageEffect或HPRecovery时，此值表示百分比，且必定为正数
         /// </summary>
         public required float Value;
-
         public Buff()
         {
         
         }
+    
+        public static string Serialize(Buff? buff)
+        {
+            string serializeStr = "";
+            if(buff is null)
+                serializeStr = $"{GetBase64Str("null")}"; 
+            else
+            {
+                serializeStr = $"{GetBase64Str((int)buff.Effect)};";            
+                serializeStr += $"{GetBase64Str(buff.Rounds)};";
+                serializeStr += $"{GetBase64Str((int)buff.OverlayType)};";
+                serializeStr += $"{GetBase64Str(buff.Value)}";
+            }
+            return GetBase64Str(serializeStr);
+        }
+        public static Buff? Deserialize(string serializeStr)
+        {
+            if (Base64ToStr(serializeStr) == "null")
+                return null;
+            var deserializeArray = Base64ToStr(serializeStr).Split(";",StringSplitOptions.RemoveEmptyEntries);
+            BuffEffect effect = (BuffEffect)int.Parse(deserializeArray[0]);
+            int rounds = int.Parse(deserializeArray[1]);
+            Overlay overlayType = (Overlay)int.Parse(deserializeArray[2]);
+            float value = float.Parse(deserializeArray[3]);
+            return new()
+            {
+                Effect = effect,
+                Rounds = rounds,
+                OverlayType = overlayType,
+                Value = value
+            };
+        }
+        public static string SerializeArray(IEnumerable<Buff?> buffs)
+        {
+            string serializeStr = "";            
+            foreach(var buff in buffs)
+                serializeStr += $"{Buff.Serialize(buff)};";
+            return GetBase64Str(serializeStr);
+        }
+        public static Buff?[] DeserializeArray(string serializeStr)
+        {
+            var deserializeArray = Base64ToStr(serializeStr).Split(";",StringSplitOptions.RemoveEmptyEntries);
+            List<Buff?> buffs = new();
+            foreach(var buffStr in deserializeArray)
+                buffs.Add(Buff.Deserialize(buffStr));
+            return buffs.ToArray();
+        }
     }
-    internal class BuffCollection : IEnumerable
+    internal class BuffCollection : IEnumerable<Buff>
     {
         static BuffEffect[] NegativeEffect = new BuffEffect[]
         {
@@ -86,10 +132,8 @@ namespace RoguelikeGame.Class
                     return true;
             return false;
         }
-        public IEnumerator GetEnumerator()
-        {
-            return ((IEnumerable)Buffs).GetEnumerator();
-        }
+        public IEnumerator<Buff> GetEnumerator() => ((IEnumerable<Buff>)Buffs).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<Buff>)Buffs).GetEnumerator();
         public void Add(Buff newBuff)
         {
             if (newBuff.Effect is BuffEffect.ClearNegativeBuff)

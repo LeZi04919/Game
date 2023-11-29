@@ -212,7 +212,7 @@ namespace RoguelikeGame.Prefabs
     }
     
     
-    internal class PrefabCollection : IEnumerable
+    internal class PrefabCollection : IEnumerable<Prefab>
     {
         List<Prefab> Prefabs = new();
 
@@ -243,22 +243,10 @@ namespace RoguelikeGame.Prefabs
                 return results.ToArray();
             }
         }
-        public void Add(Prefab newPrefab)
-        {
-            Prefabs.Add(newPrefab);
-        }
-        public void AddRange(IEnumerable<Prefab> prefabs)
-        {
-            Prefabs.AddRange(prefabs);
-        }
-        public void Remove(Prefab oldPrefab)
-        {
-            Prefabs.Remove(oldPrefab);
-        }
-        public Prefab[] GetAllPrefab()
-        {
-            return Prefabs.ToArray();
-        }
+        public void Add(Prefab newPrefab) => Prefabs.Add(newPrefab);
+        public void AddRange(IEnumerable<Prefab> prefabs) => Prefabs.AddRange(prefabs);
+        public void Remove(Prefab oldPrefab) => Prefabs.Remove(oldPrefab);
+        public Prefab[] GetAllPrefab() => Prefabs.ToArray();
         public T[] Search<T>() where T: Prefab
         {
             return Enumerable.Cast<T>(from prefab in Prefabs
@@ -268,12 +256,10 @@ namespace RoguelikeGame.Prefabs
         public T[] Search<T>(string prefabName) where T: Prefab
         {
             return Enumerable.Cast<T>(from prefab in Prefabs
-                                       where (prefab.GetType() == typeof(T) && prefab.Name.Contains(prefabName))
+                                       where prefab.GetType() == typeof(T) && prefab.Name.Contains(prefabName)
                                        select prefab).ToArray();            
         }
-        public IEnumerator GetEnumerator()
-        {
-            return ((IEnumerable)Prefabs).GetEnumerator();
-        }
+        public IEnumerator<Prefab> GetEnumerator() => ((IEnumerable<Prefab>)Prefabs).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<Prefab>)Prefabs).GetEnumerator();
     }
 }

@@ -123,8 +123,8 @@ namespace RoguelikeGame.Prefabs
             serializeStr += $"{GetBase64Str(player.Experience)};";
             serializeStr += $"{GetBase64Str(player.ExpMaxLimit)};";
             ///穿戴部分序列化
-            serializeStr += $"{GetBase64Str(JsonSerializer.Serialize(player.Hand, options))};";
-            serializeStr += $"{GetBase64Str(JsonSerializer.Serialize(player.Body, options))};";
+            serializeStr += $"{GetBase64Str(Item.Serialize(player.Hand))};";
+            serializeStr += $"{GetBase64Str(Item.Serialize(player.Body))};";
             ///ItemCollection序列化
             serializeStr += $"{GetBase64Str(player.Items.Serialize())};";
             ///SkillCollection序列化
@@ -147,12 +147,12 @@ namespace RoguelikeGame.Prefabs
             float dodge = float.Parse(Base64ToStr(deserializeArray[6]));
             long experience = long.Parse(Base64ToStr(deserializeArray[7]));
             long expMaxLimit = long.Parse(Base64ToStr(deserializeArray[8]));
-            Weapon? hand = JsonSerializer.Deserialize<Weapon>(Base64ToStr(deserializeArray[9]));
-            Armor? body = JsonSerializer.Deserialize<Armor>(Base64ToStr(deserializeArray[10]));
+            Weapon? hand = (Weapon?)Item.Deserialize(Base64ToStr(deserializeArray[9]));
+            Armor? body = (Armor?)Item.Deserialize(Base64ToStr(deserializeArray[10]));
 
             items.Deserialize(Base64ToStr(deserializeArray[11]));
             skills.Deserialize(Base64ToStr(deserializeArray[12]));
-            Player player = new()
+            return new()
             {
                 Type = PrefabType.Player,
                 Name = name,
@@ -169,7 +169,6 @@ namespace RoguelikeGame.Prefabs
                 Hand = hand,
                 Body = body
             };
-            return player;
         }
     }
 }

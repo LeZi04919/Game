@@ -4,11 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Runtime.Serialization;
+using RoguelikeGame.Interfaces;
 
 namespace RoguelikeGame.Class
 {
-    internal class Item : ISerializable
+    internal class Item : ISerializable<Item>
     {
         public required string Name;
         public string Description = "";
@@ -43,14 +43,22 @@ namespace RoguelikeGame.Class
             return true;
         }
     
-        public static string Serialize(Item item)
+        public static string Serialize(Item? item)
         {
-            string serializeStr = $"{GetBase64Str(item.Name)};"; 
-            serializeStr += $"{GetBase64Str(item.Count)}"; 
+            string serializeStr = "";
+            if (item is null)
+                serializeStr = $"{GetBase64Str("null")}";
+            else
+            {
+                serializeStr = $"{GetBase64Str(item.Name)};"; 
+                serializeStr += $"{GetBase64Str(item.Count)}"; 
+            }
             return GetBase64Str(serializeStr);
         }
-        public static Item Deserialize(string serializeStr)
+        public static Item? Deserialize(string serializeStr)
         {
+            if (Base64ToStr(serializeStr) == "null")
+                return null;
             var deserializeArray = Base64ToStr(serializeStr).Split(";");
             string name = deserializeArray[0];
             int count = int.Parse(deserializeArray[1]);    
@@ -59,12 +67,23 @@ namespace RoguelikeGame.Class
             item.Count = count;
             return item;
         }
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        public static string SerializeArray(IEnumerable<Item?> items)
         {
-            throw new NotSupportedException("类型\"Item\"没有实现此方法");
+            string serializeStr = "";            
+            foreach(var item in items)
+                serializeStr += $"{Item.Serialize(item)};";
+            return GetBase64Str(serializeStr);
+        }
+        public static Item?[] DeserializeArray(string serializeStr)
+        {
+            var deserializeArray = Base64ToStr(serializeStr).Split(";",StringSplitOptions.RemoveEmptyEntries);
+            List<Item?> items = new();
+            foreach(var itemStr in deserializeArray)
+                items.Add(Item.Deserialize(itemStr));
+            return items.ToArray();
         }
     }
-    internal class ItemCollection : IEnumerable,ISerializable
+    internal class ItemCollection : IEnumerable<Item>,ISerializable
     {
         List<Item> items;
         public ItemCollection() : this(15)
@@ -143,7 +162,8 @@ namespace RoguelikeGame.Class
         public void Remove(int index) => items.Remove(this[index]);
         public void Remove(Item item) => items.Remove(item);
         public int IndexOf(Item target) => items.IndexOf(target);
-        public IEnumerator GetEnumerator() => items.GetEnumerator();
+        public IEnumerator<Item> GetEnumerator() => ((IEnumerable<Item>)items).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<Item>)items).GetEnumerator();
         public string Serialize()
         {
             string serializeStr = "";
@@ -157,10 +177,6 @@ namespace RoguelikeGame.Class
             var itemStrArray = _serializeStr.Split(";",StringSplitOptions.RemoveEmptyEntries);
             foreach(var itemStr in itemStrArray)
                 items.Add(Item.Deserialize(itemStr));            
-        }
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            throw new NotSupportedException("类型\"ItemCollection\"没有实现此方法");
         }
     }
 }
