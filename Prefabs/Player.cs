@@ -109,26 +109,26 @@ namespace RoguelikeGame.Prefabs
             }
             return null;
         }
-        public string Serialize()
+        public static string Serialize(Player player)
         {
             var options = new JsonSerializerOptions { WriteIndented = true };
             ///Player主要属性序列化
-            string serializeStr = $"{GetBase64Str(Name)};"; 
-            serializeStr += $"{GetBase64Str(Level)};";
-            serializeStr += $"{GetBase64Str(_maxHealth)};";
-            serializeStr += $"{GetBase64Str(_health)};";
-            serializeStr += $"{GetBase64Str(_armor)};";
-            serializeStr += $"{GetBase64Str(_damage)};";
-            serializeStr += $"{GetBase64Str(_dodge)};";
-            serializeStr += $"{GetBase64Str(Experience)};";
-            serializeStr += $"{GetBase64Str(ExpMaxLimit)};";
+            string serializeStr = $"{GetBase64Str(player.Name)};"; 
+            serializeStr += $"{GetBase64Str(player.Level)};";
+            serializeStr += $"{GetBase64Str(player._maxHealth)};";
+            serializeStr += $"{GetBase64Str(player._health)};";
+            serializeStr += $"{GetBase64Str(player._armor)};";
+            serializeStr += $"{GetBase64Str(player._damage)};";
+            serializeStr += $"{GetBase64Str(player._dodge)};";
+            serializeStr += $"{GetBase64Str(player.Experience)};";
+            serializeStr += $"{GetBase64Str(player.ExpMaxLimit)};";
             ///穿戴部分序列化
-            serializeStr += $"{GetBase64Str(JsonSerializer.Serialize(Hand, options))};";
-            serializeStr += $"{GetBase64Str(JsonSerializer.Serialize(Body, options))};";
+            serializeStr += $"{GetBase64Str(JsonSerializer.Serialize(player.Hand, options))};";
+            serializeStr += $"{GetBase64Str(JsonSerializer.Serialize(player.Body, options))};";
             ///ItemCollection序列化
-            serializeStr += $"{GetBase64Str(Items.Serialize())};";
+            serializeStr += $"{GetBase64Str(player.Items.Serialize())};";
             ///SkillCollection序列化
-            serializeStr += $"{GetBase64Str(Skills.Serialize())}";
+            serializeStr += $"{GetBase64Str(player.Skills.Serialize())}";
 
             return GetBase64Str(serializeStr);
         }
@@ -138,7 +138,7 @@ namespace RoguelikeGame.Prefabs
             ItemCollection items = new();
             SkillCollection skills = new();
 
-            var name = Base64ToStr(deserializeArray[0]);
+            string name = Base64ToStr(deserializeArray[0]);
             long level = long.Parse(Base64ToStr(deserializeArray[1]));
             long maxHealth = long.Parse(Base64ToStr(deserializeArray[2]));
             long health = long.Parse(Base64ToStr(deserializeArray[3]));

@@ -2,6 +2,7 @@
 using RoguelikeGame.Class;
 using RoguelikeGame.Prefabs;
 using System;
+using static RoguelikeGame.Game;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -94,10 +95,15 @@ namespace RoguelikeGame
     /// </summary>
     internal enum ItemType
     {
+        //属Item
         Common,
+        //属Weapon
         Weapon,
+        //属Armor
         Armor,
+        //属Drug
         Drug,
+        //属Item
         Currency
     }
     /// <summary>
@@ -225,6 +231,37 @@ namespace RoguelikeGame
         /// Player在该区域已走步数
         /// </summary>
         public int PlayerStep;
+        /// <summary>
+        /// MapArea序列化
+        /// </summary>
+        /// <param name="area"></param>
+        /// <returns></returns>
+        public static string Serialize(MapArea area)
+        {
+            string serializeStr = $"{GetBase64Str((int)area.Type)};"; 
+            serializeStr = $"{GetBase64Str(area.AreaStep)};";
+            serializeStr = $"{GetBase64Str(area.PlayerStep)}";
+            return GetBase64Str(serializeStr);
+        }
+        /// <summary>
+        /// MapArea反序列化
+        /// </summary>
+        /// <param name="serializeStr"></param>
+        /// <returns></returns>
+        public static MapArea Deserialize(string serializeStr)
+        {
+            var deserializeArray = Base64ToStr(serializeStr).Split(";");
+            MapArea area = new();
+
+            var type = (AreaType)int.Parse(Base64ToStr(deserializeArray[0]));
+            var areaStep = int.Parse(Base64ToStr(deserializeArray[1]));
+            var playerStep = int.Parse(Base64ToStr(deserializeArray[2]));
+
+            area.Type = type;
+            area.AreaStep = areaStep;
+            area.PlayerStep = playerStep;
+            return area;
+        }
     }
     internal struct Result
     {

@@ -4,10 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Runtime.Serialization;
 
 namespace RoguelikeGame.Class
 {
-    internal class Item
+    internal class Item : ISerializable
     {
         public required string Name;
         public string Description = "";
@@ -41,8 +42,29 @@ namespace RoguelikeGame.Class
             }
             return true;
         }
+    
+        public static string Serialize(Item item)
+        {
+            string serializeStr = $"{GetBase64Str(item.Name)};"; 
+            serializeStr += $"{GetBase64Str(item.Count)}"; 
+            return GetBase64Str(serializeStr);
+        }
+        public static Item Deserialize(string serializeStr)
+        {
+            var deserializeArray = Base64ToStr(serializeStr).Split(";");
+            string name = deserializeArray[0];
+            int count = int.Parse(deserializeArray[1]);    
+
+            Item item = GameResources.ItemList[name][0];
+            item.Count = count;
+            return item;
+        }
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            throw new NotSupportedException("类型\"Item\"没有实现此方法");
+        }
     }
-    internal class ItemCollection : IEnumerable
+    internal class ItemCollection : IEnumerable,ISerializable
     {
         List<Item> items;
         public ItemCollection() : this(15)
@@ -124,13 +146,21 @@ namespace RoguelikeGame.Class
         public IEnumerator GetEnumerator() => items.GetEnumerator();
         public string Serialize()
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            return GetBase64Str(JsonSerializer.Serialize(items, options));
+            string serializeStr = "";
+            foreach(var item in items)
+                serializeStr += $"{Item.Serialize(item)};";
+            return GetBase64Str(serializeStr);
         }
         public void Deserialize(string serializeStr)
         {
             var _serializeStr = Base64ToStr(serializeStr);
-            items = JsonSerializer.Deserialize<List<Item>>(_serializeStr);
+            var itemStrArray = _serializeStr.Split(";",StringSplitOptions.RemoveEmptyEntries);
+            foreach(var itemStr in itemStrArray)
+                items.Add(Item.Deserialize(itemStr));            
+        }
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            throw new NotSupportedException("类型\"ItemCollection\"没有实现此方法");
         }
     }
 }

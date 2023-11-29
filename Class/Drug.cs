@@ -29,5 +29,6 @@ namespace RoguelikeGame.Class
         //    this.Value = Value;
         //    this.ReleaseType = ReleaseType;
         //}
+    
     }
 }

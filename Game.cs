@@ -43,9 +43,9 @@ namespace RoguelikeGame
         public static void Save()
         {
             var options = new JsonSerializerOptions { WriteIndented = true };
-            EncryptArchive($"{ArchivePath}/Game00.sf",Game.Player.Serialize());
+            EncryptArchive($"{ArchivePath}/Game00.sf",Player.Serialize(Game.Player));
             EncryptArchive($"{ArchivePath}/Game01.sf",Game.GetBase64Str(JsonSerializer.Serialize(Game.TotalStep,options)));
-            EncryptArchive($"{ArchivePath}/Game02.sf", Game.GetBase64Str(JsonSerializer.Serialize(Game.Area, options)));
+            EncryptArchive($"{ArchivePath}/Game02.sf", MapArea.Serialize(Game.Area));
         }
         static void EncryptArchive(string Path,string serializeStr)//加密存档
         {
