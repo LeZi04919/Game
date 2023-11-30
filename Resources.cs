@@ -239,8 +239,8 @@ namespace RoguelikeGame
         public static string Serialize(MapArea area)
         {
             string serializeStr = $"{GetBase64Str((int)area.Type)};"; 
-            serializeStr = $"{GetBase64Str(area.AreaStep)};";
-            serializeStr = $"{GetBase64Str(area.PlayerStep)}";
+            serializeStr += $"{GetBase64Str(area.AreaStep)};";
+            serializeStr += $"{GetBase64Str(area.PlayerStep)}";
             return GetBase64Str(serializeStr);
         }
         /// <summary>

@@ -49,7 +49,7 @@ namespace RoguelikeGame.Class
         {
             string serializeStr = "";
             if(skill is null)
-                serializeStr = $"{GetBase64Str("null")}";
+                serializeStr = "null";
             else
             {
                 serializeStr = $"{GetBase64Str(skill.Name)};";

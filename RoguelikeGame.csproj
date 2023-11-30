@@ -15,6 +15,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="SecureTool">
+      <HintPath>SecureTool.dll</HintPath>
+    </Reference>
     <Reference Include="SecurityTool">
       <HintPath>SecurityTool.dll</HintPath>
     </Reference>

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using static SecurityTool.Security;
+using SecureTool;
 using System.Threading;
 using static RoguelikeGame.GameResources;
 using System.Text;
@@ -37,7 +37,7 @@ namespace RoguelikeGame
         {
             Game.Player = Player.Deserialize(DecryptArchive($"{ArchivePath}/Game00.sf"));
             Game.TotalStep = JsonSerializer.Deserialize<int>(Game.Base64ToStr(DecryptArchive($"{ArchivePath}/Game01.sf")));
-            Game.Area = JsonSerializer.Deserialize<MapArea>(Game.Base64ToStr(DecryptArchive($"{ArchivePath}/Game02.sf")));
+            Game.Area = MapArea.Deserialize(DecryptArchive($"{ArchivePath}/Game02.sf"));
         }
         public static void Save()
         {
@@ -51,7 +51,7 @@ namespace RoguelikeGame
             //var sw = File.Open($"{ArchivePath}/Game.sf",FileMode.Open,FileAccess.Read,FileShare.ReadWrite);
             var sw = File.Open(Path, FileMode.OpenOrCreate,FileAccess.Write,FileShare.ReadWrite);
             byte[] buffer = Encoding.UTF8.GetBytes(serializeStr);
-            //byte[] encryptBuffer = Encrypt(buffer);
+            //byte[] encryptBuffer = Secure.Encrypt.ToBytes(buffer);
             //sw.Write(encryptBuffer, 0, encryptBuffer.Length);
             sw.Write(buffer, 0, buffer.Length);
             sw.Close();
@@ -63,7 +63,7 @@ namespace RoguelikeGame
                 var sw = File.Open(Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 byte[] buffer = new byte[sw.Length];
                 while (sw.Read(buffer, 0, buffer.Length) > 0) ;
-                //byte[] DecryptBuffer = Decrypt(buffer);
+                //byte[] DecryptBuffer = Secure.Decrypt.ToBytes(buffer);
                 byte[] DecryptBuffer = buffer;
                 sw.Close();
                 return Encoding.UTF8.GetString(DecryptBuffer);
@@ -115,7 +115,7 @@ namespace RoguelikeGame
             Console.WriteLine("            {0,-12} : {1,-50}               ","Author","LeZi");
             Console.WriteLine("            {0,-12} : {1,-50}               ","Version","v0.1");
             Console.WriteLine("            {0,-12} : {1,-50}               ","Project","https://github.com/LeZi9916/Game");
-            Console.WriteLine("            {0,-12} : {1,-50}               ","Release Date","2023/11/27");
+            Console.WriteLine("            {0,-12} : {1,-50}               ","Build Date","2023/11/30");
             WriteLine("###################################################");
             if (Player.Name == "NotDefine")
             {
@@ -161,7 +161,8 @@ namespace RoguelikeGame
             while(true)
             {
                 Clear();
-                WriteLine($"     你已走了{Area.PlayerStep}步\n");
+                WriteLine($"     你已走了{Area.PlayerStep}步");
+                WriteLine($"     目前区域:{Area.Type}\n");
                 WriteLine("     Enter. 投骰子");
                 WriteLine("     B.     查看背包");
                 WriteLine("     S.     查看技能");
@@ -173,6 +174,7 @@ namespace RoguelikeGame
                         Thread.Sleep(2500);
                         var result = NextStep();
                         WriteLine($"     你向前走了{result.Step}");
+                        Console.ReadKey();
 
                         if (result.Type is ResultType.Nothing)
                             WriteLine("     你环顾四周，什么都没发生");
@@ -181,7 +183,7 @@ namespace RoguelikeGame
                         else if (result.Type is ResultType.Battle)
                         {
                             WriteLine($"     突然，你在前进的路上遇到了魔物");
-                            Thread.Sleep(2500);
+                            Console.ReadKey();
                             WriteLine($"     准备战斗!");
                             Console.ReadKey();
                             BattleUI(result.Monsters);
@@ -189,7 +191,7 @@ namespace RoguelikeGame
                         else if (result.Type is ResultType.Boss)
                         {
                             WriteLine($"     你已接近该区域的尽头，是时候挑战区域Boss了");
-                            Thread.Sleep(2500);
+                            Console.ReadKey();
                             WriteLine($"     准备战斗!");
                             Console.ReadKey();
                             BattleUI(result.Monsters);
@@ -197,9 +199,9 @@ namespace RoguelikeGame
                         else if (result.Type is ResultType.AreaFinish)
                         {
                             WriteLine($"     经过了无数战斗的洗礼，你在这篇区域留下了属于你的足迹");
-                            Thread.Sleep(2500);
+                            Console.ReadKey();
                             WriteLine($"     准备好前往下一区域了吗？");
-                            Thread.Sleep(2500);
+                            Console.ReadKey();
                             WriteLine("     Y. 我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了我准备好了");
                             WriteLine("     N. 我想先休息一下");
                             Archive.Save();
@@ -237,6 +239,7 @@ namespace RoguelikeGame
                         ViewBagUI();
                         break;
                     case ConsoleKey.S:
+                        ViewSkillUI();
                         break;
                     case ConsoleKey.E:
                         WriteLine("[System]正在保存，请稍后...",Green);
@@ -304,7 +307,7 @@ namespace RoguelikeGame
                         if(rdNum >=75)
                         {
                             WriteLine("     你已成功逃跑!", Green);
-                            Thread.Sleep(2500);
+                            //Thread.Sleep(2500);
                             Console.ReadKey();
                             isEscaped = true;
                             break;
@@ -312,7 +315,7 @@ namespace RoguelikeGame
                         else
                         {
                             WriteLine("     你尝试逃跑，但是失败了", Red);
-                            Thread.Sleep(2500);
+                            //Thread.Sleep(2500);
                             Console.ReadKey();
                         }
                         MonsterBrain(monsters);
@@ -418,7 +421,7 @@ namespace RoguelikeGame
             }
         }
         /// <summary>
-        /// 日常查看背包
+        /// 浏览背包
         /// </summary>
         public static void ViewBagUI()
         {
@@ -438,6 +441,18 @@ namespace RoguelikeGame
                     break;
             }
             
+        }
+        /// <summary>
+        /// 浏览技能
+        /// </summary>
+        public static void ViewSkillUI()
+        {
+            Clear();
+            Console.WriteLine("     [{0,-2}] {1,-25} {2,-40}", "Index", "Name".PadRight(25, ' '), "Description");
+            foreach (Skill skill in Player.Skills)
+                Console.WriteLine("     [{0,-2}] {1,-8} {2,-6}", Player.Skills.IndexOf(skill).ToString().PadRight(2, ' '), skill.Name.PadRight(25, ' '), skill.Description);
+            WriteLine("     按下任意键以退出");
+            Console.ReadKey();
         }
         /// <summary>
         /// 释放技能UI
@@ -550,7 +565,7 @@ namespace RoguelikeGame
         public static Skill SelectSkillUI()
         {
             Clear();
-            Console.WriteLine("     [{0,-2}] {1,-6} {2,-6}","序号","技能名称","剩余冷却轮数");
+            Console.WriteLine("     [{0,-2}] {1,-6} {2,-6}","Index","Name","CoolDown");
             foreach (Skill skill in Player.Skills)
             {
                 Console.WriteLine("     [{0,-2}] {1,-6} {2,-6}", Player.Skills.IndexOf(skill), skill.Name, Player.Skills.InCoolDown(skill) is true ? Player.Skills.GetCoolDownRound(skill) : "N/A");

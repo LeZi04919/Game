@@ -47,7 +47,7 @@ namespace RoguelikeGame.Class
         {
             string serializeStr = "";
             if (item is null)
-                serializeStr = $"{GetBase64Str("null")}";
+                serializeStr = "null";
             else
             {
                 serializeStr = $"{GetBase64Str(item.Name)};"; 

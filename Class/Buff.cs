@@ -35,7 +35,7 @@ namespace RoguelikeGame.Class
         {
             string serializeStr = "";
             if(buff is null)
-                serializeStr = $"{GetBase64Str("null")}"; 
+                serializeStr = "null"; 
             else
             {
                 serializeStr = $"{GetBase64Str((int)buff.Effect)};";            
