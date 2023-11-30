@@ -124,13 +124,15 @@ namespace RoguelikeGame
         /// <param name="e"></param>
         public static void EventHandle(AreaEvent e)
         {
-            Console.Clear();
-
+            Clear();
+            while(e.Type is EventType.Shop && Player.CoinCount <= 400)
+                e = RandomEvent();
             List<Item> bonus;
             List<Item> failure;
             int epicCount, rareCount, commonCount, rdNum;
             char userInput;
             var coin = coinItem;
+            
 
             if (e.Type is EventType.Adventure)
             {

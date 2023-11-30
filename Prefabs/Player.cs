@@ -18,6 +18,11 @@ namespace RoguelikeGame.Prefabs
         public required long Experience;//目前经验值
         public required long ExpMaxLimit;//下一级
 
+        /// <summary>
+        /// 返回Player持有的Coin数
+        /// </summary>
+        public long CoinCount => this.Items["通用货币"].Length > 0 ? this.Items["通用货币"][0].Count : 0;
+
         public ItemCollection Items = new();
         public Player()
         {
