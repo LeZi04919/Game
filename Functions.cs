@@ -85,7 +85,7 @@ namespace RoguelikeGame
                         result.Event = RandomEvent();
                         break;
                     case ResultType.Battle:
-                        result.Monsters = CreateMonsters(WeightedRandom(new MonsterType[] {MonsterType.Common,MonsterType.Elite },new double[] { 0.6,0.4 }));
+                        result.Monsters = CreateMonsters(WeightedRandom(new MonsterType[] {MonsterType.Common,MonsterType.Elite },new double[] { 0.7,0.3 }));
                         break;
                 }
                 return result;
@@ -763,10 +763,7 @@ namespace RoguelikeGame
         /// </summary>
         /// <param name="maxLevel"></param>
         /// <returns></returns>
-        public static Monster[] CreateMonsters(MonsterType maxRank)
-        {
-            return CreateMonsters(maxRank, WeightedRandom(new int[] { 1, 2, 3, 4 }, new double[] { 0.35, 0.35, 0.2, 0.1 }));
-        }
+        public static Monster[] CreateMonsters(MonsterType maxRank) => CreateMonsters(maxRank, WeightedRandom(new int[] { 1, 2, 3, 4 }, new double[] { 0.445, 0.445, 0.1, 0.05 }));
         /// <summary>
         /// 随机生成指定数量不超过指定阶级的Monster
         /// </summary>

@@ -84,9 +84,9 @@ namespace RoguelikeGame
         public static Player Player = new()
         {
             Name = "NotDefine",
-            MaxHealth = 20,
-            Armor = 2,
-            Damage = 5,
+            MaxHealth = 100,
+            Armor = 10,
+            Damage = 20,
             Dodge = 0,
             Level = 1,
             Type = PrefabType.Player,
